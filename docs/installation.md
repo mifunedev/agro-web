@@ -190,7 +190,7 @@ docker ps --filter "name=openharness" --format "{{.Names}} {{.Status}}"
 docker inspect --format '{{json .State.Health}}' openharness
 ```
 
-A healthy sandbox reports the tmux-managed runtime sessions (`cron-watchdog` and `cron-system`) as available; optional Slack and Hermes dashboard sessions are checked only when configured. To debug a failure from inside the container, run `bash /home/sandbox/harness/.oh/scripts/sandbox-healthcheck.sh` for the exact missing session. For a temporary local escape hatch, add a Compose override with `services.sandbox.healthcheck.disable: true`; do not commit that override unless you are deliberately changing the harness health policy.
+A healthy sandbox reports the systemd units `openharness-bootstrap.service` and `openharness-cron.service` as active; optional Slack and Hermes dashboard tmux sessions are checked only when configured. To debug a failure from inside the container, run `bash /home/sandbox/harness/.oh/scripts/sandbox-healthcheck.sh` for the exact unit or session at fault, then `systemctl status openharness-cron.service` and `journalctl -u openharness-cron.service` for the detail. For a temporary local escape hatch, add a Compose override with `services.sandbox.healthcheck.disable: true`; do not commit that override unless you are deliberately changing the harness health policy.
 
 ### 4. Open a shell
 
@@ -274,7 +274,7 @@ Once installed, proceed to the [Quickstart](./quickstart.md) to authenticate ins
 
 The sandbox image ships a complete development environment. The required host dependencies are Docker with the Compose plugin, Git, and Node.js ≥ 20 (see [Prerequisites](#prerequisites)).
 
-Project-local Pi packages are loaded from `.pi/settings.json`; the defaults include `@tintinweb/pi-subagents`, `@tintinweb/pi-tasks`, `@narumitw/pi-goal`, `@narumitw/pi-plan-mode`, `@narumitw/pi-codex-usage@0.6.2` for `/codex-status` plus fixed statusline usage timers, `@tifan/pi-recap` for `/recap` plus automatic idle/resume session summaries, `@trevonistrevon/pi-loop` for Monitor/Loop tools, `@guwidoe/pi-prompt-suggester` for next-prompt suggestions, and `pi-dynamic-workflows` for workflow-script fan-out through isolated Pi subagents.
+Project-local Pi packages are loaded from `.pi/settings.json`; the defaults include `@tintinweb/pi-subagents`, `@tintinweb/pi-tasks`, `@narumitw/pi-goal`, `@narumitw/pi-codex-usage@0.6.2` for `/codex-status` plus fixed statusline usage timers, `@tifan/pi-recap` for `/recap` plus automatic idle/resume session summaries, `@trevonistrevon/pi-loop` for Monitor/Loop tools, `@guwidoe/pi-prompt-suggester` for next-prompt suggestions, and `pi-dynamic-workflows` for workflow-script fan-out through isolated Pi subagents.
 
 ### Base image
 
@@ -309,6 +309,7 @@ system path is unwritable from a running sandbox. Consequences worth knowing:
 | Pi | `pi` | `@earendil-works/pi-coding-agent` — local-first coding agent (was `@mariozechner/pi-coding-agent`, now deprecated) | `oh harness install pi` |
 | OpenCode | `opencode` | `opencode-ai` — terminal coding agent with OpenAI OAuth support | `oh harness install opencode` |
 | Hermes | `hermes` | Nous Research's self-improving agent CLI | `oh harness install hermes` |
+| [Muse Code](harnesses/muse-code.md) | `muse` | Meta's native terminal coding agent | `oh harness install muse-code` |
 | Grok Build | `grok` | xAI's proprietary Grok Build CLI (`@xai-official/grok@0.2.39`, Node >=20) | `oh harness install grok-build` |
 | T3 Code | `npx t3` | Browser UI over Claude/Codex/OpenCode | on demand, no install |
 
