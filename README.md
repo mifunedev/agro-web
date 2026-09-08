@@ -1,6 +1,6 @@
 # Open Harness Web
 
-Docusaurus documentation site for [Open Harness](https://github.com/mifunedev/openharness), published at <https://oh.mifune.dev>.
+Docusaurus documentation site for [Open Harness](https://github.com/mifunedev/agro), published at <https://oh.mifune.dev>.
 
 ## Develop
 
@@ -63,7 +63,7 @@ know before changing any of it.
 Both build scripts resolve their upstream repo and ref through `scripts/oh-source.mjs`,
 which is the single place they are decided. `AGRO_GITHUB_REPO` and `AGRO_SCRIPTS_REF`
 win over `OH_GITHUB_REPO` and `OH_SCRIPTS_REF`; setting both forms to different
-values prints a warning. The ref defaults to **`main`** — the release ref.
+values prints a warning. The repo defaults to **`mifunedev/agro`** and the ref to **`main`** — the release ref.
 `development` carries unreleased CLI behaviour and must not be published to people
 running `curl … | bash`.
 
@@ -91,11 +91,11 @@ mirroring it properly needs whoever owns that layer.
 
 The site rebuilds on push to `main`, on a daily schedule, on manual
 `workflow_dispatch` (which takes a `ref` input), and on a `repository_dispatch` of
-type `openharness-release`:
+type `agro-release` (the legacy `openharness-release` type still works):
 
 ```bash
-gh api repos/mifunedev/openharness-web/dispatches \
-  -f event_type=openharness-release \
+gh api repos/mifunedev/agro-web/dispatches \
+  -f event_type=agro-release \
   -F 'client_payload[ref]=main'
 ```
 
