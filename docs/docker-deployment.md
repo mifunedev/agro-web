@@ -47,7 +47,7 @@ read-only, and its default AppArmor profile denies the mount even with `SYS_ADMI
 are the minimum proven necessary; the sandbox is not `privileged` and the host cgroup tree
 is never exposed.
 
-`oh-a_workspace` is the whole sandbox home, and it is unique to A. The name follows the convention Compose uses—`<sandbox-name>_workspace`—so the same volume can later be adopted by the [image-only Compose file](https://github.com/mifunedev/openharness/blob/main/.devcontainer/docker-compose.image-only.yml) without moving data.
+`oh-a_workspace` is the whole sandbox home, and it is unique to A. The name follows the convention Compose uses—`<sandbox-name>_workspace`—so the same volume can later be adopted by the [image-only Compose file](https://github.com/mifunedev/agro/blob/main/.devcontainer/docker-compose.image-only.yml) without moving data.
 
 To keep the home on the host filesystem instead, replace the volume name with an absolute host path:
 
@@ -203,7 +203,7 @@ No ports are published by these commands; the `openharness` network remains priv
 
 ## Full-option references
 
-The `docker run` path above is the recommended walkthrough. For the complete image/boot model and advanced settings, see [Creating a sandbox](/docs/deployment-prebuilt-image). The [canonical image-only Compose file](https://github.com/mifunedev/openharness/blob/main/.devcontainer/docker-compose.image-only.yml) is available as a reference for operators who specifically need Compose-managed options.
+The `docker run` path above is the recommended walkthrough. For the complete image/boot model and advanced settings, see [Creating a sandbox](/docs/deployment-prebuilt-image). The [canonical image-only Compose file](https://github.com/mifunedev/agro/blob/main/.devcontainer/docker-compose.image-only.yml) is available as a reference for operators who specifically need Compose-managed options.
 
 ## The same image runs under MicroSandbox
 

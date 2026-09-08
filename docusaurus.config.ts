@@ -8,16 +8,16 @@ import timeOfDayThemePlugin from "./src/plugins/time-of-day-theme";
 // baseUrl: "/openharness/"
 
 const config: Config = {
-  title: "Open Harness",
+  title: "AGRO",
   tagline:
-    "A portable harness for running coding agents in an isolated Docker sandbox.",
+    "AGRO is a portable harness for running coding agents in an isolated Docker sandbox.",
   favicon: "img/favicon.svg",
 
-  url: "https://oh.mifune.dev",
+  url: "https://agro.mifune.dev",
   baseUrl: "/",
 
   organizationName: "mifunedev",
-  projectName: "openharness",
+  projectName: "agro-web",
 
   trailingSlash: false,
 
@@ -112,19 +112,19 @@ const config: Config = {
           path: "docs",
           sidebarPath: "./sidebars.ts",
           editUrl: ({ docPath }) =>
-            `https://github.com/mifunedev/openharness-web/edit/main/docs/${docPath}`,
+            `https://github.com/mifunedev/agro-web/edit/main/docs/${docPath}`,
           routeBasePath: "docs",
           showLastUpdateTime: true,
         },
         blog: {
           path: "blog",
           showReadingTime: true,
-          blogTitle: "Open Harness Blog",
-          blogDescription: "Notes from building Open Harness",
+          blogTitle: "AGRO Blog",
+          blogDescription: "Notes from building AGRO",
           postsPerPage: 10,
-          feedOptions: { type: ["rss", "atom"], title: "Open Harness Blog" },
+          feedOptions: { type: ["rss", "atom"], title: "AGRO Blog" },
           editUrl: ({ blogPath }) =>
-            `https://github.com/mifunedev/openharness-web/edit/main/blog/${blogPath}`,
+            `https://github.com/mifunedev/agro-web/edit/main/blog/${blogPath}`,
           routeBasePath: "blog",
         },
         theme: {
@@ -166,10 +166,10 @@ const config: Config = {
       maxHeadingLevel: 4,
     },
     navbar: {
-      title: "Open Harness",
+      title: "AGRO",
       hideOnScroll: true,
       logo: {
-        alt: "Open Harness Logo",
+        alt: "AGRO Logo",
         src: "img/logo.svg",
         srcDark: "img/logo-dark.svg",
       },
@@ -191,7 +191,7 @@ const config: Config = {
           position: "left",
         },
         {
-          href: "https://github.com/mifunedev/openharness-web",
+          href: "https://github.com/mifunedev/agro",
           label: "GitHub",
           position: "right",
         },
@@ -214,16 +214,20 @@ const config: Config = {
           items: [
             {
               label: "GitHub",
-              href: "https://github.com/mifunedev/openharness-web",
+              href: "https://github.com/mifunedev/agro",
+            },
+            {
+              label: "Site source",
+              href: "https://github.com/mifunedev/agro-web",
             },
             {
               label: "License",
-              href: "https://github.com/mifunedev/openharness-web/blob/main/LICENSE",
+              href: "https://github.com/mifunedev/agro/blob/main/LICENSE",
             },
           ],
         },
       ],
-      copyright: `Copyright ${new Date().getFullYear()} Open Harness Contributors.`,
+      copyright: `Copyright ${new Date().getFullYear()} AGRO Contributors.`,
     },
   } satisfies Preset.ThemeConfig,
 };

@@ -30,6 +30,16 @@
 // When you remove a command, a file, or a configuration knob from the harness,
 // add its name here in the same change. The cost is one line; the thing it buys
 // is that the site cannot quietly keep recommending it.
+//
+// ── LEGACY_IDENTITY guards the OpenHarness → AGRO rename. ──
+// The pre-rename host (oh.mifune.dev) and repository names (mifunedev/openharness,
+// mifunedev/openharness-web) keep working as aliases, so a page may name them to
+// say so. The exemption rule is deterministic: a line that contains the word
+// "compatibility", or any line under a Markdown heading that contains it (until
+// the next heading of the same or a shallower level; headings inside fenced code
+// are ignored). promos/ is not scanned for this rule: its drafts are dated
+// records. GHCR image references (ghcr.io/mifunedev/openharness) are not flagged;
+// the image name is owned by the harness release workflow, not by this site.
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -217,6 +227,33 @@ const ALLOW = [
   },
 ];
 
+const LEGACY_IDENTITY = {
+  pattern: /\boh\.mifune\.dev\b|(?<!ghcr\.io\/)\bmifunedev\/openharness(?:-web)?\b/g,
+  name: "the pre-AGRO host or repository name",
+  instead: "agro.mifune.dev, mifunedev/agro, or mifunedev/agro-web — or name it as a compatibility alias on that line or under a compatibility heading",
+};
+const LEGACY_IDENTITY_SCANNED = ["docs", "src/pages"];
+const COMPATIBILITY = /compatibility/i;
+const HEADING = /^(#{1,6})\s/;
+const FENCE = /^\s*(```|~~~)/;
+
+function compatibilityLines(lines) {
+  const exempt = new Set();
+  let sectionLevel = 0;
+  let inFence = false;
+  lines.forEach((line, i) => {
+    if (FENCE.test(line)) inFence = !inFence;
+    const heading = inFence ? null : HEADING.exec(line);
+    if (heading) {
+      const level = heading[1].length;
+      if (COMPATIBILITY.test(line)) sectionLevel = level;
+      else if (sectionLevel && level <= sectionLevel) sectionLevel = 0;
+    }
+    if (sectionLevel || COMPATIBILITY.test(line)) exempt.add(i);
+  });
+  return exempt;
+}
+
 const SCANNED_EXTENSIONS = [".md", ".json", ".tsx"];
 
 function walk(dir) {
@@ -246,6 +283,14 @@ for (const { path, rel } of pages) {
       if (hit) violations.push({ file: rel, line: i + 1, name, match: hit[0], instead, text: line.trim() });
     });
   }
+  if (!LEGACY_IDENTITY_SCANNED.some((dir) => rel.startsWith(dir + "/"))) continue;
+  const exempt = compatibilityLines(lines);
+  lines.forEach((line, i) => {
+    if (exempt.has(i)) return;
+    LEGACY_IDENTITY.pattern.lastIndex = 0;
+    const hit = LEGACY_IDENTITY.pattern.exec(line);
+    if (hit) violations.push({ file: rel, line: i + 1, name: LEGACY_IDENTITY.name, match: hit[0], instead: LEGACY_IDENTITY.instead, text: line.trim() });
+  });
 }
 
 if (violations.length > 0) {

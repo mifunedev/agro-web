@@ -4,25 +4,25 @@ import Link from "@docusaurus/Link";
 import CodeBlock from "@theme/CodeBlock";
 import styles from "./index.module.css";
 
-const GITHUB_REPO = "mifunedev/openharness";
+const GITHUB_REPO = "mifunedev/agro";
 const GITHUB_URL = `https://github.com/${GITHUB_REPO}`;
 const FALLBACK_STARS = 18;
 
-const QUICKSTART = `# 1 · install the oh CLI  (host: Docker + git + Node.js ≥ 20)
-curl -fsSL https://oh.mifune.dev/get-oh.sh | bash
-# ...or: npm install -g @mifune/openharness
+const QUICKSTART = `# 1 · install the agro CLI  (host: Docker + git + Node.js ≥ 20)
+curl -fsSL https://agro.mifune.dev/get-agro.sh | bash
+# ...or: npm install -g @mifune/agro
 
 # 2 · create a sandbox from any directory, then open a shell in it
-oh sandbox install docker   # wizard: name, timezone, git identity, SSH, Docker socket
-oh shell <name>             # default name oh-sbx-1; omit it when it is your only sandbox
+agro sandbox install docker   # wizard: name, timezone, git identity, SSH, Docker socket
+agro shell <name>             # default name oh-sbx-1; omit it when it is your only sandbox
 
 # 3 · nothing installs at boot — add tools through the one door, inside the sandbox
-oh tool install herdr && herdr     # persistent terminal workspace
-oh harness install claude-code     # or codex · pi · opencode · hermes · grok-build · muse-code
+agro tool install herdr && herdr     # persistent terminal workspace
+agro harness install claude-code     # or codex · pi · opencode · hermes · grok-build · muse-code
 claude
 
 # 4 · optional — Hermes + Slack messaging (in order)
-oh harness install hermes
+agro harness install hermes
 hermes setup            # 1. model/provider auth
 hermes gateway setup    # 2. configure the Slack gateway
 gateway hermes          # 3. start the Slack session`;
@@ -117,7 +117,7 @@ export default function Home(): React.ReactElement {
   const starLabel = formatStars(stars);
 
   return (
-    <Layout description="Open Harness is a durable Docker workspace for coding agents. Bring Claude Code, Codex, OpenCode, or Pi; keep its tools, identity, schedules, branches, and communication channels together on a laptop or remote VM.">
+    <Layout description="AGRO is a durable Docker workspace for coding agents. Bring Claude Code, Codex, OpenCode, or Pi; keep its tools, identity, schedules, branches, and communication channels together on a laptop or remote VM.">
       <main>
         <section className={styles.hero}>
           <div className={styles.heroBg} aria-hidden="true" />
@@ -131,7 +131,7 @@ export default function Home(): React.ReactElement {
                 Give coding agents a place to live and work.
               </h1>
               <p className={styles.heroSubtitle}>
-                Open Harness turns your repository into a persistent Docker workspace for autonomous coding agents. Bring Claude Code, Codex, OpenCode, or Pi; keep its tools, identity, schedules, branches, and Slack access together locally or on a remote VM.
+                AGRO turns your repository into a persistent Docker workspace for autonomous coding agents. Bring Claude Code, Codex, OpenCode, or Pi; keep its tools, identity, schedules, branches, and Slack access together locally or on a remote VM.
               </p>
               <div className={styles.heroButtons}>
                 <Link
@@ -143,7 +143,7 @@ export default function Home(): React.ReactElement {
                 <Link
                   className="button button--secondary button--lg"
                   href={GITHUB_URL}
-                  aria-label={`Star Open Harness on GitHub, ${starLabel} stars`}
+                  aria-label={`Star AGRO on GitHub, ${starLabel} stars`}
                 >
                   ★ Star on GitHub
                 </Link>
@@ -183,7 +183,7 @@ export default function Home(): React.ReactElement {
             <div className={styles.starCopy}>
               <p className={styles.starEyebrow}>Open source signal</p>
               <h2 id="github-stars-title" className={styles.starTitle}>
-                Help more agent builders find Open Harness.
+                Help more agent builders find AGRO.
               </h2>
               <p className={styles.starBody}>
                 If the sandbox model saves you from one broken local agent setup,
@@ -197,7 +197,7 @@ export default function Home(): React.ReactElement {
               <Link
                 className={styles.starPanelCta}
                 href={GITHUB_URL}
-                aria-label={`Star Open Harness on GitHub, ${starLabel} stars`}
+                aria-label={`Star AGRO on GitHub, ${starLabel} stars`}
               >
                 Star on GitHub →
               </Link>
@@ -272,7 +272,7 @@ export default function Home(): React.ReactElement {
             <h2 className={styles.sectionTitle}>A durable home for agent work.</h2>
             <div className={styles.archCard}>
               <p>
-                Open Harness keeps the agent environment with the project instead of scattering it across a laptop. Git versions the portable control plane: identity, task procedures, schedules, and checks. Docker provides the isolated runtime. Herdr preserves interactive terminals, and git worktrees keep parallel agent sessions from colliding. The agent owns its workspace while the host stays clean.
+                AGRO keeps the agent environment with the project instead of scattering it across a laptop. Git versions the portable control plane: identity, task procedures, schedules, and checks. Docker provides the isolated runtime. Herdr preserves interactive terminals, and git worktrees keep parallel agent sessions from colliding. The agent owns its workspace while the host stays clean.
               </p>
               <p>
                 A markdown cron runtime reads <code>crons/*.md</code> and wakes the agent on a schedule — issue triage, PR review, background grooming, anything you want running while you sleep. Each sandbox is a registry entry at <code>~/.oh/sandboxes/&lt;name&gt;/oh.json</code>, written by the <code>oh sandbox install docker</code> wizard and edited with <code>oh config set --sandbox &lt;name&gt;</code>; Postgres and other overlays are opt-in, and extra infra (tunnels, reverse proxies) is registered through <code>composeOverrides[]</code>.
@@ -295,14 +295,14 @@ export default function Home(): React.ReactElement {
                 className={styles.linkCard}
                 href={GITHUB_URL}
               >
-                <span className={styles.linkCardLabel}>Star Open Harness</span>
+                <span className={styles.linkCardLabel}>Star AGRO</span>
                 <span className={styles.linkCardSub}>
                   Help others discover the project on GitHub
                 </span>
               </Link>
               <Link
                 className={styles.linkCard}
-                href="https://github.com/mifunedev/openharness/blob/main/LICENSE"
+                href="https://github.com/mifunedev/agro/blob/main/LICENSE"
               >
                 <span className={styles.linkCardLabel}>License</span>
                 <span className={styles.linkCardSub}>Apache 2.0</span>

@@ -69,7 +69,7 @@ oh shell <name>                # attach as the sandbox user
   [`oh sandbox install docker`](deployment-prebuilt-image.md).
 - `docker` is the only provisionable runtime today. `oh sandbox install
   microsandbox` refuses and points at
-  [the runtime RFC](https://github.com/mifunedev/openharness/blob/main/docs/rfcs/rfc-runtime-support.md); inside a sandbox,
+  [the runtime RFC](https://github.com/mifunedev/agro/blob/main/docs/rfcs/rfc-runtime-support.md); inside a sandbox,
   `oh tool install microsandbox` installs the `msb` binary.
 
 `oh sandbox` with no subcommand prints help and exits non-zero.

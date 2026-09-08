@@ -71,7 +71,7 @@ Treat pairing URLs and tokens as secrets. Do not paste them into issues, pull re
 
 ## Run in tmux
 
-Per [`.oh/skills/t3/references/sandbox-processes.md`](https://github.com/mifunedev/openharness/blob/development/.oh/skills/t3/references/sandbox-processes.md), long-running processes inside the sandbox go in named tmux sessions. T3 Code stays bound to **container loopback** (`127.0.0.1:3773`); the harness publishes no host port for it. Reach it through VSCode port forwarding, an SSH tunnel, or Tailscale Serve — see [Connecting to the Sandbox](/docs/connecting).
+Per [`.oh/skills/t3/references/sandbox-processes.md`](https://github.com/mifunedev/agro/blob/development/.oh/skills/t3/references/sandbox-processes.md), long-running processes inside the sandbox go in named tmux sessions. T3 Code stays bound to **container loopback** (`127.0.0.1:3773`); the harness publishes no host port for it. Reach it through VSCode port forwarding, an SSH tunnel, or Tailscale Serve — see [Connecting to the Sandbox](/docs/connecting).
 
 Prefer the `/t3` skill when an agent is available:
 
@@ -127,7 +127,7 @@ Remove the device from the tailnet in the Tailscale admin console as well — `t
 
 ## Sharing publicly
 
-Tailscale is the **private** path and the supported mobile path. If you need a genuinely public preview URL for someone who is not on your tailnet, use `/cloudflared 3773` instead. That is public bearer-URL exposure — anyone with the link reaches the port. Tailscale Funnel is **not** enabled by default and the harness ships no Funnel command. See [Security considerations](https://github.com/mifunedev/openharness/blob/main/docs/security-considerations.md).
+Tailscale is the **private** path and the supported mobile path. If you need a genuinely public preview URL for someone who is not on your tailnet, use `/cloudflared 3773` instead. That is public bearer-URL exposure — anyone with the link reaches the port. Tailscale Funnel is **not** enabled by default and the harness ships no Funnel command. See [Security considerations](https://github.com/mifunedev/agro/blob/main/docs/security-considerations.md).
 
 ## Tips
 

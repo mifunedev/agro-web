@@ -259,7 +259,7 @@ gateway status            # show client-slack-pi + client-slack-hermes
 `oh gateway pi`). The same command brings up the sibling Hermes gateway
 client: `gateway hermes`. Detach an attached session with `Ctrl-b d`. The
 session name `client-slack-pi` follows the `client-` prefix convention in
-[`.oh/skills/t3/references/sandbox-processes.md`](https://github.com/mifunedev/openharness/blob/development/.oh/skills/t3/references/sandbox-processes.md).
+[`.oh/skills/t3/references/sandbox-processes.md`](https://github.com/mifunedev/agro/blob/development/.oh/skills/t3/references/sandbox-processes.md).
 
 ## 5. Access Control — challenge-based auth
 
@@ -375,6 +375,6 @@ pins the entrypoint's `npm install` line to a fork branch
 
 For upstream lineage, the version-pin model, the quarterly review cadence, and
 the removal of the old in-tree Slack extension, see
-[`.pi/UPSTREAM.md`](https://github.com/mifunedev/openharness/blob/development/.pi/UPSTREAM.md).
+[`.pi/UPSTREAM.md`](https://github.com/mifunedev/agro/blob/development/.pi/UPSTREAM.md).
 
 [Connecting to the Sandbox](/docs/connecting)

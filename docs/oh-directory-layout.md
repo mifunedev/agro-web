@@ -11,7 +11,7 @@ no new requirements.
 
 For *why* `.oh/` exists and what earns a place in it (the governing principle —
 "a dotdir namespace is earned by function-class"), see
-[`.oh/README.md`](https://github.com/mifunedev/openharness/blob/main/.oh/README.md). This page complements that one: the README is
+[`.oh/README.md`](https://github.com/mifunedev/agro/blob/main/.oh/README.md). This page complements that one: the README is
 the rationale, this is the map. It does not restate the governing principle.
 
 > Verify against reality with `ls .oh/`. If this table and the tree disagree,
@@ -28,7 +28,7 @@ Every entry below is present in a fresh clone unless noted otherwise.
 | `skills.lock` | file | Pinned lockfile for the vendored skill pack (`skills.v1` schema). | `.oh/scripts/link-providers.sh` (vendored-pack validation). |
 | `cli/` | dir | The in-tree `oh` CLI — a standalone npm package built into the image as `/opt/oh`. | `npm --prefix .oh/cli`; the `oh` binary (`oh update` vendors this payload). |
 | `evals/` | dir | The fitness-function suite — regression `probes/` (incl. `cc-safety-net-wiring.sh`, the destructive-command guard wiring probe), the `capability/` benchmark, trajectory `datasets/`, and the `RESULTS.md` scoreboard. | `/eval` and the `.oh/scripts` eval runner. |
-| `hooks/` | dir | Provider-portable **secret-exposure** hook scripts (`deny-env-dump.sh`, `deny-secret-paths.sh`, `notify_slack.sh`, `warn-devtcp.sh`). The complementary **destructive-command** guard (cc-safety-net) is not a script here — it is a global binary baked into the image plus guard-wrapped entries in the provider configs (`.claude/settings.json`, `.codex/hooks.json`, the `npm:cc-safety-net` package in `.pi/settings.json`); see [security-considerations.md §3](https://github.com/mifunedev/openharness/blob/main/docs/security-considerations.md). | Agent providers via symlinks (`.claude/hooks` → `.oh/hooks`). |
+| `hooks/` | dir | Provider-portable **secret-exposure** hook scripts (`deny-env-dump.sh`, `deny-secret-paths.sh`, `notify_slack.sh`, `warn-devtcp.sh`). The complementary **destructive-command** guard (cc-safety-net) is not a script here — it is a global binary baked into the image plus guard-wrapped entries in the provider configs (`.claude/settings.json`, `.codex/hooks.json`, the `npm:cc-safety-net` package in `.pi/settings.json`); see [security-considerations.md §3](https://github.com/mifunedev/agro/blob/main/docs/security-considerations.md). | Agent providers via symlinks (`.claude/hooks` → `.oh/hooks`). |
 | `install/` | dir | Container-install inputs (currently `banner.sh`) consumed while building/booting the sandbox. | `.devcontainer/Dockerfile` + `entrypoint.sh`. |
 | `knowledge/` | dir | Durable repository knowledge — tracked `source/` and `patterns/` entity pages, tracked `raw/` immutable external snapshots, gitignored `local/` per-machine scratch, and the generated `README.md` index. | `/wiki query`, `/wiki lint`, `/wiki compile`, and `/spec`. |
 | `scripts/` | dir | Installer, lifecycle, cron-runtime, and eval-support scripts (`docker-compose.sh`, `cron-runtime.ts`, `locked-append.sh`, `migrate-harness-yaml.sh`, `link-providers.sh`, `git-maintenance.sh` — the file-invoked destructive-git shim the cc-safety-net guard permits by design, …). | The `oh` CLI, CI, `cron-runtime`, and the provider link step. |
@@ -82,6 +82,6 @@ must not be treated as real until a change actually creates them:
 
 ## See also
 
-- [`.oh/README.md`](https://github.com/mifunedev/openharness/blob/main/.oh/README.md) — the governing principle and the `.oh/`-vs-root boundary.
-- [Descriptive `.oh/harness.yml` example](https://github.com/mifunedev/openharness/blob/main/docs/harness-manifest.md) — an example-only pointer map over the real `.oh/` surfaces, not a required manifest schema.
-- [`.oh/skills/harness-context/references/directory-readme.md`](https://github.com/mifunedev/openharness/blob/main/.oh/skills/harness-context/references/directory-readme.md) — the README-as-directory-anchor convention.
+- [`.oh/README.md`](https://github.com/mifunedev/agro/blob/main/.oh/README.md) — the governing principle and the `.oh/`-vs-root boundary.
+- [Descriptive `.oh/harness.yml` example](https://github.com/mifunedev/agro/blob/main/docs/harness-manifest.md) — an example-only pointer map over the real `.oh/` surfaces, not a required manifest schema.
+- [`.oh/skills/harness-context/references/directory-readme.md`](https://github.com/mifunedev/agro/blob/main/.oh/skills/harness-context/references/directory-readme.md) — the README-as-directory-anchor convention.
