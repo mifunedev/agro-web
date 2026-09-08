@@ -22,7 +22,7 @@ function resolveSetting(agroName, legacyName, fallback, normalize = (value) => v
   return { name: agro ? agroName : legacyName, value: agro || legacy || fallback };
 }
 
-const repoSetting = resolveSetting("AGRO_GITHUB_REPO", "OH_GITHUB_REPO", "mifunedev/openharness");
+const repoSetting = resolveSetting("AGRO_GITHUB_REPO", "OH_GITHUB_REPO", "mifunedev/agro");
 const refSetting = resolveSetting("AGRO_SCRIPTS_REF", "OH_SCRIPTS_REF", "main", stripHeads);
 
 export const REPO = repoSetting.value;

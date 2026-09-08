@@ -31,7 +31,7 @@ your live, git-versioned `.oh/` control plane (and the rest of your repo)
 shadows the copy baked into the image. That is the key property: **the image
 version is a toolchain concern, not a correctness one**, which is why `latest` is
 a safe default. Building locally from
-[`.devcontainer/Dockerfile`](https://github.com/mifunedev/openharness/blob/main/.devcontainer/Dockerfile) — Node, `gh`, the
+[`.devcontainer/Dockerfile`](https://github.com/mifunedev/agro/blob/main/.devcontainer/Dockerfile) — Node, `gh`, the
 Docker CLI, bun, uv, pnpm — happens only in that case, and only when
 `image.mode` is `build`. On a cold cache that build is **~10 minutes**.
 
@@ -134,7 +134,7 @@ same last-wins ordering as the CLI.
 ## VS Code "Reopen in Container"
 
 The VS Code Dev Containers path reads
-[`.devcontainer/docker-compose.yml`](https://github.com/mifunedev/openharness/blob/main/.devcontainer/docker-compose.yml)
+[`.devcontainer/docker-compose.yml`](https://github.com/mifunedev/agro/blob/main/.devcontainer/docker-compose.yml)
 **directly** and cannot receive `--no-build`, so its build-suppression relies on
 `pull_policy`. Set both in `.devcontainer/.env` (compose auto-loads it):
 
@@ -168,10 +168,10 @@ container:
 ## Under the hood: the image-only compose file
 
 Without `--repo`, the CLI materialises
-[`.devcontainer/docker-compose.image-only.yml`](https://github.com/mifunedev/openharness/blob/main/.devcontainer/docker-compose.image-only.yml)
+[`.devcontainer/docker-compose.image-only.yml`](https://github.com/mifunedev/agro/blob/main/.devcontainer/docker-compose.image-only.yml)
 into the entry as the compose base. Everything below describes that path, and it
 is what `oh sandbox install docker` runs for you. Tracked in
-[#609](https://github.com/mifunedev/openharness/issues/609).
+[#609](https://github.com/mifunedev/agro/issues/609).
 
 ### The recipe by hand
 
@@ -227,7 +227,7 @@ clobbered.
 
 > ⚠️ **The image-only path requires an image built after two changes:** (1) the seed-bake
 > that stages `/opt/oh-seed`, and (2) the `.claude` seed-config fix
-> ([#617](https://github.com/mifunedev/openharness/pull/617)) that stops
+> ([#617](https://github.com/mifunedev/agro/pull/617)) that stops
 > `.dockerignore` from starving `/opt/oh-seed` of `.claude/protected-paths.txt`.
 > An image missing (2) crash-loops on boot with
 > `ERROR: .claude/protected-paths.txt is missing`. Pin a tag published **after
@@ -237,7 +237,7 @@ clobbered.
 
 ### Clean slate + fresh run (explicit `docker run`)
 
-The [compose file](https://github.com/mifunedev/openharness/blob/main/.devcontainer/docker-compose.image-only.yml) is the
+The [compose file](https://github.com/mifunedev/agro/blob/main/.devcontainer/docker-compose.image-only.yml) is the
 canonical one-liner (`docker compose -f … up -d`). If you drive Docker directly
 instead, this is the equivalent teardown → fresh run → verify sequence. It
 mirrors the compose file's env and volume set — note it reads `GIT_USER_NAME` /
@@ -349,5 +349,5 @@ pinned tag through the CLI.
 ## See also
 
 - [Installation](installation.md) — all install paths
-- [Security considerations](https://github.com/mifunedev/openharness/blob/main/docs/security-considerations.md) — the Docker-socket opt-in
+- [Security considerations](https://github.com/mifunedev/agro/blob/main/docs/security-considerations.md) — the Docker-socket opt-in
 - [`.oh/` directory layout](oh-directory-layout.md)

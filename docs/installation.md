@@ -32,7 +32,7 @@ The installer prompts for sandbox name, timezone, and git identity, writes the n
 
 ### Fork-and-clone
 
-1. Fork `mifunedev/openharness` on GitHub.
+1. Fork `mifunedev/agro` on GitHub.
 2. Clone your fork:
    ```bash
    git clone --recurse-submodules https://github.com/<your-org>/<your-fork>.git && cd <your-fork>
@@ -49,14 +49,14 @@ The installer prompts for sandbox name, timezone, and git identity, writes the n
 ### Clone-and-own: private origin and upstream (recommended)
 
 The validated path for running your own long-lived harness: clone upstream, make
-**your** repo the `origin`, and keep `mifunedev/openharness` as `upstream` so you can
+**your** repo the `origin`, and keep `mifunedev/agro` as `upstream` so you can
 pull framework updates and open PRs back. Creating the private repo and setting the
 remotes happens **inside the sandbox**, after GitHub auth, so the SSH key generated
 there is the one used for pushes.
 
 1. Clone upstream, create a sandbox against that checkout, and open a shell (`oh` from npm or `get-oh.sh` — see [Standalone CLI](#standalone-cli-oh-equip-an-existing-repo)):
    ```bash
-   git clone --recurse-submodules https://github.com/mifunedev/openharness.git ~/.openharness
+   git clone --recurse-submodules https://github.com/mifunedev/agro.git ~/.openharness
    cd ~/.openharness
    oh sandbox install docker --repo "$PWD" --name openharness
                           # wizard: name, timezone, git identity, SSH, Docker socket
@@ -87,11 +87,11 @@ there is the one used for pushes.
    ```bash
    gh repo create <your-user>/openharness --private
    git remote set-url origin git@github.com:<your-user>/openharness.git
-   git remote add upstream git@github.com:mifunedev/openharness.git
+   git remote add upstream git@github.com:mifunedev/agro.git
    git push -u origin HEAD
    ```
    Pull framework updates later with `git fetch upstream && git merge upstream/development`;
-   contribute back by opening PRs from your repo to `mifunedev/openharness`.
+   contribute back by opening PRs from your repo to `mifunedev/agro`.
 
 > Prefer HTTPS or an installer-driven bring-up? Re-point origin to your repo with
 > `git remote set-url origin https://github.com/<your-org>/<your-repo>.git` and run
@@ -101,7 +101,7 @@ there is the one used for pushes.
 ## One-line installer (upstream only)
 
 ```bash
-curl -fsSL https://oh.mifune.dev/install.sh | bash
+curl -fsSL https://agro.mifune.dev/install.sh | bash
 ```
 
 ### Review-first install
@@ -109,7 +109,7 @@ curl -fsSL https://oh.mifune.dev/install.sh | bash
 Keep the one-liner for fast setup, but use this dependency-free flow when you want to inspect the remote installer first:
 
 ```bash
-curl -fsSL -o openharness-install.sh https://oh.mifune.dev/install.sh
+curl -fsSL -o openharness-install.sh https://agro.mifune.dev/install.sh
 # Review openharness-install.sh in your editor or pager before running it.
 bash openharness-install.sh
 ```
@@ -129,7 +129,7 @@ The installer:
 
 | Variable | Effect |
 |---|---|
-| `OH_GITHUB_REPO=<owner>/<repo>` | GitHub repository to clone (default: `mifunedev/openharness`). Set to your fork's slug to install your fork's code. |
+| `OH_GITHUB_REPO=<owner>/<repo>` | GitHub repository to clone (default: `mifunedev/openharness`, the compatibility name that GitHub redirects to `mifunedev/agro`). Set to your fork's slug to install your fork's code. |
 | `OH_GITHUB_REF=<git-ref>` | Pin the cloned repo to a specific tag, branch, or SHA instead of `main`. |
 | `OH_INSTALL_REF=<git-ref>` | Back-compat alias for `OH_GITHUB_REF`. Both names work; `OH_GITHUB_REF` takes precedence when both are set. |
 | `OH_ASSUME_YES=1` | Accept defaults at every prompt. |
@@ -165,7 +165,7 @@ Use this path when you want more control or are setting up a CI environment.
 
 ```bash
 # Forkers: substitute your fork URL here.
-git clone --recurse-submodules https://github.com/mifunedev/openharness.git
+git clone --recurse-submodules https://github.com/mifunedev/agro.git
 cd openharness
 ```
 
@@ -212,34 +212,37 @@ npm install -g @mifune/openharness   # puts `oh` on your PATH
 npx @mifune/openharness sandbox install docker
 ```
 
-The published package is the same single self-contained bundle: it carries the compose files and the wrapper a sandbox needs, and `oh update` carries the `.oh/` payload (falling back to an on-demand fetch, no repo clone). npm does **not** install Node; Node ≥ 20 must already be on your PATH (that is exactly what `get-oh.sh` bootstraps below).
+The published package is the same single self-contained bundle: it carries the compose files and the wrapper a sandbox needs, and `oh update` carries the `.oh/` payload (falling back to an on-demand fetch, no repo clone). npm does **not** install Node; Node ≥ 20 must already be on your PATH (that is exactly what `get-agro.sh` bootstraps below).
 
-**No npm, or no Node yet?** Bootstrap with `get-oh.sh` instead. It installs the single self-contained `oh` binary to `~/.local/bin/oh` — **no repo clone**, and it does not touch an existing `~/.openharness` sandbox. If Node.js ≥ 20 is missing, it offers to install nvm + Node 22 and sources it so `oh` works in the same shell.
+**No npm, or no Node yet?** Bootstrap with `get-agro.sh` instead. It installs the single self-contained `agro` binary to `~/.local/bin/agro` — **no repo clone**, and it does not touch an existing `~/.openharness` sandbox. If Node.js ≥ 20 is missing, it offers to install nvm + Node 22.
 
 For a review-first install, download and inspect the script before you run it.
 The review-first alternative appears below.
 
 ```bash
-curl -fsSL https://oh.mifune.dev/get-oh.sh | bash
+curl -fsSL https://agro.mifune.dev/get-agro.sh | bash
 ```
 
-**Use `oh` immediately in the current shell** — `source` the installer instead of piping to `bash` so it installs *and* puts `oh` on your PATH in the running shell (no new terminal, no re-login):
-
-```bash
-source <(curl -fsSL https://oh.mifune.dev/get-oh.sh)
-```
-
-If you already used the plain `curl … | bash` form and `oh` isn't found yet, add its install dir to the current shell's PATH: `export PATH="$HOME/.local/bin:$PATH"`.
+If you already used the plain `curl … | bash` form and `agro` isn't found yet, add its install dir to the current shell's PATH: `export PATH="$HOME/.local/bin:$PATH"`.
 
 Review-first alternative (no extra dependency):
 
 ```bash
-curl -fsSL -o get-oh.sh https://oh.mifune.dev/get-oh.sh
-# Review get-oh.sh in your editor or pager before running it.
-bash get-oh.sh
+curl -fsSL -o get-agro.sh https://agro.mifune.dev/get-agro.sh
+# Review get-agro.sh in your editor or pager before running it.
+bash get-agro.sh
 ```
 
-Environment overrides: `OH_BIN_DIR=<dir>` (install location, default `~/.local/bin`), `OH_JS_URL=<url>` (prebuilt bundle URL), `OH_GITHUB_REPO=<org>/<fork>` / `OH_GITHUB_REF=<ref>` (source for the build fallback), `OH_NVM_VERSION=<tag>` (nvm version for the Node install), `--yes`/`--no` (auto-accept/decline the Node-install prompt).
+Environment overrides: `AGRO_BIN_DIR=<dir>` (install location, default `~/.local/bin`), `AGRO_JS_URL=<url>` (artifact URL), `AGRO_NVM_VERSION=<tag>` (nvm version for the Node install), `--yes`/`--no` (auto-accept/decline the Node-install prompt). Each `AGRO_<NAME>` falls back to the legacy `OH_<NAME>` spelling.
+
+### Compatibility: `get-oh.sh` and the `oh` name
+
+`get-oh.sh` still installs the legacy `oh` executable to `~/.local/bin/oh`, and every `oh <verb>` on this site runs as `agro <verb>`:
+
+```bash
+curl -fsSL https://oh.mifune.dev/get-oh.sh | bash
+source <(curl -fsSL https://oh.mifune.dev/get-oh.sh)   # installs and puts `oh` on the running shell's PATH
+```
 
 Then, in any project:
 

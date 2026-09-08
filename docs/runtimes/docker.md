@@ -35,7 +35,7 @@ call. Install Docker Engine and start it — see
 A shared kernel is the trade. Namespaces and cgroups separate processes,
 filesystems, and networks; they do **not** put a kernel boundary between the
 workload and the host. The
-[isolation landscape](https://github.com/mifunedev/openharness/blob/main/docs/rfcs/rfc-runtime-support.md) covers the tiers above
+[isolation landscape](https://github.com/mifunedev/agro/blob/main/docs/rfcs/rfc-runtime-support.md) covers the tiers above
 this one, and [MicroSandbox](microsandbox.md) is the microVM candidate this
 harness is working toward.
 
@@ -45,7 +45,7 @@ Two harness-specific notes:
   `/var/run/docker.sock` into the sandbox is effectively host root, so it is
   opt-in: the wizard asks, and `access.dockerSocket` in the entry's `oh.json`
   records the answer. See
-  [security considerations](https://github.com/mifunedev/openharness/blob/main/docs/security-considerations.md).
+  [security considerations](https://github.com/mifunedev/agro/blob/main/docs/security-considerations.md).
 - **The container is the unit of disposal.** `oh destroy <name>` removes the
   containers, the volumes, and the registry entry; `oh stop <name>` keeps the
   volumes, so provider auth survives a rebuild.

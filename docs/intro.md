@@ -6,6 +6,13 @@ title: "Introduction"
 
 # Open Harness
 
+:::info OpenHarness is now AGRO
+
+The project was renamed from Open Harness to AGRO: the site lives at [agro.mifune.dev](https://agro.mifune.dev) and the source at [github.com/mifunedev/agro](https://github.com/mifunedev/agro).
+The old names keep working as compatibility aliases — `oh.mifune.dev`, `github.com/mifunedev/openharness`, and the `oh` command — and `get-oh.sh` and `oh.js` remain available beside `get-agro.sh` and `agro.js`.
+
+:::
+
 Open Harness is your **portable harness** — one repo per sandbox — that wraps your project in an isolated Docker container and versions its state. The repo tracks the agent's identity, skills, crons, and memory in git; the sandbox keeps the agent (Claude Code, Codex, Pi, or another of your choice) off your host machine. The agent owns its workspace, runs against your code, and wakes itself on a schedule via a tiny croner runtime.
 
 ## What is Open Harness?
@@ -24,7 +31,7 @@ Key capabilities:
 
 The harness uses Docker Compose to build a sandbox image from `.devcontainer/`. Bring it up with `oh sandbox install docker`, attach with `oh shell <name>` (or VS Code), then run `oh tool install herdr` and `herdr` first — nothing installs at boot. Authenticate GitHub and your chosen provider and launch agents from Herdr panes. `oh stop` preserves state; `oh destroy` is the destructive teardown, and it asks before it wipes the volumes. Every one of those verbs runs `.oh/scripts/docker-compose.sh` — see [lifecycle commands](/docs/lifecycle-commands).
 
-The primary agent pane at the project root inside Herdr is your **orchestrator** — git, sandbox lifecycle, and most file edits all flow through that organized workspace. When the optional Docker socket is enabled (off by default — see [security-considerations.md](https://github.com/mifunedev/openharness/blob/main/docs/security-considerations.md#3-sandbox-isolation--the-docker-socket-caveat--enforced-with-a-caveat)), the orchestrator can also drive other containers and edit files inside them over that socket, so day-to-day work rarely needs anything else. Drop back to the host shell only when something can't be done from inside the container — typically adding a new bind-mounted volume, which requires a `.devcontainer/docker-compose.yml` change and restart.
+The primary agent pane at the project root inside Herdr is your **orchestrator** — git, sandbox lifecycle, and most file edits all flow through that organized workspace. When the optional Docker socket is enabled (off by default — see [security-considerations.md](https://github.com/mifunedev/agro/blob/main/docs/security-considerations.md#3-sandbox-isolation--the-docker-socket-caveat--enforced-with-a-caveat)), the orchestrator can also drive other containers and edit files inside them over that socket, so day-to-day work rarely needs anything else. Drop back to the host shell only when something can't be done from inside the container — typically adding a new bind-mounted volume, which requires a `.devcontainer/docker-compose.yml` change and restart.
 
 Stand up a **second sandbox** only when you want isolation — an independent identity, branch, or provider key running on its own. Most users won't need this.
 
@@ -70,7 +77,7 @@ If you already have a sandbox running, jump directly to the page you need.
 
 ## Where to get help
 
-- Source code and issues: [github.com/mifunedev/openharness](https://github.com/mifunedev/openharness)
+- Source code and issues: [github.com/mifunedev/agro](https://github.com/mifunedev/agro)
 - Learning material: [Resources](/docs/resources)
 - Philosophy: [How Open Harness embodies compound engineering](/blog/compound-engineering) — why each unit of work here should make the next one easier.
 

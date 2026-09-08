@@ -7,28 +7,28 @@ title: "Contributing"
 
 This guide covers the workflow for contributing to Open Harness: creating branches, writing commits, updating the changelog, and shipping releases.
 
-For the inbound license terms and the Developer Certificate of Origin (DCO), see the root [`CONTRIBUTING.md`](https://github.com/mifunedev/openharness/blob/main/CONTRIBUTING.md).
+For the inbound license terms and the Developer Certificate of Origin (DCO), see the root [`CONTRIBUTING.md`](https://github.com/mifunedev/agro/blob/main/CONTRIBUTING.md).
 
 ## Setup
 
 Clone the repository:
 
 ```bash
-git clone --recurse-submodules https://github.com/mifunedev/openharness.git
+git clone --recurse-submodules https://github.com/mifunedev/agro.git
 cd openharness
 ```
 
 Open Harness has no host-side build step. The orchestrator runs at the project root, and all application work happens inside the sandbox container. You only need:
 
 - Docker (with `docker compose`)
-- Node.js ≥ 20, to run the `oh` CLI. To install both:
+- Node.js ≥ 20, to run the `agro` CLI (`oh` remains a compatibility alias). To install both:
 
   ```bash
-  curl -fsSL -o get-oh.sh https://oh.mifune.dev/get-oh.sh   # review it first
-  bash get-oh.sh
+  curl -fsSL -o get-agro.sh https://agro.mifune.dev/get-agro.sh   # review it first
+  bash get-agro.sh
   ```
 
-  Or, if you would rather not review it, `curl -fsSL https://oh.mifune.dev/get-oh.sh | bash`.
+  Or, if you would rather not review it, `curl -fsSL https://agro.mifune.dev/get-agro.sh | bash`.
 - `git` and the GitHub CLI (`gh`)
 
 ### Provision the sandbox
@@ -83,7 +83,7 @@ pnpm run test:scripts   # root script + .pi extension tests
 bash .claude/skills/eval/run.sh
 ```
 
-The rendered docs site is maintained in [`mifunedev/openharness-web`](https://github.com/mifunedev/openharness-web). In this core repo, validate docs by checking the Markdown links and the GitHub-readable index at `docs/README.md`; no Docusaurus build runs here.
+The rendered docs site is maintained in [`mifunedev/agro-web`](https://github.com/mifunedev/agro-web). In this core repo, validate docs by checking the Markdown links and the GitHub-readable index at `docs/README.md`; no Docusaurus build runs here.
 
 ### Multi-agent messaging (Slack)
 
@@ -138,7 +138,7 @@ Example:
 
 ```markdown
 ### Added
-- Slack thread replies in multi-channel mode ([#42](https://github.com/mifunedev/openharness/pull/42)).
+- Slack thread replies in multi-channel mode ([#42](https://github.com/mifunedev/agro/pull/42)).
 ```
 
 Skip CHANGELOG entries only for pure chores with no runtime or workflow effect (refactors, test fixes, typos). When in doubt, add an entry.
@@ -164,7 +164,7 @@ Closes #42
 one keyword per issue. A bare `#42` links the issue but does not close it.
 
 When the pull request merges into `development`, the workflow
-[`.github/workflows/close-issues-on-development.yml`](https://github.com/mifunedev/openharness/blob/main/.github/workflows/close-issues-on-development.yml)
+[`.github/workflows/close-issues-on-development.yml`](https://github.com/mifunedev/agro/blob/main/.github/workflows/close-issues-on-development.yml)
 closes each referenced issue as `completed`. Closing the pull request without
 merging it closes no issue. A pull request opened from a fork gets a read-only
 token, so close its issue by hand.

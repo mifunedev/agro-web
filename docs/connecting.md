@@ -65,7 +65,7 @@ Auth is public-key by default and the host bind is loopback-only. This is the
 foundation for routing multiple tenants' containers behind one nginx proxy on a
 single VM. Full setup — enabling the overlay, adding your key, the port-collision
 preflight, and the nginx multi-tenant recipe — is in
-[Integrations → SSH](https://github.com/mifunedev/openharness/blob/main/docs/integrations/sshd.md).
+[Integrations → SSH](https://github.com/mifunedev/agro/blob/main/docs/integrations/sshd.md).
 
 ## Why VSCode Attach is the recommended path
 
@@ -109,7 +109,7 @@ For **private** access from your own devices — including a phone — use Tails
 
 **3. Direct SSH + nginx multi-tenant routing**
 
-To SSH straight into the container — and to route several tenants' containers through one nginx reverse proxy on a single VM — enable the opt-in `sshd` overlay. See [Integrations → SSH](https://github.com/mifunedev/openharness/blob/main/docs/integrations/sshd.md).
+To SSH straight into the container — and to route several tenants' containers through one nginx reverse proxy on a single VM — enable the opt-in `sshd` overlay. See [Integrations → SSH](https://github.com/mifunedev/agro/blob/main/docs/integrations/sshd.md).
 
 ## Mobile access over Tailscale
 
@@ -119,7 +119,7 @@ This is the supported path for reaching T3 Code from a phone, and the supported 
 
 `tailscaled` runs **inside the sandbox container**, in userspace-networking mode, as the unprivileged `sandbox` user. The container is the tailnet node.
 
-- No `NET_ADMIN`, no `/dev/net/tun`, no `privileged: true`, no host socket mount. Userspace networking needs none of them, and Tailscale Serve is fully supported in that mode. The sandbox does carry `cap_add: SYS_ADMIN` and `security_opt: apparmor=unconfined` — that grant exists so `systemd` can mount its own cgroup2 hierarchy as PID 1, is unrelated to Tailscale, and gives it no networking capability. The reviewed trade-off is in [security considerations](https://github.com/mifunedev/openharness/blob/main/docs/security-considerations.md) §4 Caveat 3.
+- No `NET_ADMIN`, no `/dev/net/tun`, no `privileged: true`, no host socket mount. Userspace networking needs none of them, and Tailscale Serve is fully supported in that mode. The sandbox does carry `cap_add: SYS_ADMIN` and `security_opt: apparmor=unconfined` — that grant exists so `systemd` can mount its own cgroup2 hierarchy as PID 1, is unrelated to Tailscale, and gives it no networking capability. The reviewed trade-off is in [security considerations](https://github.com/mifunedev/agro/blob/main/docs/security-considerations.md) §4 Caveat 3.
 - **No host port is published.** T3 Code stays on container loopback `127.0.0.1:3773`. Tailscale Serve inside the container proxies tailnet HTTPS to that loopback address. A device outside the tailnet has nothing to reach.
 - **There is no compose change at all.** `oh tool install tailscale` is the only door, and nothing installs Tailscale at boot. Node identity and daemon state live in `/home/sandbox/.tailscale`, inside the single `/home/sandbox` mount, so the node does not re-authenticate on every container recreate without any per-tool volume.
 - Because the container is the node, the MagicDNS name your phone saved does not change when you move the workspace to another VM.
@@ -288,7 +288,7 @@ Every long-running process above container init runs in a named tmux session. Th
 | `agent-` | `agent-watcher`, `agent-batch`, `agent-t3code`, `agent-tailscaled` | Headless / long-running agent processes (interactive CLIs are foreground, not tmux) |
 | `app-` | `app-api` | Dev servers |
 
-For the full convention see [`.oh/skills/t3/references/sandbox-processes.md`](https://github.com/mifunedev/openharness/blob/development/.oh/skills/t3/references/sandbox-processes.md).
+For the full convention see [`.oh/skills/t3/references/sandbox-processes.md`](https://github.com/mifunedev/agro/blob/development/.oh/skills/t3/references/sandbox-processes.md).
 
 ## End-to-end recipe
 

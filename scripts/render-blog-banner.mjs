@@ -171,7 +171,7 @@ async function renderProofPathCard() {
           letterSpacing: 2.4,
           textTransform: "uppercase",
         },
-      }, content.eyebrow ?? "OPEN HARNESS GUIDE"),
+      }, content.eyebrow ?? "AGRO GUIDE"),
       h("div", { style: { display: "flex", flexDirection: "column", marginTop: 60 } },
         lineStack(content.headlineLines ?? [content.headline ?? ""], {
           fontSize: 64,
@@ -285,7 +285,7 @@ async function renderSiteHeroCard() {
         paddingRight: 70,
       },
     },
-      h("div", { style: { fontSize: 18, fontWeight: 700 } }, "Open Harness"),
+      h("div", { style: { fontSize: 18, fontWeight: 700 } }, "AGRO"),
       h("div", { style: { fontSize: 15, fontWeight: 700, color: theme.muted } }, "Blog guide"),
     ),
 

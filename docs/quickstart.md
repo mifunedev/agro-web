@@ -15,31 +15,31 @@ Install Docker with the Compose plugin ([docs.docker.com/get-docker](https://doc
 
 `oh` is the only front door. Get it, then create a sandbox.
 
-**1. Get `oh`** — from npm if you already have Node ≥ 20:
+**1. Get the CLI** — from npm if you already have Node ≥ 20:
 
 ```bash
-npm install -g @mifune/openharness   # or, zero-install: npx @mifune/openharness --help
+npm install -g @mifune/agro   # or, zero-install: npx @mifune/agro --help
 ```
 
 …or with the curl bootstrap, which offers to install nvm + Node 22 when Node is
 missing:
 
 ```bash
-curl -fsSL https://oh.mifune.dev/get-oh.sh | bash
+curl -fsSL https://agro.mifune.dev/get-agro.sh | bash
 ```
 
 Review-first, without adding a host dependency:
 
 ```bash
-curl -fsSL -o get-oh.sh https://oh.mifune.dev/get-oh.sh
-# Review get-oh.sh in your editor or pager before running it.
-bash get-oh.sh
+curl -fsSL -o get-agro.sh https://agro.mifune.dev/get-agro.sh
+# Review get-agro.sh in your editor or pager before running it.
+bash get-agro.sh
 ```
 
-`get-oh.sh` installs the self-contained `oh` binary to `~/.local/bin/oh` — no
-repo clone. `source <(curl -fsSL https://oh.mifune.dev/get-oh.sh)` installs *and*
-puts `oh` on the current shell's PATH; after the piped form,
-`export PATH="$HOME/.local/bin:$PATH"` does the same in an already-open shell.
+`get-agro.sh` installs the self-contained `agro` binary to `~/.local/bin/agro` — no
+repo clone. After the piped form, `export PATH="$HOME/.local/bin:$PATH"` puts it on
+the current shell's PATH. Every `oh <verb>` on this site runs as `agro <verb>`; the
+`oh` name is the compatibility alias that `get-oh.sh` (`oh.mifune.dev/get-oh.sh`) and `@mifune/openharness` install.
 
 **2. Create the sandbox** — from any directory, with no project checkout:
 
@@ -89,10 +89,10 @@ builds from that checkout's `.devcontainer/Dockerfile` instead of pulling
 `~/.openharness`, configures it, and provisions — in one shot:
 
 ```bash
-curl -fsSL https://oh.mifune.dev/install.sh | bash
+curl -fsSL https://agro.mifune.dev/install.sh | bash
 ```
 
-Review-first: `curl -fsSL -o openharness-install.sh https://oh.mifune.dev/install.sh`,
+Review-first: `curl -fsSL -o openharness-install.sh https://agro.mifune.dev/install.sh`,
 read it, then `bash openharness-install.sh`. Run `bash .oh/scripts/install.sh`
 from inside an existing clone and it detects the local repo. Set
 `OH_GITHUB_REPO=<your-org>/<your-fork>` to install a fork — every override is in
@@ -274,14 +274,14 @@ cross-provider method is `/login` → **device mode** inside each agent's intera
 1. **Install host prerequisites** — Docker (+ Compose), Git, and Node.js ≥ 20
    ([details](./installation.md#prerequisites)):
    ```bash
-   curl -fsSL -o get-oh.sh https://oh.mifune.dev/get-oh.sh   # review it first
-   bash get-oh.sh                                            # installs `oh`, and Node if missing
+   curl -fsSL -o get-agro.sh https://agro.mifune.dev/get-agro.sh   # review it first
+   bash get-agro.sh                                                # installs `agro`, and Node if missing
    ```
 
-   To skip the review step: `curl -fsSL https://oh.mifune.dev/get-oh.sh | bash`.
+   To skip the review step: `curl -fsSL https://agro.mifune.dev/get-agro.sh | bash`.
 2. **Clone the repo** to `~/.openharness`:
    ```bash
-   git clone --recurse-submodules https://github.com/mifunedev/openharness.git ~/.openharness
+   git clone --recurse-submodules https://github.com/mifunedev/agro.git ~/.openharness
    cd ~/.openharness
    ```
 3. **Create the sandbox against that checkout** — the wizard asks for the name,
@@ -318,7 +318,7 @@ cross-provider method is `/login` → **device mode** inside each agent's intera
    ```bash
    gh repo create <your-user>/openharness --private
    git remote set-url origin git@github.com:<your-user>/openharness.git
-   git remote add upstream git@github.com:mifunedev/openharness.git
+   git remote add upstream git@github.com:mifunedev/agro.git
    git push -u origin HEAD
    ```
 9. **Install and authenticate Claude Code** ([Claude Code](./harnesses/claude-code.md)):
