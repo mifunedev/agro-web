@@ -11,11 +11,12 @@ on:
   pull_request:
     branches:
       - main
-  # A release in mifunedev/openharness refreshes the mirrored get-oh.sh and oh.js
-  # without anyone having to remember to push to this repo. Sending the dispatch is
-  # a follow-up on the harness side and is not part of this repo's diff.
+  # A release in the harness repo refreshes the mirrored get-agro.sh, get-oh.sh,
+  # agro.js, and oh.js without anyone having to remember to push to this repo.
+  # Both event types carry client_payload.ref. Sending the dispatch is a follow-up
+  # on the harness side and is not part of this repo's diff.
   repository_dispatch:
-    types: [openharness-release]
+    types: [agro-release, openharness-release]
   # Backstop: the mirror going stale is invisible until someone installs, so rebuild
   # daily even if no dispatch arrives.
   schedule:
@@ -23,7 +24,7 @@ on:
   workflow_dispatch:
     inputs:
       ref:
-        description: "openharness ref to mirror (default: main)"
+        description: "harness ref to mirror (default: main)"
         required: false
         default: "main"
 
@@ -73,20 +74,20 @@ jobs:
         run: pnpm run build
 
       - name: Configure Pages
-        if: github.ref == 'refs/heads/main' && github.repository == 'mifunedev/openharness-web'
+        if: github.ref == 'refs/heads/main' && contains(fromJSON('["mifunedev/agro-web", "mifunedev/openharness-web"]'), github.repository)
         uses: actions/configure-pages@v5
         with:
           enablement: true
 
       - name: Upload Pages artifact
-        if: github.ref == 'refs/heads/main' && github.repository == 'mifunedev/openharness-web'
+        if: github.ref == 'refs/heads/main' && contains(fromJSON('["mifunedev/agro-web", "mifunedev/openharness-web"]'), github.repository)
         uses: actions/upload-pages-artifact@v3
         with:
           path: build
 
   deploy:
     name: Deploy to GitHub Pages
-    if: github.ref == 'refs/heads/main' && github.repository == 'mifunedev/openharness-web'
+    if: github.ref == 'refs/heads/main' && contains(fromJSON('["mifunedev/agro-web", "mifunedev/openharness-web"]'), github.repository)
     needs: build
     runs-on: ubuntu-latest
     concurrency:

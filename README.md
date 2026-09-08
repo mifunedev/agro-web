@@ -48,23 +48,30 @@ hold the mirror back to punish a prose typo.
 
 ## The script mirror
 
-Three paths under the site root serve executable content that users pipe into a
-shell. Two of them are built here; one is not, and that asymmetry is the thing to
+Five paths under the site root serve executable content that users pipe into a
+shell. Four of them are built here; one is not, and that asymmetry is the thing to
 know before changing any of it.
 
 | URL | Served by | Source |
 | --- | --- | --- |
-| `/get-oh.sh` | `scripts/sync-external-scripts.mjs` → `static/get-oh.sh` | `.oh/scripts/get-oh.sh` in the harness repo |
-| `/oh.js` | `scripts/build-oh-cli.mjs` → `static/oh.js` | built from `.oh/cli` in the harness repo |
+| `/get-agro.sh` | `scripts/sync-external-scripts.mjs` → `static/get-agro.sh` | `.agro/scripts/get-agro.sh` in the harness repo |
+| `/get-oh.sh` | `scripts/sync-external-scripts.mjs` → `static/get-oh.sh` | `.agro/scripts/get-oh.sh` in the harness repo |
+| `/agro.js` | `scripts/build-oh-cli.mjs` → `static/agro.js` | built from `.agro/cli` in the harness repo |
+| `/oh.js` | `scripts/build-oh-cli.mjs` → `static/oh.js` | the same bundle as `/agro.js` |
 | `/install.sh` | **an HTTP 302 configured at the CDN, outside this repo** | `.oh/scripts/install.sh` on `main`, via `raw.githubusercontent.com` |
 
-Both build scripts resolve their upstream ref through `scripts/oh-source.mjs`, which
-is the single place the ref is decided. It defaults to **`main`** — the release ref.
+Both build scripts resolve their upstream repo and ref through `scripts/oh-source.mjs`,
+which is the single place they are decided. `AGRO_GITHUB_REPO` and `AGRO_SCRIPTS_REF`
+win over `OH_GITHUB_REPO` and `OH_SCRIPTS_REF`; setting both forms to different
+values prints a warning. The ref defaults to **`main`** — the release ref.
 `development` carries unreleased CLI behaviour and must not be published to people
 running `curl … | bash`.
 
-Both artifacts are gitignored. They exist only as build output, so the deployed site
-is always as fresh as its last successful build.
+A ref that predates the `.oh/` → `.agro/` rename still builds: both scripts fall back
+to `.oh/scripts/` and `.oh/cli` when the `.agro/` path is absent at the pinned ref.
+
+All four artifacts are gitignored. They exist only as build output, so the deployed
+site is always as fresh as its last successful build.
 
 **A failed mirror fails the build.** A missing file, a ref that does not resolve, a
 body without a shebang, or a CLI build error all exit non-zero rather than deploying.
