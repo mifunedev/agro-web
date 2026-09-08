@@ -2,8 +2,10 @@
 .docusaurus/
 build/
 
-# Build-time synced/built artifacts from the openharness repo (scripts/sync-external-scripts.mjs, scripts/build-oh-cli.mjs)
+# Build-time synced/built artifacts from the harness repo (scripts/sync-external-scripts.mjs, scripts/build-oh-cli.mjs)
+static/get-agro.sh
 static/get-oh.sh
+static/agro.js
 static/oh.js
 
 # Dependencies

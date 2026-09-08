@@ -1,7 +1,7 @@
-// Build the standalone `oh` CLI bundle (oh.js) from the canonical openharness
-// repo and place it at static/oh.js, so GitHub Pages serves it at
-// https://oh.mifune.dev/oh.js. `get-oh.sh` downloads this prebuilt bundle
-// instead of building on the host.
+// Build the standalone CLI bundle from the canonical harness repo and place it
+// at static/agro.js and static/oh.js, so GitHub Pages serves it at
+// https://oh.mifune.dev/agro.js and https://oh.mifune.dev/oh.js. `get-agro.sh`
+// and `get-oh.sh` download this prebuilt bundle instead of building on the host.
 //
 // Runs as part of the `prebuild` hook. A failure to produce a fresh bundle FAILS
 // the build. `oh` is the only door into Open Harness: a silently skipped build
@@ -13,14 +13,19 @@ import {
   mkdtempSync, rmSync, copyFileSync, existsSync, readFileSync, mkdirSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, dirname } from "node:path";
+import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import process from "node:process";
 import { REPO, REF, MirrorError, reportAndExit, resolveSha } from "./oh-source.mjs";
 
 const TAG = "build-oh-cli";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const DEST = join(ROOT, "static", "oh.js");
+const DESTS = ["agro.js", "oh.js"].map((name) => join(ROOT, "static", name));
+const CLI_DIRS = [".agro/cli", ".oh/cli"];
+const BUNDLE_NAMES = ["agro.js", "oh.js"];
+
+const firstExisting = (dir, candidates, probe) =>
+  candidates.find((candidate) => existsSync(join(dir, probe(candidate))));
 
 const run = (cmd, cwd) => execSync(cmd, { cwd, stdio: "inherit" });
 const capture = (cmd, cwd) => execSync(cmd, { cwd, encoding: "utf8" }).trim();
@@ -38,18 +43,22 @@ try {
   const cloned = capture("git rev-parse HEAD", src);
   if (cloned !== sha) console.warn(`[${TAG}] ref moved during build: resolved ${sha}, cloned ${cloned}`);
 
-  const cli = join(src, ".oh", "cli");
-  if (!existsSync(join(cli, "package.json"))) throw new MirrorError(`.oh/cli not found in ${REPO}@${REF}`);
+  const cliDir = firstExisting(src, CLI_DIRS, (dir) => join(dir, "package.json"));
+  if (!cliDir) throw new MirrorError(`none of ${CLI_DIRS.join(", ")} found in ${REPO}@${REF}`);
+  const cli = join(src, cliDir);
   run("npm install --no-audit --no-fund", cli);
   run("npm run build", cli);
-  const built = join(cli, "dist", "oh.js");
-  if (!existsSync(built)) throw new MirrorError("build did not produce dist/oh.js");
-  if (!readFileSync(built, "utf8").startsWith("#!")) throw new MirrorError("built oh.js has no shebang");
-  mkdirSync(dirname(DEST), { recursive: true });
-  copyFileSync(built, DEST);
-  console.log(`[${TAG}] wrote static/oh.js <- ${REPO}@${REF} (${cloned}, .oh/cli)`);
+  const bundleName = firstExisting(cli, BUNDLE_NAMES, (name) => join("dist", name));
+  if (!bundleName) throw new MirrorError(`build did not produce dist/${BUNDLE_NAMES.join(" or dist/")}`);
+  const built = join(cli, "dist", bundleName);
+  if (!readFileSync(built, "utf8").startsWith("#!")) throw new MirrorError(`built ${bundleName} has no shebang`);
+  for (const dest of DESTS) {
+    mkdirSync(dirname(dest), { recursive: true });
+    copyFileSync(built, dest);
+    console.log(`[${TAG}] wrote static/${basename(dest)} <- ${REPO}@${REF} (${cloned}, ${cliDir}/dist/${bundleName})`);
+  }
 } catch (err) {
-  reportAndExit(TAG, err, [DEST]);
+  reportAndExit(TAG, err, DESTS);
 } finally {
   if (work) rmSync(work, { recursive: true, force: true });
 }

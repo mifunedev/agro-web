@@ -11,14 +11,28 @@
 import { existsSync } from "node:fs";
 import process from "node:process";
 
-export const REPO = process.env.OH_GITHUB_REPO || "mifunedev/openharness";
-export const REF = (process.env.OH_SCRIPTS_REF || "main").replace(/^refs\/heads\//, "");
+const stripHeads = (ref) => ref.replace(/^refs\/heads\//, "");
+
+function resolveSetting(agroName, legacyName, fallback, normalize = (value) => value) {
+  const agro = process.env[agroName] ? normalize(process.env[agroName]) : "";
+  const legacy = process.env[legacyName] ? normalize(process.env[legacyName]) : "";
+  if (agro && legacy && agro !== legacy) {
+    console.warn(`[oh-source] ${agroName} and ${legacyName} are both set and differ — using ${agroName}`);
+  }
+  return { name: agro ? agroName : legacyName, value: agro || legacy || fallback };
+}
+
+const repoSetting = resolveSetting("AGRO_GITHUB_REPO", "OH_GITHUB_REPO", "mifunedev/openharness");
+const refSetting = resolveSetting("AGRO_SCRIPTS_REF", "OH_SCRIPTS_REF", "main", stripHeads);
+
+export const REPO = repoSetting.value;
+export const REF = refSetting.value;
 export const RAW_BASE = `https://raw.githubusercontent.com/${REPO}/${REF}`;
 
 // REF and REPO reach `git clone` as command arguments. Reject anything that is not
 // a plausible ref/slug, and anything leading with `-`, which git would read as a flag.
 const SAFE = /^[A-Za-z0-9][A-Za-z0-9._\/-]*$/;
-for (const [name, value] of [["OH_GITHUB_REPO", REPO], ["OH_SCRIPTS_REF", REF]]) {
+for (const { name, value } of [repoSetting, refSetting]) {
   if (!SAFE.test(value)) {
     console.error(`[oh-source] FATAL: ${name}=${JSON.stringify(value)} is not a valid ref or repo slug.`);
     process.exit(1);

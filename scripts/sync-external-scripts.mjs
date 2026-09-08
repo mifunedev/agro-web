@@ -24,12 +24,15 @@ import {
 const TAG = "sync-scripts";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-// path in the openharness repo -> path under static/ (served at site root)
+// path in the harness repo -> path under static/ (served at site root)
 const SCRIPTS = [
-  { src: ".oh/scripts/get-oh.sh", dest: "static/get-oh.sh" },
+  { src: ".agro/scripts/get-agro.sh", dest: "static/get-agro.sh" },
+  { src: ".agro/scripts/get-oh.sh", dest: "static/get-oh.sh" },
 ];
+const PRE_RENAME_SCRIPTS_DIR = ".oh/";
+const sourceCandidates = (src) => [src, src.replace(/^\.agro\//, PRE_RENAME_SCRIPTS_DIR)];
 
-async function syncOne({ src, dest }) {
+async function fetchScript(src, dest) {
   const url = `${RAW_BASE}/${src}`;
   let res;
   try {
@@ -38,13 +41,29 @@ async function syncOne({ src, dest }) {
     throw classifyFetchError(err);
   }
   const body = await res.text();
-  if (!res.ok) {
-    const detail = `${url} -> HTTP ${res.status}`;
-    if (isTransientStatus(res.status)) {
-      throw new MirrorError(`could not fetch ${dest} (${detail})`, { transient: true });
-    }
-    throw new MirrorError(`${dest} is not present at ${REPO}@${REF} (${detail})`);
+  if (res.ok) return { url, body };
+  const detail = `${url} -> HTTP ${res.status}`;
+  if (isTransientStatus(res.status)) {
+    throw new MirrorError(`could not fetch ${dest} (${detail})`, { transient: true });
   }
+  return { url, missing: detail };
+}
+
+async function syncOne({ src, dest }) {
+  const looked = [];
+  let found;
+  for (const candidate of sourceCandidates(src)) {
+    const result = await fetchScript(candidate, dest);
+    if (result.body !== undefined) {
+      found = result;
+      break;
+    }
+    looked.push(result.missing);
+  }
+  if (!found) {
+    throw new MirrorError(`${dest} is not present at ${REPO}@${REF}; looked for ${looked.join(", ")}`);
+  }
+  const { url, body } = found;
   if (!body.startsWith("#!")) {
     throw new MirrorError(`${url} did not return a script (no shebang)`);
   }
