@@ -127,7 +127,7 @@ Remove the device from the tailnet in the Tailscale admin console as well — `t
 
 ## Sharing publicly
 
-Tailscale is the **private** path and the supported mobile path. If you need a genuinely public preview URL for someone who is not on your tailnet, use `/cloudflared 3773` instead. That is public bearer-URL exposure — anyone with the link reaches the port. Tailscale Funnel is **not** enabled by default and the harness ships no Funnel command. See [Security considerations](https://github.com/mifunedev/agro/blob/main/docs/security-considerations.md).
+Tailscale is the **private** path and the supported mobile path. If you need a genuinely public preview URL for someone who is not on your tailnet, use `/cloudflared 3773` instead. That is public bearer-URL exposure — anyone with the link reaches the port. Tailscale Funnel is **not** enabled by default and the harness ships no Funnel command. See [Security considerations](../security-considerations.md).
 
 ## Tips
 

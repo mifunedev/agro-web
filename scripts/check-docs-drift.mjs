@@ -57,10 +57,11 @@ const RETIRED = [
     instead: "the equivalent `oh` verb — see docs/lifecycle-commands.md",
   },
   {
-    // Config split into a tracked oh.json and a secrets-only root .env.
-    pattern: /\.example\.env\b|\bexample\.env\b/g,
-    name: ".example.env",
-    instead: "`oh.json` for non-secrets and root `.env.example` for secret names",
+    // Config split into a tracked oh.json and a secrets-only root .env, whose
+    // key names the harness documents in the tracked `.example.env` template.
+    pattern: /\.env\.example\b|\benv\.example\b/g,
+    name: ".env.example",
+    instead: "`oh.json` for non-secrets and root `.example.env` for secret names",
   },
   {
     // The directory layout is fixed convention, not configuration.
@@ -214,6 +215,11 @@ const ALLOW = [
     file: "docker-deployment.md",
     token: "the pre-systemd container lifecycle",
     why: "names --init to explain why the systemd recipe no longer carries it",
+  },
+  {
+    file: "security-considerations.md",
+    token: "harness.yaml",
+    why: "names the pre-0.4.0 `.harness.yaml.env` gitignore line to say nothing generates it any more",
   },
   {
     file: "lifecycle-commands.md",
