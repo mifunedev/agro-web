@@ -51,14 +51,6 @@ export class MirrorError extends Error {
 // simply could not reach it: DNS, TCP, TLS, 5xx, or a rate limit. Everything else
 // — a missing ref, a 404, a file that is not a script, a failed build — means the
 // mirror would publish something wrong, and must fail the deploy instead.
-//
-// GitHub answers an exhausted PRIMARY rate limit with 403, not 429, so the status
-// alone cannot separate "we are over quota" from "this token may not read that repo".
-// `x-ratelimit-remaining: 0` is set in the first case and not the second, and it is
-// the only evidence that makes a 403 safe to retry. Without it a 403 stays fatal:
-// treating a real authorization failure as transient is how a deploy publishes the
-// wrong mirror. raw.githubusercontent.com sends no such header, so a 403 from there
-// remains fatal too, which is correct — it is not quota-limited.
 const RATE_LIMIT_REMAINING_HEADER = "x-ratelimit-remaining";
 
 export function isRateLimited(headers) {

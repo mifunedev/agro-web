@@ -63,9 +63,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # Unlike the drift check below, this DOES gate every run: it guards the rule
-      # that decides whether a failed mirror fetch aborts the deploy, and getting
-      # that wrong either publishes a bad mirror or blocks a good one.
       - name: Test the mirror failure classification
         run: pnpm test
 
@@ -79,9 +76,6 @@ jobs:
       - name: Build site
         run: pnpm run build
         env:
-          # The prebuild mirror resolves mifunedev/agro through the GitHub API.
-          # Unauthenticated that is 60 requests/hour per IP, shared across runners,
-          # so it fails on quota rather than on anything about this repository.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configure Pages
