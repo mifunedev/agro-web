@@ -63,6 +63,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Test the mirror failure classification
+        run: pnpm test
+
       # Drift is caught before it lands, not after. This deliberately does NOT gate
       # the deploy: a stale doc line is worth less than a stale oh.js, and blocking
       # the scheduled rebuild would leave the mirror behind to punish a prose typo.
@@ -72,6 +75,8 @@ jobs:
 
       - name: Build site
         run: pnpm run build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configure Pages
         if: github.ref == 'refs/heads/main' && contains(fromJSON('["mifunedev/agro-web", "mifunedev/openharness-web"]'), github.repository)

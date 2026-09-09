@@ -13,7 +13,8 @@
     "serve": "docusaurus serve",
     "clear": "docusaurus clear",
     "typecheck": "tsc --noEmit",
-    "render:blog-banner": "node scripts/render-blog-banner.mjs"
+    "render:blog-banner": "node scripts/render-blog-banner.mjs",
+    "test": "node --test \"scripts/**/*.test.mjs\""
   },
   "dependencies": {
     "@docusaurus/core": "3.10.1",

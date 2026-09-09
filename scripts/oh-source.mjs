@@ -51,8 +51,15 @@ export class MirrorError extends Error {
 // simply could not reach it: DNS, TCP, TLS, 5xx, or a rate limit. Everything else
 // — a missing ref, a 404, a file that is not a script, a failed build — means the
 // mirror would publish something wrong, and must fail the deploy instead.
-export function isTransientStatus(status) {
-  return status === 408 || status === 429 || status >= 500;
+const RATE_LIMIT_REMAINING_HEADER = "x-ratelimit-remaining";
+
+export function isRateLimited(headers) {
+  return headers?.get?.(RATE_LIMIT_REMAINING_HEADER) === "0";
+}
+
+export function isTransientResponse({ status, headers }) {
+  if (status === 408 || status === 429 || status >= 500) return true;
+  return status === 403 && isRateLimited(headers);
 }
 
 export function classifyFetchError(err) {
@@ -79,8 +86,11 @@ export async function resolveSha() {
   }
   if (!res.ok) {
     const detail = `${url} -> HTTP ${res.status}`;
-    if (isTransientStatus(res.status)) {
-      throw new MirrorError(`could not reach GitHub (${detail})`, { transient: true });
+    if (isTransientResponse(res)) {
+      const reason = isRateLimited(res.headers)
+        ? "GitHub rate limit exhausted"
+        : "could not reach GitHub";
+      throw new MirrorError(`${reason} (${detail})`, { transient: true });
     }
     throw new MirrorError(`ref ${REPO}@${REF} does not resolve (${detail})`);
   }
