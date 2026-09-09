@@ -51,8 +51,23 @@ export class MirrorError extends Error {
 // simply could not reach it: DNS, TCP, TLS, 5xx, or a rate limit. Everything else
 // — a missing ref, a 404, a file that is not a script, a failed build — means the
 // mirror would publish something wrong, and must fail the deploy instead.
-export function isTransientStatus(status) {
-  return status === 408 || status === 429 || status >= 500;
+//
+// GitHub answers an exhausted PRIMARY rate limit with 403, not 429, so the status
+// alone cannot separate "we are over quota" from "this token may not read that repo".
+// `x-ratelimit-remaining: 0` is set in the first case and not the second, and it is
+// the only evidence that makes a 403 safe to retry. Without it a 403 stays fatal:
+// treating a real authorization failure as transient is how a deploy publishes the
+// wrong mirror. raw.githubusercontent.com sends no such header, so a 403 from there
+// remains fatal too, which is correct — it is not quota-limited.
+const RATE_LIMIT_REMAINING_HEADER = "x-ratelimit-remaining";
+
+export function isRateLimited(headers) {
+  return headers?.get?.(RATE_LIMIT_REMAINING_HEADER) === "0";
+}
+
+export function isTransientResponse({ status, headers }) {
+  if (status === 408 || status === 429 || status >= 500) return true;
+  return status === 403 && isRateLimited(headers);
 }
 
 export function classifyFetchError(err) {
@@ -79,8 +94,11 @@ export async function resolveSha() {
   }
   if (!res.ok) {
     const detail = `${url} -> HTTP ${res.status}`;
-    if (isTransientStatus(res.status)) {
-      throw new MirrorError(`could not reach GitHub (${detail})`, { transient: true });
+    if (isTransientResponse(res)) {
+      const reason = isRateLimited(res.headers)
+        ? "GitHub rate limit exhausted"
+        : "could not reach GitHub";
+      throw new MirrorError(`${reason} (${detail})`, { transient: true });
     }
     throw new MirrorError(`ref ${REPO}@${REF} does not resolve (${detail})`);
   }

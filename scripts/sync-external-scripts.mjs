@@ -18,7 +18,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import process from "node:process";
 import {
-  RAW_BASE, REF, REPO, MirrorError, classifyFetchError, isTransientStatus, reportAndExit, resolveSha,
+  RAW_BASE, REF, REPO, MirrorError, classifyFetchError, isTransientResponse, reportAndExit, resolveSha,
 } from "./oh-source.mjs";
 
 const TAG = "sync-scripts";
@@ -43,7 +43,7 @@ async function fetchScript(src, dest) {
   const body = await res.text();
   if (res.ok) return { url, body };
   const detail = `${url} -> HTTP ${res.status}`;
-  if (isTransientStatus(res.status)) {
+  if (isTransientResponse(res)) {
     throw new MirrorError(`could not fetch ${dest} (${detail})`, { transient: true });
   }
   return { url, missing: detail };
