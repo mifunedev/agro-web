@@ -105,8 +105,8 @@ boot. The install lands in `~/.local` inside the persistent home volume, and
 
 | Field | Type | Default | Compose variable | What it does |
 | --- | --- | --- | --- | --- |
-| `access.dockerSocket` | boolean | `false` | `DOCKER_SOCKET` | Applies the `docker-compose.docker-sock.yml` overlay. Mounting `/var/run/docker.sock` is effectively HOST ROOT: an agent can start a privileged container that mounts the host filesystem. See [security considerations](https://github.com/mifunedev/agro/blob/main/docs/security-considerations.md). |
-| `access.ssh` | boolean | `false` | `SANDBOX_SSH` | Applies the `docker-compose.ssh.yml` overlay, which runs sshd for direct container SSH. See [sshd](https://github.com/mifunedev/agro/blob/main/docs/integrations/sshd.md). |
+| `access.dockerSocket` | boolean | `false` | `DOCKER_SOCKET` | Applies the `docker-compose.docker-sock.yml` overlay. Mounting `/var/run/docker.sock` is effectively HOST ROOT: an agent can start a privileged container that mounts the host filesystem. See [security considerations](security-considerations.md). |
+| `access.ssh` | boolean | `false` | `SANDBOX_SSH` | Applies the `docker-compose.ssh.yml` overlay, which runs sshd for direct container SSH. See [sshd](integrations/sshd.md). |
 | `access.sshPort` | number (1–65535) | `2222` | `SANDBOX_SSH_PORT` | Host loopback port published for SSH. |
 | `access.sshAuthorizedKeys` | string | unset | — | One or more public keys, newline or literal `\n` separated, read by `entrypoint.sh` through `oh config show`. This is public key material, not a secret. Without a key and without password auth nobody can log in, and sshd warns loudly. |
 | `access.sshPasswordAuth` | boolean | `false` | — | Enables SSH password auth, which uses the `SANDBOX_PASSWORD` secret. Never enable it on a public-facing bind while `SANDBOX_PASSWORD` is the default. |
@@ -183,7 +183,7 @@ tracked place.
 
 The allow-list in `.oh/cli/src/lib/secrets.ts` is the complete set of keys the
 root `.env` may hold. Each is documented, commented out, in the tracked
-`.env.example`:
+`.example.env`:
 
 `GH_TOKEN`, `SANDBOX_PASSWORD`, `XAI_API_KEY`, `META_API_KEY`, `PI_SLACK_APP_TOKEN`,
 `PI_SLACK_BOT_TOKEN`, `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`,

@@ -349,5 +349,5 @@ pinned tag through the CLI.
 ## See also
 
 - [Installation](installation.md) — all install paths
-- [Security considerations](https://github.com/mifunedev/agro/blob/main/docs/security-considerations.md) — the Docker-socket opt-in
+- [Security considerations](security-considerations.md) — the Docker-socket opt-in
 - [`.oh/` directory layout](oh-directory-layout.md)
