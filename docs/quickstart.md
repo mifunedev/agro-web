@@ -45,10 +45,11 @@ already-open shell's PATH. Upgrade later with `agro update`.
 
 ### Package and PATH rules
 
-`@mifune/agro` ships only `agro`; `@mifune/openharness` ships only `oh` and
-depends on the exact same `@mifune/agro` version. Both may be installed
-together, and installing or removing either never removes the other's
-executable. `npx @mifune/agro <verb>` works without a global install. A
+`@mifune/agro` ships only `agro`. The retained legacy package
+`@mifune/openharness` ships only `oh`. Its own manifest pins the exact
+`@mifune/agro` dependency version. The operator can install both packages together.
+Installing or removing either package never removes the other executable.
+`npx @mifune/agro <verb>` works without a global install. A
 standalone `get-agro.sh` install and an npm install can coexist, but `agro
 update` refuses when another `agro` is earlier on PATH than the one it would
 replace. Details: [Installation → Package and PATH rules](./installation.md#package-and-path-rules).
@@ -85,8 +86,8 @@ wrapper script the CLI regenerates on every lifecycle call — edit only
 `oh.json` there.
 
 Without `--repo` the sandbox runs the published image
-(`ghcr.io/mifunedev/openharness:latest`) and seeds its workspace from the
-image's `/opt/oh-seed`, so there is no build and no clone.
+(`ghcr.io/mifunedev/agro:latest`) and seeds its workspace from the image's
+`/opt/oh-seed`, so there is no build and no clone.
 
 Finish by attaching:
 

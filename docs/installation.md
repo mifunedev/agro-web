@@ -53,7 +53,7 @@ Upgrade the installed CLI later with `agro update`; it upgrades the running exec
 
 ### Package and PATH rules
 
-- `@mifune/agro` ships only the `agro` executable. `@mifune/openharness` ships only the `oh` executable and depends on the exact same `@mifune/agro` version.
+- `@mifune/agro` ships only the `agro` executable. The retained legacy package `@mifune/openharness` ships only the `oh` executable. Its own manifest pins the exact `@mifune/agro` dependency version.
 - Both packages may be installed together. Installing or removing either never removes the other's executable.
 - `npx @mifune/agro <verb>` runs the CLI without a global install.
 - A standalone `get-agro.sh` install (`~/.local/bin/agro`) and an npm install can coexist. `agro update` upgrades the executable that is running, and it refuses when another `agro` is earlier on PATH than the one it would replace; remove or reorder one of them first.
@@ -342,7 +342,7 @@ oh update --from <local-checkout>    # ...or vendor from a built checkout, offli
 
 `oh update` equips an empty directory and upgrades an equipped one with the same command; a second run reports it is already up to date. It writes only `.oh/` and `crons/` — never `oh.json`, `.env`, `AGENTS.md`, `.gitignore`, `.devcontainer/`, or a provider directory. It never prompts. Payload precedence is `--from` > `--from-remote` > the CLI's bundled payload > a remote fetch announced on one line. `--from-remote` fetches over public HTTPS only — private or credential-prompting remotes fail fast (`GIT_TERMINAL_PROMPT=0`).
 
-A checkout bound with `--repo` mounts at `/home/sandbox/harness`. Without `--repo` the sandbox runs `ghcr.io/mifunedev/openharness:latest` and seeds its workspace from the image — see [`agro sandbox install docker`](deployment-prebuilt-image.md) for that recipe and the `--image` / `--no-build` flags.
+A checkout bound with `--repo` mounts at `/home/sandbox/harness`. Without `--repo` the sandbox runs `ghcr.io/mifunedev/agro:latest` and seeds its workspace from the image — see [`agro sandbox install docker`](deployment-prebuilt-image.md) for that recipe and the `--image` / `--no-build` flags.
 
 ## Next step
 
