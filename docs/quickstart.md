@@ -45,10 +45,11 @@ already-open shell's PATH. Upgrade later with `agro update`.
 
 ### Package and PATH rules
 
-`@mifune/agro` ships only `agro`; `@mifune/openharness` ships only `oh` and
-depends on the exact same `@mifune/agro` version. Both may be installed
-together, and installing or removing either never removes the other's
-executable. `npx @mifune/agro <verb>` works without a global install. A
+`@mifune/agro` ships only `agro`. The retained legacy package
+`@mifune/openharness` ships only `oh`. Its own manifest pins the exact
+`@mifune/agro` dependency version. The operator can install both packages together.
+Installing or removing either package never removes the other executable.
+`npx @mifune/agro <verb>` works without a global install. A
 standalone `get-agro.sh` install and an npm install can coexist, but `agro
 update` refuses when another `agro` is earlier on PATH than the one it would
 replace. Details: [Installation → Package and PATH rules](./installation.md#package-and-path-rules).
@@ -85,8 +86,8 @@ wrapper script the CLI regenerates on every lifecycle call — edit only
 `oh.json` there.
 
 Without `--repo` the sandbox runs the published image
-(`ghcr.io/mifunedev/openharness:latest`) and seeds its workspace from the
-image's `/opt/oh-seed`, so there is no build and no clone.
+(`ghcr.io/mifunedev/agro:latest`) and seeds its workspace from the image's
+`/opt/oh-seed`, so there is no build and no clone.
 
 Finish by attaching:
 
@@ -107,15 +108,16 @@ agro sandbox install docker --repo "$PWD" --name <your-project>
 `oh update` writes `.oh/` and `crons/` and **nothing else** — no `oh.json`, no
 `.env`, no `AGENTS.md`, no provider configuration, and no `.gitignore` line
 beyond the `.env` line `agro secret set` adds inside a git checkout. Those files
-are yours to author. With `--repo` and `image.mode` set to `build`, the sandbox
+are yours to author. `agro update` upgrades the CLI and touches no project file.
+With `--repo` and `image.mode` set to `build`, the sandbox
 builds from that checkout's `.devcontainer/Dockerfile` instead of pulling
 (~10 min cold, ~30s warm).
 
 <details>
-<summary>One-line harness installer and forks</summary>
+<summary>Historical compatibility: one-line installer and forks</summary>
 
-**One-line installer for this harness.** Gets `oh`, clones this repo to
-`~/.openharness`, configures it, and provisions — in one shot:
+These recipes clone the harness repository. They are not the current onboarding
+path. Prefer [Get `agro`](#install) then `agro sandbox install docker`.
 
 ```bash
 curl -fsSL https://agro.mifune.dev/install.sh | bash
@@ -295,8 +297,10 @@ paths to `composeOverrides[]` in `oh.json` (last wins).
 ## End-to-end setup walkthrough
 
 The full path from a bare Linux host to an authenticated multi-agent sandbox. Each step
-inlines the command to run; follow the link for depth/troubleshooting. Steps 5–14 run
-**inside the sandbox** (`agro shell <name>`); step 5 enters Herdr before setup. For agent-auth steps (9–12), the simplest
+inlines the command to run; follow the link for depth/troubleshooting. The required path
+installs the CLI and creates a sandbox. It does not clone the harness, fork it, run
+`install.sh`, or run `agro config repo`. Steps 4–11 run
+**inside the sandbox** (`agro shell <name>`); step 4 enters Herdr before setup. For agent-auth steps (6–9), the simplest
 cross-provider method is `/login` → **device mode** inside each agent's interactive session
 (see [Set up agents inside Herdr](#set-up-agents-inside-herdr)); the explicit commands shown are equivalents.
 
@@ -307,74 +311,53 @@ cross-provider method is `/login` → **device mode** inside each agent's intera
    bash get-agro.sh                                          # installs `agro`, and Node if missing
    ```
 
-   To skip the review step: `curl -fsSL https://agro.mifune.dev/get-agro.sh | bash`. `npm install -g @mifune/agro` is the npm equivalent when Node is already present.
-2. **Clone the repo** to `~/.openharness`:
-   ```bash
-   git clone --recurse-submodules https://github.com/mifunedev/agro.git ~/.openharness
-   cd ~/.openharness
-   ```
-3. **Create the sandbox against that checkout** — the wizard asks for the name,
+   To skip the review step: `curl -fsSL https://agro.mifune.dev/get-agro.sh | bash`. `npm install -g @mifune/agro` is the npm equivalent when Node is already present. Upgrade the CLI later with `agro update`.
+2. **Create the sandbox** from any directory, with no project checkout — the wizard asks for the name,
    timezone, git identity, SSH, and the Docker socket, then writes
    `~/.oh/sandboxes/<name>/`:
    ```bash
-   agro sandbox install docker --repo "$PWD" --name openharness
+   agro sandbox install docker
    ```
-4. **Enter the sandbox**:
+3. **Enter the sandbox**:
    ```bash
-   agro shell openharness   # attach as the sandbox user
+   agro sandbox list
+   agro shell <name>   # attach as the sandbox user
    ```
-5. **Install and start Herdr** — a fresh sandbox has none; all remaining setup runs in its panes:
+4. **Install and start Herdr** — a fresh sandbox has none; all remaining setup runs in its panes:
    ```bash
    agro tool install herdr
    herdr
    ```
-6. **Authenticate GitHub over SSH** — choose SSH, generate a key, paste a token
+5. **Authenticate GitHub over SSH** — choose SSH, generate a key, paste a token
    ([GitHub auth](./integrations/github.md)):
    ```bash
    gh auth login && gh auth setup-git
    ```
-7. **Create your own private repo and point the remotes at it** — one command,
-   which asks first and defaults to no:
-   ```bash
-   agro config repo
-   ```
-   It prompts for owner, repository name, and visibility (default private), then runs
-   `gh repo create`, renames the existing `origin` to `openharness`, adds your repo as
-   `origin`, and pushes. Nothing is created unless you answer yes in that run —
-   a piped (non-TTY) run skips the step entirely.
-8. **Or do it by hand** — the same result without `gh`, keeping upstream as `upstream`
-   ([clone-and-own](./installation.md#clone-and-own-private-origin-and-upstream-recommended)):
-   ```bash
-   gh repo create <your-user>/openharness --private
-   git remote set-url origin git@github.com:<your-user>/openharness.git
-   git remote add upstream git@github.com:mifunedev/agro.git
-   git push -u origin HEAD
-   ```
-9. **Install and authenticate Claude Code** ([Claude Code](./harnesses/claude-code.md)):
+6. **Install and authenticate Claude Code** ([Claude Code](./harnesses/claude-code.md)):
    ```bash
    agro harness install claude-code
    claude auth login && claude auth status
    ```
-10. **Install and authenticate Codex** ([Codex](./harnesses/codex.md)):
+7. **Install and authenticate Codex** ([Codex](./harnesses/codex.md)):
    ```bash
    agro harness install codex
    codex login --device-auth
    ```
    > Optional: DebugMCP (cross-harness debugging over MCP) is available if you attached via
    > VS Code — see [Enter the sandbox](#enter-the-sandbox) above, not this step.
-11. **Install and authenticate Pi** — configure provider keys / OAuth ([Pi](./harnesses/pi.md)):
+8. **Install and authenticate Pi** — configure provider keys / OAuth ([Pi](./harnesses/pi.md)):
     ```bash
     agro harness install pi
     pi        # first run walks provider auth
     ```
-12. **Install and authenticate Hermes** ([Hermes](./harnesses/hermes.md)):
+9. **Install and authenticate Hermes** ([Hermes](./harnesses/hermes.md)):
     ```bash
     agro harness install hermes
     hermes setup
     ```
-13. **Configure Slack** for Pi (and Hermes) — create the Slack app, add tokens, set trust
+10. **Configure Slack** for Pi (and Hermes) — create the Slack app, add tokens, set trust
     ([Slack](./integrations/slack.md); Hermes uses `hermes gateway setup`).
-14. **Run and verify the gateways** (sandbox-only; watch read-only so you can't kill them —
+11. **Run and verify the gateways** (sandbox-only; watch read-only so you can't kill them —
     [Slack § Run and verify](./integrations/slack.md), [Hermes § Run and verify](./harnesses/hermes.md#run-and-verify-read-only)):
     ```bash
     gateway pi && gateway hermes        # start the client-slack-* sessions
@@ -382,8 +365,11 @@ cross-provider method is `/login` → **device mode** inside each agent's intera
     tmux attach -r -t client-slack-pi   # read-only view; detach with Ctrl-b d
     ```
 
+`agro config repo` stays a compatibility helper for the retired clone-and-own recipe.
+It is not a step on this path. See [Installation → Optional compatibility and historical installer workflows](./installation.md#optional-compatibility-and-historical-installer-workflows).
+
 > Shortcut: if `GH_TOKEN` was set at install, the entrypoint already ran `gh auth login`
-> + `gh auth setup-git` and generated/uploaded an SSH key for you (steps 5 partly done).
+> + `gh auth setup-git` and generated/uploaded an SSH key for you (step 5 partly done).
 
 ## Tear down
 

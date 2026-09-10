@@ -14,29 +14,28 @@
 // static/install.sh that the redirect shadows — two mechanisms serving one path.
 // Removing the CDN rule is tracked as a follow-up; do not mirror it until then.
 import { writeFile, mkdir } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import process from "node:process";
 import {
-  RAW_BASE, REF, REPO, MirrorError, classifyFetchError, isTransientResponse, reportAndExit, resolveSha,
+  REF, REPO, MirrorError, classifyFetchError, isTransientResponse, reportAndExit, resolveSha, rawBaseFor,
 } from "./oh-source.mjs";
 
 const TAG = "sync-scripts";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-// path in the harness repo -> path under static/ (served at site root)
-const SCRIPTS = [
+export const SCRIPTS = [
   { src: ".agro/scripts/get-agro.sh", dest: "static/get-agro.sh" },
   { src: ".agro/scripts/get-oh.sh", dest: "static/get-oh.sh" },
 ];
 const PRE_RENAME_SCRIPTS_DIR = ".oh/";
 const sourceCandidates = (src) => [src, src.replace(/^\.agro\//, PRE_RENAME_SCRIPTS_DIR)];
 
-async function fetchScript(src, dest) {
-  const url = `${RAW_BASE}/${src}`;
+async function fetchScript(src, dest, { base, fetchImpl }) {
+  const url = `${base}/${src}`;
   let res;
   try {
-    res = await fetch(url);
+    res = await fetchImpl(url);
   } catch (err) {
     throw classifyFetchError(err);
   }
@@ -49,11 +48,11 @@ async function fetchScript(src, dest) {
   return { url, missing: detail };
 }
 
-async function syncOne({ src, dest }) {
+async function syncOne({ src, dest }, { base, sha, fetchImpl, destRoot }) {
   const looked = [];
   let found;
   for (const candidate of sourceCandidates(src)) {
-    const result = await fetchScript(candidate, dest);
+    const result = await fetchScript(candidate, dest, { base, fetchImpl });
     if (result.body !== undefined) {
       found = result;
       break;
@@ -61,22 +60,45 @@ async function syncOne({ src, dest }) {
     looked.push(result.missing);
   }
   if (!found) {
-    throw new MirrorError(`${dest} is not present at ${REPO}@${REF}; looked for ${looked.join(", ")}`);
+    throw new MirrorError(`${dest} is not present at ${REPO}@${sha}; looked for ${looked.join(", ")}`);
   }
   const { url, body } = found;
   if (!body.startsWith("#!")) {
     throw new MirrorError(`${url} did not return a script (no shebang)`);
   }
-  const out = join(ROOT, dest);
+  const out = join(destRoot, dest);
   await mkdir(dirname(out), { recursive: true });
   await writeFile(out, body, { mode: 0o644 });
-  console.log(`[${TAG}] wrote ${dest} <- ${url} (${body.length} bytes)`);
+  console.log(`[${TAG}] wrote ${dest} <- ${url} (${sha}, ${body.length} bytes)`);
+  return { dest, url, sha, bytes: body.length };
 }
 
-try {
-  const sha = await resolveSha();
-  console.log(`[${TAG}] source ${REPO}@${REF} (${sha})`);
-  for (const script of SCRIPTS) await syncOne(script);
-} catch (err) {
-  reportAndExit(TAG, err, SCRIPTS.map((s) => join(ROOT, s.dest)));
+export async function syncFromResolvedCommit({
+  sha: shaOption,
+  fetchImpl = globalThis.fetch.bind(globalThis),
+  destRoot = ROOT,
+  resolve = resolveSha,
+  scripts = SCRIPTS,
+} = {}) {
+  const sha = shaOption ?? await resolve();
+  if (!sha) throw new MirrorError(`ref ${REPO}@${REF} resolved to an empty SHA`);
+  const base = rawBaseFor(sha);
+  console.log(`[${TAG}] source ${REPO}@${REF} pinned to ${sha}`);
+  const written = [];
+  for (const script of scripts) {
+    written.push(await syncOne(script, { base, sha, fetchImpl, destRoot }));
+  }
+  return { sha, written };
+}
+
+const invokedDirectly =
+  Boolean(process.argv[1]) &&
+  fileURLToPath(import.meta.url) === resolve(process.argv[1]);
+
+if (invokedDirectly) {
+  try {
+    await syncFromResolvedCommit();
+  } catch (err) {
+    reportAndExit(TAG, err, SCRIPTS.map((s) => join(ROOT, s.dest)));
+  }
 }

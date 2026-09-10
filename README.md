@@ -67,6 +67,14 @@ values prints a warning. The repo defaults to **`mifunedev/agro`** and the ref t
 `development` carries unreleased CLI behaviour and must not be published to people
 running `curl … | bash`.
 
+Each script resolves that ref to a full commit SHA, then fetches that commit.
+The CLI builder checks the commit out detached and fails if `git rev-parse HEAD`
+does not match the resolved SHA. The script mirror downloads from
+`raw.githubusercontent.com/<repo>/<sha>/…`, not from a moving branch URL.
+A successful build log names the source commit of each `agro.js` / `oh.js` bundle
+and each mirrored `get-agro.sh` / `get-oh.sh`. Stale-artifact fallback on a
+transient network error is not source-identity evidence.
+
 A ref that predates the `.oh/` → `.agro/` rename still builds: both scripts fall back
 to `.oh/scripts/` and `.oh/cli` when the `.agro/` path is absent at the pinned ref.
 

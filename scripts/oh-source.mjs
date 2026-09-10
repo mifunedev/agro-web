@@ -32,11 +32,29 @@ export const RAW_BASE = `https://raw.githubusercontent.com/${REPO}/${REF}`;
 // REF and REPO reach `git clone` as command arguments. Reject anything that is not
 // a plausible ref/slug, and anything leading with `-`, which git would read as a flag.
 const SAFE = /^[A-Za-z0-9][A-Za-z0-9._\/-]*$/;
+const FULL_SHA = /^[0-9a-f]{40}$/i;
 for (const { name, value } of [repoSetting, refSetting]) {
   if (!SAFE.test(value)) {
     console.error(`[oh-source] FATAL: ${name}=${JSON.stringify(value)} is not a valid ref or repo slug.`);
     process.exit(1);
   }
+}
+
+export function assertSafeRef(value, label = "ref") {
+  if (!SAFE.test(value)) {
+    throw new MirrorError(`${label}=${JSON.stringify(value)} is not a valid ref`);
+  }
+  return value;
+}
+
+export function rawBaseFor(sha) {
+  assertSafeRef(sha, "commit");
+  return `https://raw.githubusercontent.com/${REPO}/${sha}`;
+}
+
+export function gitUrlFor(repo = REPO) {
+  assertSafeRef(repo, "repo");
+  return `https://github.com/${repo}.git`;
 }
 
 export class MirrorError extends Error {
@@ -73,7 +91,7 @@ function authHeaders() {
 
 // Resolves REF to a commit SHA. Doubles as the existence check for the ref, so a
 // typo or an unpromoted branch fails here with a clear message rather than deep
-// inside a `git clone`.
+// inside a `git clone`. Never substitutes `main`.
 export async function resolveSha() {
   const url = `https://api.github.com/repos/${REPO}/commits/${encodeURIComponent(REF)}`;
   let res;
@@ -94,7 +112,11 @@ export async function resolveSha() {
     }
     throw new MirrorError(`ref ${REPO}@${REF} does not resolve (${detail})`);
   }
-  return (await res.text()).trim();
+  const sha = (await res.text()).trim();
+  if (!FULL_SHA.test(sha)) {
+    throw new MirrorError(`ref ${REPO}@${REF} did not resolve to a full SHA`);
+  }
+  return sha.toLowerCase();
 }
 
 // A transient failure is survivable only when there is already a good artifact to
@@ -105,7 +127,7 @@ export function reportAndExit(tag, err, artifacts = []) {
     const missing = artifacts.filter((path) => !existsSync(path));
     if (missing.length === 0) {
       console.warn(`[${tag}] transient: ${err.message} — keeping the previously published artifact`);
-      return;
+      return { fallback: true, sha: null };
     }
     console.error(`[${tag}] FATAL: ${err.message}`);
     console.error(`[${tag}] the failure looks transient, but there is no previous artifact to fall back on: ${missing.join(", ")}`);
