@@ -53,7 +53,6 @@ Open Harness loads these project-local Pi packages from `.pi/settings.json`:
 - [`@tifan/pi-recap`](https://github.com/tifandotme/pi-extensions/tree/master/packages/pi-recap) — one-line session recaps for re-entry. Use `/recap` for a fresh goal-first recap, `/recap status` to inspect freshness/model state, and `/recap config` to choose the recap model. The package also generates one idle recap after five minutes and refreshes stale/missing recaps on resume.
 - [`@trevonistrevon/pi-loop`](https://pi.dev/packages/@trevonistrevon/pi-loop?name=monitor) — Monitor and loop tools for background command monitoring and scheduled re-wakes. Use `MonitorCreate`, `MonitorList`, and `MonitorStop` for long-running commands; use `/loop` or `LoopCreate` for cron/event-triggered follow-up prompts.
 - [`@guwidoe/pi-prompt-suggester`](https://github.com/guwidoe/pi-prompt-suggester) — intent-aware next-prompt suggestions after assistant completions. Suggestions can appear as ghost text in the editor, with `/suggesterSettings` for interactive configuration and `/suggester status` / `/suggester reseed` for inspection and manual reseeding.
-- [`pi-autoresearch`](../integrations/pi-autoresearch.md) — autonomous metric-optimization loops for Pi. Use `/skill:autoresearch-create` to create `.auto/` session files, run benchmark iterations, log keep/revert decisions, and inspect results through `/autoresearch export`.
 
 Pi installs missing project packages automatically on startup after the project is trusted. Open Harness also auto-loads project-local extensions from `.pi/extensions/`.
 
@@ -68,7 +67,7 @@ and configure its external Langfuse deployment before installing it.
 
 The installed `@earendil-works/pi-ai` Codex Responses provider can reuse WebSocket cached continuation state by sending `previous_response_id`. If the upstream Codex backend forgets that response id, it returns `previous_response_not_found`; Pi clears the stale continuation but the failed user turn would otherwise be lost. Open Harness keeps a small auto-loaded `.pi/extensions/codex-stale-response-retry.ts` extension that re-injects non-Slack failed turns once via `sendUserMessage(..., { deliverAs: "followUp" })`, causing the next request to start from fresh/full context. Slack-prefixed turns remain owned by the dedicated `.pi/bridge-recovery/` extension that is co-loaded with `pi-messenger-bridge`.
 
-Outside this project, try the packages manually with `pi -e npm:@narumitw/pi-goal`, `pi -e npm:@narumitw/pi-codex-usage@0.6.2`, `pi -e npm:@tifan/pi-recap`, `pi -e npm:@trevonistrevon/pi-loop`, `pi -e npm:@guwidoe/pi-prompt-suggester@0.3.10`, or `pi -e npm:pi-autoresearch@1.6.0`.
+Outside this project, try the packages manually with `pi -e npm:@narumitw/pi-goal`, `pi -e npm:@narumitw/pi-codex-usage@0.6.2`, `pi -e npm:@tifan/pi-recap`, `pi -e npm:@trevonistrevon/pi-loop`, or `pi -e npm:@guwidoe/pi-prompt-suggester@0.3.10`.
 
 ## Prompt suggestions
 
