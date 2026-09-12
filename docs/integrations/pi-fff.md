@@ -13,9 +13,8 @@ project-local Pi package from `.pi/settings.json`:
 ```
 
 Pi installs missing project packages automatically on startup after the project is
-trusted. Open Harness uses this package path — the same one used for
-`pi-autoresearch` — instead of vendoring upstream source into `.pi/extensions/`,
-so the integration stays small, pinned, and easy to update.
+trusted. Open Harness loads the package by pin instead of vendoring upstream source
+into `.pi/extensions/`, so the integration stays small, pinned, and easy to update.
 
 [`fff`](https://github.com/dmtrKovalenko/fff) is a fast, typo-resistant file-search
 toolkit for AI agents (the same engine that powers file search in opencode and

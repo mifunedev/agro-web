@@ -41,7 +41,7 @@
 // records. GHCR image references (ghcr.io/mifunedev/openharness) are not flagged;
 // the image name is owned by the harness release workflow, not by this site.
 import { readdirSync, readFileSync, statSync } from "node:fs";
-import { join, relative } from "node:path";
+import { join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { dirname } from "node:path";
 import process from "node:process";
@@ -49,7 +49,7 @@ import process from "node:process";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SCANNED = ["docs", "promos", "src/pages"];
 
-const RETIRED = [
+export const RETIRED = [
   {
     // The Makefile is gone; `oh` is the only lifecycle door.
     pattern: /\bmake\s+(sandbox|shell|destroy|ps|stop|restart|logs|config|gateway|help|harness-config)\b/g,
@@ -176,6 +176,12 @@ const RETIRED = [
     instead: "nothing installs at boot; `oh harness install <id>` / `oh tool install <id>` are the only door",
   },
   {
+    // pi-autoresearch is not a default Pi package; the harness never carried it.
+    pattern: /\bpi-autoresearch\b|\/(?:skill:)?autoresearch\b/g,
+    name: "pi-autoresearch",
+    instead: "nothing — the package is no longer part of the harness; see docs/harnesses/pi.md for the default Pi packages",
+  },
+  {
     // The checkout path is fixed at /home/sandbox/harness.
     pattern: /\/home\/sandbox\/project\b/g,
     name: "/home/sandbox/project",
@@ -185,7 +191,7 @@ const RETIRED = [
 
 // A page may name a retired thing in order to say it is retired. Each exemption
 // is per file AND per token, and carries the reason it is allowed to stay.
-const ALLOW = [
+export const ALLOW = [
   {
     file: "harnesses/muse-code.md",
     token: "the pre-systemd container lifecycle",
@@ -277,40 +283,46 @@ function scanned() {
 const allowed = (file, token) =>
   ALLOW.some((a) => (file === a.file || file.endsWith("/" + a.file)) && a.token === token);
 
-const pages = scanned();
-const violations = [];
-for (const { path, rel } of pages) {
-  const lines = readFileSync(path, "utf8").split("\n");
-  for (const { pattern, name, instead } of RETIRED) {
-    if (allowed(rel, name)) continue;
+const invokedDirectly =
+  Boolean(process.argv[1]) &&
+  fileURLToPath(import.meta.url) === resolve(process.argv[1]);
+
+if (invokedDirectly) {
+  const pages = scanned();
+  const violations = [];
+  for (const { path, rel } of pages) {
+    const lines = readFileSync(path, "utf8").split("\n");
+    for (const { pattern, name, instead } of RETIRED) {
+      if (allowed(rel, name)) continue;
+      lines.forEach((line, i) => {
+        pattern.lastIndex = 0;
+        const hit = pattern.exec(line);
+        if (hit) violations.push({ file: rel, line: i + 1, name, match: hit[0], instead, text: line.trim() });
+      });
+    }
+    if (!LEGACY_IDENTITY_SCANNED.some((dir) => rel.startsWith(dir + "/"))) continue;
+    const exempt = compatibilityLines(lines);
     lines.forEach((line, i) => {
-      pattern.lastIndex = 0;
-      const hit = pattern.exec(line);
-      if (hit) violations.push({ file: rel, line: i + 1, name, match: hit[0], instead, text: line.trim() });
+      if (exempt.has(i)) return;
+      LEGACY_IDENTITY.pattern.lastIndex = 0;
+      const hit = LEGACY_IDENTITY.pattern.exec(line);
+      if (hit) violations.push({ file: rel, line: i + 1, name: LEGACY_IDENTITY.name, match: hit[0], instead: LEGACY_IDENTITY.instead, text: line.trim() });
     });
   }
-  if (!LEGACY_IDENTITY_SCANNED.some((dir) => rel.startsWith(dir + "/"))) continue;
-  const exempt = compatibilityLines(lines);
-  lines.forEach((line, i) => {
-    if (exempt.has(i)) return;
-    LEGACY_IDENTITY.pattern.lastIndex = 0;
-    const hit = LEGACY_IDENTITY.pattern.exec(line);
-    if (hit) violations.push({ file: rel, line: i + 1, name: LEGACY_IDENTITY.name, match: hit[0], instead: LEGACY_IDENTITY.instead, text: line.trim() });
-  });
-}
 
-if (violations.length > 0) {
-  console.error(`[docs-drift] ${violations.length} retired reference(s) in ${SCANNED.map((d) => `${d}/`).join(", ")}:\n`);
-  for (const v of violations) {
-    console.error(`  ${v.file}:${v.line} — ${v.name}: "${v.match}"`);
-    console.error(`    ${v.text.length > 100 ? v.text.slice(0, 100) + "…" : v.text}`);
-    console.error(`    use instead: ${v.instead}\n`);
+  if (violations.length > 0) {
+    console.error(`[docs-drift] ${violations.length} retired reference(s) in ${SCANNED.map((d) => `${d}/`).join(", ")}:\n`);
+    for (const v of violations) {
+      console.error(`  ${v.file}:${v.line} — ${v.name}: "${v.match}"`);
+      console.error(`    ${v.text.length > 100 ? v.text.slice(0, 100) + "…" : v.text}`);
+      console.error(`    use instead: ${v.instead}\n`);
+    }
+    console.error("[docs-drift] The harness retired these. A page that still recommends one");
+    console.error("[docs-drift] tells a new reader to run something that no longer exists.");
+    console.error("[docs-drift] If a page names one in order to say it is retired, add a");
+    console.error("[docs-drift] per-file, per-token entry to ALLOW in scripts/check-docs-drift.mjs.");
+    process.exit(1);
   }
-  console.error("[docs-drift] The harness retired these. A page that still recommends one");
-  console.error("[docs-drift] tells a new reader to run something that no longer exists.");
-  console.error("[docs-drift] If a page names one in order to say it is retired, add a");
-  console.error("[docs-drift] per-file, per-token entry to ALLOW in scripts/check-docs-drift.mjs.");
-  process.exit(1);
-}
 
-console.log(`[docs-drift] PASS — ${pages.length} file(s) under ${SCANNED.map((d) => `${d}/`).join(", ")}, no retired references`);
+  console.log(`[docs-drift] PASS — ${pages.length} file(s) under ${SCANNED.map((d) => `${d}/`).join(", ")}, no retired references`);
+}
