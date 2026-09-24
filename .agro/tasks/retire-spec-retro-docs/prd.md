@@ -21,7 +21,7 @@ Issue: [#59](https://github.com/mifunedev/agro-web/issues/59)
 
 ### US-002: Retire the get-oh.sh mirror and repoint the install docs
 
-**Description:** As a reader of the docs site, I want the install docs to use `get-agro.sh` so that the documented install command works after the next deploy.
+**Description:** As a reader of the docs site, I want the install docs to use `get-agro.sh` so that the documented install works after the next deploy.
 
 The operator added this story during execution. mifunedev/agro#1136 removed `.agro/scripts/get-oh.sh`. `scripts/sync-external-scripts.mjs` still mirrors that file, so `pnpm run build` exits 1, and the `main` deploy fails since 2026-09-23.
 
