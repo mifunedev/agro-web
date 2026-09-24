@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "project": "agro-web",
+  "branchName": "task/61-agro-update-js-url",
+  "description": "Correct the agro update download source in the docs and guard the retired OH_JS_URL.",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "State the agro update download source and guard the retired variable",
+      "description": "As a reader of the docs site, I want the `agro update` row to name the real override and default so that my override works.",
+      "acceptanceCriteria": [
+        "Before the docs change, `pnpm run check:docs-drift` exits 1 and names `OH_JS_URL` in `docs/lifecycle-commands.md`. The evidence records the command and the exit status.",
+        "`docs/lifecycle-commands.md` row `get-agro.sh` names `AGRO_JS_URL` only and the default `https://github.com/mifunedev/agro/releases/latest/download/agro.js`.",
+        "`scripts/check-docs-drift.mjs` `RETIRED` has one entry that matches `OH_JS_URL`, with an `instead` text that names `AGRO_JS_URL`.",
+        "`scripts/check-docs-drift.test.mjs` asserts that the entry matches `OH_JS_URL` and does not match `AGRO_JS_URL`.",
+        "After the docs change, `pnpm run check:docs-drift`, `pnpm test`, `pnpm run typecheck`, and `pnpm run build` exit 0."
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/lifecycle-commands.md",
+        "scripts/check-docs-drift.mjs",
+        "scripts/check-docs-drift.test.mjs"
+      ]
+    }
+  ]
+}
