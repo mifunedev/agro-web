@@ -97,4 +97,9 @@ None.
 
 ## Lessons
 
-Filled by the advisor before undraft.
+| Lesson | Evidence | Outcome |
+| --- | --- | --- |
+| A mirror of an upstream file breaks the build when the upstream repository removes the file. | mifunedev/agro#1136 removed `.agro/scripts/get-oh.sh`, and `pnpm run build` exited 1 on `main` from 2026-09-23. | fixed in this PR (US-002) |
+| A retired install path needs its install docs and a drift guard in the same change. | The quickstart and installation pages told readers to run `get-oh.sh`. | fixed in this PR (US-002 and its `RETIRED` entry) |
+| The `agro update` row names a retired `OH_JS_URL` fallback and a wrong default URL. | The harness test `self-upgrade.test.ts` asserts that `agro update` ignores `OH_JS_URL` and falls back to the release asset. | issue #61 |
+| A code comment in `scripts/build-oh-cli.mjs` still names `get-oh.sh`. | The US-002 worker reported it. | dropped: a comment only, outside the changed files; the `RETIRED` guard covers the published docs. |
