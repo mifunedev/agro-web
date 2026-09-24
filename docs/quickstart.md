@@ -60,16 +60,7 @@ replace. Details: [Installation → Package and PATH rules](./installation.md#pa
 From npm it is the deprecated shim `@mifune/openharness`
 (`npm install -g @mifune/openharness`, or `npx @mifune/openharness --help`);
 `oh update` remains the command that vendors `.oh/` + `crons/` into a checkout.
-The curl bootstrap is `get-oh.sh`:
-
-```bash
-curl -fsSL https://oh.mifune.dev/get-oh.sh | bash
-```
-
-Review-first: `curl -fsSL -o get-oh.sh https://oh.mifune.dev/get-oh.sh`, read
-it, then `bash get-oh.sh`. It installs the self-contained `oh` binary to
-`~/.local/bin/oh` — no repo clone. `source <(curl -fsSL https://oh.mifune.dev/get-oh.sh)`
-installs *and* puts `oh` on the current shell's PATH.
+The curl bootstrap `get-agro.sh` installs only `agro`.
 
 **2. Create the sandbox** — from any directory, with no project checkout:
 

@@ -48,14 +48,13 @@ hold the mirror back to punish a prose typo.
 
 ## The script mirror
 
-Five paths under the site root serve executable content that users pipe into a
-shell. Four of them are built here; one is not, and that asymmetry is the thing to
+Four paths under the site root serve executable content that users pipe into a
+shell. Three of them are built here; one is not, and that asymmetry is the thing to
 know before changing any of it.
 
 | URL | Served by | Source |
 | --- | --- | --- |
 | `/get-agro.sh` | `scripts/sync-external-scripts.mjs` → `static/get-agro.sh` | `.agro/scripts/get-agro.sh` in the harness repo |
-| `/get-oh.sh` | `scripts/sync-external-scripts.mjs` → `static/get-oh.sh` | `.agro/scripts/get-oh.sh` in the harness repo |
 | `/agro.js` | `scripts/build-oh-cli.mjs` → `static/agro.js` | built from `.agro/cli` in the harness repo |
 | `/oh.js` | `scripts/build-oh-cli.mjs` → `static/oh.js` | the same bundle as `/agro.js` |
 | `/install.sh` | **an HTTP 302 configured at the CDN, outside this repo** | `.oh/scripts/install.sh` on `main`, via `raw.githubusercontent.com` |
@@ -72,7 +71,7 @@ The CLI builder checks the commit out detached and fails if `git rev-parse HEAD`
 does not match the resolved SHA. The script mirror downloads from
 `raw.githubusercontent.com/<repo>/<sha>/…`, not from a moving branch URL.
 A successful build log names the source commit of each `agro.js` / `oh.js` bundle
-and each mirrored `get-agro.sh` / `get-oh.sh`. Stale-artifact fallback on a
+and the mirrored `get-agro.sh`. Stale-artifact fallback on a
 transient network error is not source-identity evidence.
 
 A ref that predates the `.oh/` → `.agro/` rename still builds: both scripts fall back

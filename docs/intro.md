@@ -9,7 +9,7 @@ title: "Introduction"
 :::info OpenHarness is now AGRO
 
 The project was renamed from Open Harness to AGRO: the site lives at [agro.mifune.dev](https://agro.mifune.dev) and the source at [github.com/mifunedev/agro](https://github.com/mifunedev/agro).
-The old names keep working as compatibility aliases — `oh.mifune.dev`, `github.com/mifunedev/openharness`, and the `oh` command — and `get-oh.sh` and `oh.js` remain available beside `get-agro.sh` and `agro.js`.
+The old names keep working as compatibility aliases — `oh.mifune.dev`, `github.com/mifunedev/openharness`, and the `oh` command — and `oh.js` remains available beside `agro.js`. The install script is `get-agro.sh`.
 
 :::
 
@@ -23,7 +23,7 @@ Key capabilities:
 
 - **One repo, one sandbox.** Your portable harness is one repo; it boots one container. The agent owns its workspace; your machine stays clean — you're not running agents straight on your host.
 - **Markdown-defined crons.** `crons/*.md` files declare schedules; an in-container croner runtime fires the bodies as agent prompts so the agent can work autonomously while you focus on other things.
-- **Host dependencies: Docker, Git, and Node.js ≥ 20.** No Python, no pnpm, no agent CLIs, and no toolchain maintenance on your laptop — Node runs the `oh` CLI and nothing else, and `get-oh.sh` installs it for you when it is missing. (See [Prerequisites](/docs/installation#prerequisites).)
+- **Host dependencies: Docker, Git, and Node.js ≥ 20.** No Python, no pnpm, no agent CLIs, and no toolchain maintenance on your laptop — Node runs the `oh` CLI and nothing else, and `get-agro.sh` installs it for you when it is missing. (See [Prerequisites](/docs/installation#prerequisites).)
 - **Cloudflared previews.** Share sandbox app ports through Cloudflared tunnels; SSH and pack-supplied services remain opt-in Docker Compose overlays.
 - **Multi-agent messaging.** Bridge Slack (and other messengers) to a Pi agent with the [`pi-messenger-bridge`](/docs/integrations/slack) npm package; SSH and pack-supplied services remain opt-in Docker Compose overlays.
 

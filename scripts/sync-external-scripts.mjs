@@ -1,6 +1,6 @@
 // Build-time sync of shipped install scripts from the canonical openharness repo
 // into static/, so GitHub Pages serves them at the site root (e.g.
-// https://oh.mifune.dev/get-oh.sh) without a copy that can drift.
+// https://agro.mifune.dev/get-agro.sh) without a copy that can drift.
 //
 // Runs as the `prebuild` hook. A missing file, a 404, or a body that is not a
 // script FAILS the build: `oh` is the only door into Open Harness, so publishing
@@ -26,7 +26,6 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 export const SCRIPTS = [
   { src: ".agro/scripts/get-agro.sh", dest: "static/get-agro.sh" },
-  { src: ".agro/scripts/get-oh.sh", dest: "static/get-oh.sh" },
 ];
 const PRE_RENAME_SCRIPTS_DIR = ".oh/";
 const sourceCandidates = (src) => [src, src.replace(/^\.agro\//, PRE_RENAME_SCRIPTS_DIR)];
