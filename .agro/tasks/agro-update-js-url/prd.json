@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "project": "agro-web",
+  "branchName": "task/61-agro-update-js-url",
+  "description": "Correct the agro update download source in the docs and guard the retired OH_JS_URL.",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "State the agro update download source and guard the retired variable",
+      "description": "As a reader of the docs site, I want the `agro update` row to name the real override and default so that my override works.",
+      "acceptanceCriteria": [
+        "Before the docs change, `pnpm run check:docs-drift` exits 1 and names `OH_JS_URL` in `docs/lifecycle-commands.md`. The evidence records the command and the exit status.",
+        "`docs/lifecycle-commands.md` row `get-agro.sh` names `AGRO_JS_URL` only and the default `https://github.com/mifunedev/agro/releases/latest/download/agro.js`.",
+        "`scripts/check-docs-drift.mjs` `RETIRED` has one entry that matches `OH_JS_URL`, with an `instead` text that names `AGRO_JS_URL`.",
+        "`scripts/check-docs-drift.test.mjs` asserts that the entry matches `OH_JS_URL` and does not match `AGRO_JS_URL`.",
+        "After the docs change, `pnpm run check:docs-drift`, `pnpm test`, `pnpm run typecheck`, and `pnpm run build` exit 0."
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "Accepted by the advisor on the integrated task branch at 4588ac7. AC1 executed: the advisor ran the final scripts/check-docs-drift.mjs against a git archive of main at bb9b6cf -> exit 1, OH_JS_URL named at docs/lifecycle-commands.md:106. AC2 executed: the row reads \"downloads `AGRO_JS_URL` (default `https://github.com/mifunedev/agro/releases/latest/download/agro.js`)\"; grep -rn OH_JS_URL docs -> exit 1; the worker checked the default against harness self-upgrade.ts:67 and the OH_JS_URL behavior against self-upgrade.test.ts:444. AC3 executed: RETIRED gains one entry /\\bOH_JS_URL\\b/g whose instead names AGRO_JS_URL. AC4 executed: pnpm test -> exit 0 with match and no-match tests. AC5 executed: pnpm install --frozen-lockfile, then check:docs-drift, test, typecheck, build -> exit 0 each.",
+      "dependsOn": [],
+      "files": [
+        "docs/lifecycle-commands.md",
+        "scripts/check-docs-drift.mjs",
+        "scripts/check-docs-drift.test.mjs"
+      ],
+      "commit": "4588ac7"
+    }
+  ]
+}

@@ -200,6 +200,12 @@ export const RETIRED = [
     name: "/home/sandbox/project",
     instead: "the fixed checkout path `/home/sandbox/harness`",
   },
+  {
+    // `agro update` reads AGRO_JS_URL only; OH_JS_URL is ignored.
+    pattern: /\bOH_JS_URL\b/g,
+    name: "OH_JS_URL",
+    instead: "`AGRO_JS_URL` (default https://github.com/mifunedev/agro/releases/latest/download/agro.js)",
+  },
 ];
 
 // A page may name a retired thing in order to say it is retired. Each exemption
