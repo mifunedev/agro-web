@@ -47,7 +47,7 @@ curl -fsSL -o get-agro.sh https://agro.mifune.dev/get-agro.sh
 bash get-agro.sh
 ```
 
-If `agro` is not found after the piped form, add the install directory to the current shell's PATH: `export PATH="$HOME/.local/bin:$PATH"`. Environment overrides: `AGRO_BIN_DIR=<dir>` (install location, default `~/.local/bin`), `AGRO_JS_URL=<url>` (artifact URL), `AGRO_NVM_VERSION=<tag>` (nvm version for the Node install), `AGRO_ASSUME_YES=1` (same as `--yes`); `--yes`/`--no` accept or decline the Node-install prompt. Each `AGRO_<NAME>` falls back to the legacy `OH_<NAME>` spelling; when both are set and differ, the AGRO value wins and a warning names the two keys. There is no source-build fallback, so `get-agro.sh` has no repository or ref override.
+If `agro` is not found after the piped form, add the install directory to the current shell's PATH: `export PATH="$HOME/.local/bin:$PATH"`. Environment overrides: `AGRO_BIN_DIR=<dir>` (install location, default `~/.local/bin`), `AGRO_JS_URL=<url>` (artifact URL), `AGRO_NVM_VERSION=<tag>` (nvm version for the Node install), `AGRO_GITHUB_REPO=<owner>/<repo>` (the repository whose latest GitHub release hosts the artifact, default `mifunedev/agro`), `AGRO_ASSUME_YES=1` (same as `--yes`); `--yes`/`--no` accept or decline the Node-install prompt. `get-agro.sh` reads only the `AGRO_*` names. There is no source-build fallback, so `get-agro.sh` has no ref override.
 
 Upgrade the installed CLI later with `agro update`; it upgrades the running executable through the mechanism that installed it (npm or `get-agro.sh`) and touches no project file. See [lifecycle commands](lifecycle-commands.md#upgrading-the-cli-agro-update).
 
@@ -69,21 +69,7 @@ npm install -g @mifune/openharness   # puts `oh` on your PATH
 npx @mifune/openharness sandbox install docker
 ```
 
-Or bootstrap with `get-oh.sh`, which installs the single self-contained `oh` binary to `~/.local/bin/oh` — no repo clone, and it does not touch an existing `~/.openharness` checkout. If Node.js ≥ 20 is missing, it offers to install nvm + Node 22 and sources it so `oh` works in the same shell:
-
-```bash
-curl -fsSL https://oh.mifune.dev/get-oh.sh | bash
-```
-
-`source <(curl -fsSL https://oh.mifune.dev/get-oh.sh)` installs *and* puts `oh` on the running shell's PATH. After the plain piped form, `export PATH="$HOME/.local/bin:$PATH"` does the same. Review-first alternative:
-
-```bash
-curl -fsSL -o get-oh.sh https://oh.mifune.dev/get-oh.sh
-# Review get-oh.sh in your editor or pager before running it.
-bash get-oh.sh
-```
-
-Environment overrides: `OH_BIN_DIR=<dir>` (install location, default `~/.local/bin`), `OH_JS_URL=<url>` (prebuilt bundle URL), `OH_GITHUB_REPO=<org>/<fork>` / `OH_GITHUB_REF=<ref>` (source for `get-oh.sh`'s build fallback; `get-agro.sh` reads `AGRO_GITHUB_REPO`/`OH_GITHUB_REPO` only to pick the release that hosts its artifacts), `OH_NVM_VERSION=<tag>` (nvm version for the Node install), `--yes`/`--no` (auto-accept/decline the Node-install prompt). `oh update` is the project-payload command, not a self-upgrade: to upgrade the `oh` shim, run `npm install -g @mifune/openharness` again or re-run `get-oh.sh`, or move to `@mifune/agro` and use `agro update`.
+The curl bootstrap installs only `agro`; use [`get-agro.sh`](#get-the-cli-agro). `oh update` is the project-payload command, not a self-upgrade: to upgrade the `oh` shim, run `npm install -g @mifune/openharness` again, or move to `@mifune/agro` and use `agro update`.
 
 ## Create the sandbox
 

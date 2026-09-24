@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "project": "agro-web",
+  "branchName": "task/59-retire-spec-retro-docs",
+  "description": "Remove the retired /spec, /retro, and /wiki compile from the docs and guard the names in check-docs-drift.",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Describe the core chain and guard the retired names",
+      "description": "As a reader of the docs site, I want the docs to describe current skills only so that I follow no retired workflow.",
+      "acceptanceCriteria": [
+        "Before the docs change, `pnpm run check:docs-drift` exits 1 and names each current mention of `/spec` and `/retro` in `docs/glossary.md`, `docs/security-considerations.md`, and `docs/oh-directory-layout.md`. The evidence records the command and the exit status.",
+        "`scripts/check-docs-drift.mjs` `RETIRED` has one entry that matches `/spec`, `/retro`, `/wiki compile`, and `skills/spec/` and `skills/retro/` paths, with an `instead` text that names the core chain (`/prd` → draft PR → `/delegate` → ready PR).",
+        "`scripts/check-docs-drift.test.mjs` asserts that the entry matches each retired shape and does not match a current skill name such as `/prd`, `/delegate`, or `/wiki query`.",
+        "`docs/security-considerations.md` anchors the human merge gate to `https://github.com/mifunedev/agro/blob/development/.agro/skills/git/SKILL.md#ready-for-review`.",
+        "After the docs change, `pnpm run check:docs-drift`, `pnpm test`, and `pnpm run typecheck` exit 0.",
+        "`pnpm run build` exits 0."
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "Accepted by the advisor on the integrated task branch at c6d11de (worker commit 91aaf9e). AC1 executed: the advisor ran the final scripts/check-docs-drift.mjs against a git archive of main at 2c4b852 -> exit 1, 43 hits across the retired /spec, /retro, and get-oh.sh entries (the worker recorded 17 /spec and /retro hits before its rewrite). AC2 executed: RETIRED holds one entry for /spec, /retro, /wiki compile, skills/spec/, skills/retro/, with instead naming the core chain; pnpm test covers it. AC3 executed: pnpm test -> exit 0, including match and no-match cases for /prd, /delegate, /wiki query, and prose. AC4 executed: both merge-gate links point to .agro/skills/git/SKILL.md#ready-for-review on development (worker confirmed the heading with gh api). AC5 executed: check:docs-drift, test, typecheck -> exit 0. AC6 executed: pnpm run build -> exit 0 after US-002 retired the get-oh.sh mirror; before US-002 the build exited 1 on a FATAL for get-oh.sh.",
+      "dependsOn": [],
+      "files": [
+        "docs/glossary.md",
+        "docs/security-considerations.md",
+        "docs/oh-directory-layout.md",
+        "scripts/check-docs-drift.mjs",
+        "scripts/check-docs-drift.test.mjs"
+      ],
+      "commit": "91aaf9e"
+    },
+    {
+      "id": "US-002",
+      "title": "Retire the get-oh.sh mirror and repoint the install docs",
+      "description": "As a reader of the docs site, I want the install docs to use `get-agro.sh` so that the documented install works after the next deploy.",
+      "acceptanceCriteria": [
+        "`scripts/sync-external-scripts.mjs` `SCRIPTS` has no `get-oh.sh` entry, and `scripts/sync-external-scripts.test.mjs` asserts the `get-agro.sh` endpoint only.",
+        "`docs/quickstart.md`, `docs/installation.md`, `docs/intro.md`, and `README.md` name no `get-oh.sh`. Their install commands use `https://oh.mifune.dev/get-agro.sh` or the site's current `get-agro.sh` URL, with the flags and environment variables that the harness `.agro/scripts/get-agro.sh` accepts.",
+        "`pnpm run check:docs-drift`, `pnpm test`, `pnpm run typecheck`, and `pnpm run build` exit 0."
+      ],
+      "priority": 2,
+      "passes": true,
+      "notes": "Accepted by the advisor on the integrated task branch at c6d11de (worker commits aea8e78 and repair c6d11de). AC1 executed: SCRIPTS mirrors get-agro.sh only; pnpm test -> exit 0 with the endpoint test asserting static/get-agro.sh only. AC2 executed: grep for get-oh over quickstart.md, installation.md, intro.md, README.md, security-considerations.md -> exit 1; install commands use https://agro.mifune.dev/get-agro.sh; the worker corrected two false claims about get-agro.sh (OH_* fallback, no repo override) against the harness script. AC3 executed: pnpm install --frozen-lockfile, then check:docs-drift, test, typecheck, build -> exit 0 each. One bounded repair: the last get-oh.sh line in security-considerations.md and a RETIRED entry with tests for get-oh.sh.",
+      "dependsOn": [
+        "US-001"
+      ],
+      "files": [
+        "scripts/sync-external-scripts.mjs",
+        "scripts/sync-external-scripts.test.mjs",
+        "docs/quickstart.md",
+        "docs/installation.md",
+        "docs/intro.md",
+        "README.md"
+      ],
+      "commit": "c6d11de"
+    }
+  ]
+}

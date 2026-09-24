@@ -27,7 +27,6 @@ function writeScripts(dir, marker) {
   const scripts = join(dir, ".agro", "scripts");
   mkdirSync(scripts, { recursive: true });
   writeFileSync(join(scripts, "get-agro.sh"), `#!/bin/sh\necho ${marker}-agro\n`);
-  writeFileSync(join(scripts, "get-oh.sh"), `#!/bin/sh\necho ${marker}-oh\n`);
 }
 
 function makeOrigin() {
@@ -71,11 +70,12 @@ function stubFetch(origin, resolvedSha) {
   return { fetchImpl, requested };
 }
 
-test("Pages script endpoints stay get-agro.sh and get-oh.sh, with no install.sh", () => {
+test("the only Pages script endpoint is get-agro.sh", () => {
   assert.deepEqual(
     SCRIPTS.map((script) => script.dest),
-    ["static/get-agro.sh", "static/get-oh.sh"],
+    ["static/get-agro.sh"],
   );
+  assert.ok(SCRIPTS.every((script) => !script.src.includes("get-oh.sh")));
   assert.ok(SCRIPTS.every((script) => !script.dest.includes("install.sh")));
   assert.ok(SCRIPTS.every((script) => !script.src.includes("install.sh")));
 });
@@ -106,9 +106,8 @@ test("downloads scripts by the resolved commit, not a moving branch URL", async 
     assert.ok(requested.every((url) => !url.includes("/main/")));
     assert.ok(requested.some((url) => url.includes(`/${shaA}/`)));
     const agro = readFileSync(join(destRoot, "static/get-agro.sh"), "utf8");
-    const oh = readFileSync(join(destRoot, "static/get-oh.sh"), "utf8");
     assert.equal(agro, "#!/bin/sh\necho PINNED_A-agro\n");
-    assert.equal(oh, "#!/bin/sh\necho PINNED_A-oh\n");
+    assert.equal(existsSync(join(destRoot, "static/get-oh.sh")), false);
     assert.ok(logs.some((line) => line.includes(shaA)));
     assert.ok(logs.every((line) => !line.includes("MOVING_REF")));
     assert.equal(rawBaseFor(shaA), `https://raw.githubusercontent.com/mifunedev/agro/${shaA}`);
@@ -156,7 +155,6 @@ test("stale-asset fallback cannot satisfy release verification", async () => {
   try {
     mkdirSync(join(destRoot, "static"), { recursive: true });
     writeFileSync(join(destRoot, "static/get-agro.sh"), "#!/bin/sh\necho STALE\n");
-    writeFileSync(join(destRoot, "static/get-oh.sh"), "#!/bin/sh\necho STALE\n");
     const fetchImpl = async () => {
       throw Object.assign(new Error("ECONNRESET"), { code: "ECONNRESET" });
     };
