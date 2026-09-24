@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "project": "agro-web",
+  "branchName": "task/59-retire-spec-retro-docs",
+  "description": "Remove the retired /spec, /retro, and /wiki compile from the docs and guard the names in check-docs-drift.",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Describe the core chain and guard the retired names",
+      "description": "As a reader of the docs site, I want the docs to describe current skills only so that I follow no retired workflow.",
+      "acceptanceCriteria": [
+        "Before the docs change, `pnpm run check:docs-drift` exits 1 and names each current mention of `/spec` and `/retro` in `docs/glossary.md`, `docs/security-considerations.md`, and `docs/oh-directory-layout.md`. The evidence records the command and the exit status.",
+        "`scripts/check-docs-drift.mjs` `RETIRED` has one entry that matches `/spec`, `/retro`, `/wiki compile`, and `skills/spec/` and `skills/retro/` paths, with an `instead` text that names the core chain (`/prd` \u2192 draft PR \u2192 `/delegate` \u2192 ready PR).",
+        "`scripts/check-docs-drift.test.mjs` asserts that the entry matches each retired shape and does not match a current skill name such as `/prd`, `/delegate`, or `/wiki query`.",
+        "`docs/security-considerations.md` anchors the human merge gate to `https://github.com/mifunedev/agro/blob/development/.agro/skills/git/SKILL.md#ready-for-review`.",
+        "After the docs change, `pnpm run check:docs-drift`, `pnpm test`, and `pnpm run typecheck` exit 0.",
+        "`pnpm run build` exits 0."
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/glossary.md",
+        "docs/security-considerations.md",
+        "docs/oh-directory-layout.md",
+        "scripts/check-docs-drift.mjs",
+        "scripts/check-docs-drift.test.mjs"
+      ]
+    }
+  ]
+}
