@@ -182,6 +182,13 @@ export const RETIRED = [
     instead: "nothing — the package is no longer part of the harness; see docs/harnesses/pi.md for the default Pi packages",
   },
   {
+    // /spec, /retro, and /wiki compile are retired; the core chain replaced them.
+    pattern: /(?<![\w./-])\/(?:spec|retro)\b(?![\w-])|\/wiki compile\b|\bskills\/(?:spec|retro)\//g,
+    name: "a retired /spec, /retro, or /wiki compile skill",
+    instead:
+      "the core chain: `/prd` → draft PR → `/delegate` → ready PR; the advisor accepts each story in `prd.json`, a human merges, and each plan's `## Lessons` records lessons",
+  },
+  {
     // The checkout path is fixed at /home/sandbox/harness.
     pattern: /\/home\/sandbox\/project\b/g,
     name: "/home/sandbox/project",

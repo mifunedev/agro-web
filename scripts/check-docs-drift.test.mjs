@@ -54,6 +54,46 @@ test("no page is exempted from the pi-autoresearch token", () => {
   assert.equal(ALLOW.filter((a) => a.token === "pi-autoresearch").length, 0);
 });
 
+const RETIRED_SKILLS = "a retired /spec, /retro, or /wiki compile skill";
+
+test("the retired-skills entry names the core chain", () => {
+  const { instead } = entry(RETIRED_SKILLS);
+  assert.match(instead, /`\/prd` → draft PR → `\/delegate` → ready PR/);
+});
+
+test("the retired-skills pattern matches the shapes it must catch", () => {
+  const { pattern } = entry(RETIRED_SKILLS);
+  for (const line of [
+    "the `/spec` pipeline reads and writes",
+    "such as the `/spec execute` implementation cycle",
+    "`/architect`, `/spec`, `/audit`, `/retro`, and",
+    "run /retro after the merge",
+    "`/wiki query`, `/wiki lint`, `/wiki compile`, and more",
+    "Source: [`.oh/skills/spec/references/execute.md`](https://example.com)",
+    "see .agro/skills/retro/SKILL.md",
+  ]) {
+    assert.ok(matches(pattern, line), `expected a match in: ${line}`);
+  }
+});
+
+test("the retired-skills pattern does not flag current skills or prose", () => {
+  const { pattern } = entry(RETIRED_SKILLS);
+  for (const line of [
+    "`/prd` writes the plan and `/delegate` runs the stories",
+    "`/wiki query` and `/wiki lint` read the knowledge base",
+    "write a spec, then hold a retrospective",
+    "the OpenAPI /specification endpoint and /spec-kit",
+    "https://example.com/spec and docs/spec/overview.md",
+    "`/retrospective` is not a skill",
+  ]) {
+    assert.ok(!matches(pattern, line), `expected no match in: ${line}`);
+  }
+});
+
+test("no page is exempted from the retired-skills token", () => {
+  assert.equal(ALLOW.filter((a) => a.token === RETIRED_SKILLS).length, 0);
+});
+
 test("importing the checker has no side effects and running it directly passes", () => {
   const run = spawnSync(process.execPath, [SCRIPT], { encoding: "utf8" });
   assert.equal(run.status, 0, run.stderr);

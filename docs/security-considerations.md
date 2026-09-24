@@ -250,7 +250,7 @@ expose to whichever trust level you choose.
 
 No agent merges its own work to the trunk.
 
-- **Doctrine:** [the `/spec` workflow contract](https://github.com/mifunedev/agro/blob/main/.oh/skills/spec/SKILL.md#workflow-contract) — the canonical path ends `… → merge (human) → reset|clean`, and the human alone merges. The runner resets; it never merges.
+- **Doctrine:** [the `/git` task PR procedure](https://github.com/mifunedev/agro/blob/development/.agro/skills/git/SKILL.md#ready-for-review) — the agent path ends at `gh pr ready`, and the human alone merges. The agent cleans up only after `gh pr view` reports `MERGED`; it never merges.
 - **No unattended merger exists:** the `autopilot` self-improvement loop and its rate-capping preflight were removed in 0.4.0. No scheduled agent now opens or promotes PRs unattended, so there is no automated path to a merge at all.
 - **RECOMMENDED (hard gate):** the ultimate enforcement of "no agent merges" is **GitHub branch protection** (required reviews / restricted merge) on `development`/`main`. That lives in repo settings, not this tree — configure it. Without it, "no auto-merge" rests on the agents' skill definitions, not a server-side block.
 
@@ -299,4 +299,4 @@ exploit publicly.
 ## Related
 
 - [Contributing](contributing.md) · [Connecting to the sandbox](connecting.md) · [Installation](installation.md)
-- [The `/spec` workflow contract](https://github.com/mifunedev/agro/blob/main/.oh/skills/spec/SKILL.md#workflow-contract) — the human merge gate in context.
+- [The `/git` task PR procedure](https://github.com/mifunedev/agro/blob/development/.agro/skills/git/SKILL.md#ready-for-review) — the human merge gate in context.
