@@ -118,6 +118,22 @@ test("the get-oh.sh pattern does not flag get-agro.sh", () => {
   }
 });
 
+test("the OH_JS_URL entry names AGRO_JS_URL", () => {
+  assert.match(entry("OH_JS_URL").instead, /\bAGRO_JS_URL\b/);
+});
+
+test("the OH_JS_URL pattern matches OH_JS_URL and not AGRO_JS_URL", () => {
+  const { pattern } = entry("OH_JS_URL");
+  assert.ok(matches(pattern, "downloads `OH_JS_URL` into the same directory"));
+  assert.ok(matches(pattern, "OH_JS_URL=https://o.example/oh.js agro update"));
+  for (const line of [
+    "downloads `AGRO_JS_URL` into the same directory",
+    "AGRO_JS_URL=https://a.example/agro.js agro update",
+  ]) {
+    assert.ok(!matches(pattern, line), `expected no match in: ${line}`);
+  }
+});
+
 test("importing the checker has no side effects and running it directly passes", () => {
   const run = spawnSync(process.execPath, [SCRIPT], { encoding: "utf8" });
   assert.equal(run.status, 0, run.stderr);
