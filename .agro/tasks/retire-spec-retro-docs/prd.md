@@ -19,6 +19,18 @@ Issue: [#59](https://github.com/mifunedev/agro-web/issues/59)
 - [ ] After the docs change, `pnpm run check:docs-drift`, `pnpm test`, and `pnpm run typecheck` exit 0.
 - [ ] `pnpm run build` exits 0.
 
+### US-002: Retire the get-oh.sh mirror and repoint the install docs
+
+**Description:** As a reader of the docs site, I want the install docs to use `get-agro.sh` so that the documented install command works after the next deploy.
+
+The operator added this story during execution. mifunedev/agro#1136 removed `.agro/scripts/get-oh.sh`. `scripts/sync-external-scripts.mjs` still mirrors that file, so `pnpm run build` exits 1, and the `main` deploy fails since 2026-09-23.
+
+**Acceptance Criteria:**
+
+- [ ] `scripts/sync-external-scripts.mjs` `SCRIPTS` has no `get-oh.sh` entry, and `scripts/sync-external-scripts.test.mjs` asserts the `get-agro.sh` endpoint only.
+- [ ] `docs/quickstart.md`, `docs/installation.md`, `docs/intro.md`, and `README.md` name no `get-oh.sh`. Their install commands use `https://oh.mifune.dev/get-agro.sh` or the site's current `get-agro.sh` URL, with the flags and environment variables that the harness `.agro/scripts/get-agro.sh` accepts.
+- [ ] `pnpm run check:docs-drift`, `pnpm test`, `pnpm run typecheck`, and `pnpm run build` exit 0.
+
 ## Summary
 
 `mifunedev/agro` retired `/spec`, `/retro`, and `/wiki compile` in mifunedev/agro#1156 (PR mifunedev/agro#1157). The core chain is `/prd` → draft PR → `/delegate` → ready PR. Each plan's `## Lessons` section is the only lesson record.
