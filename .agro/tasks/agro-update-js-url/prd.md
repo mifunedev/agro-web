@@ -75,4 +75,4 @@ None.
 
 ## Lessons
 
-Filled by the advisor before undraft.
+None. The story passed on its first commit.
