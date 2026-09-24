@@ -189,6 +189,12 @@ export const RETIRED = [
       "the core chain: `/prd` → draft PR → `/delegate` → ready PR; the advisor accepts each story in `prd.json`, a human merges, and each plan's `## Lessons` records lessons",
   },
   {
+    // The harness removed get-oh.sh; get-agro.sh is the only curl bootstrap.
+    pattern: /\bget-oh\.sh\b/g,
+    name: "get-oh.sh",
+    instead: "`get-agro.sh` — https://agro.mifune.dev/get-agro.sh",
+  },
+  {
     // The checkout path is fixed at /home/sandbox/harness.
     pattern: /\/home\/sandbox\/project\b/g,
     name: "/home/sandbox/project",

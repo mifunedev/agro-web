@@ -94,6 +94,30 @@ test("no page is exempted from the retired-skills token", () => {
   assert.equal(ALLOW.filter((a) => a.token === RETIRED_SKILLS).length, 0);
 });
 
+test("the get-oh.sh entry names get-agro.sh and its URL", () => {
+  assert.match(entry("get-oh.sh").instead, /https:\/\/agro\.mifune\.dev\/get-agro\.sh/);
+});
+
+test("the get-oh.sh pattern matches the name in prose and in a URL", () => {
+  const { pattern } = entry("get-oh.sh");
+  for (const line of [
+    "the `oh` CLI / `get-oh.sh` path",
+    "curl -fsSL https://oh.mifune.dev/get-oh.sh | bash",
+  ]) {
+    assert.ok(matches(pattern, line), `expected a match in: ${line}`);
+  }
+});
+
+test("the get-oh.sh pattern does not flag get-agro.sh", () => {
+  const { pattern } = entry("get-oh.sh");
+  for (const line of [
+    "curl -fsSL https://agro.mifune.dev/get-agro.sh | bash",
+    "`get-agro.sh` installs to `~/.local/bin/agro`",
+  ]) {
+    assert.ok(!matches(pattern, line), `expected no match in: ${line}`);
+  }
+});
+
 test("importing the checker has no side effects and running it directly passes", () => {
   const run = spawnSync(process.execPath, [SCRIPT], { encoding: "utf8" });
   assert.equal(run.status, 0, run.stderr);
