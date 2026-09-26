@@ -5,26 +5,121 @@ title: "Harnesses Overview"
 
 # Harnesses Overview
 
-Open Harness installs no agent CLI at boot. A harness enters the sandbox only when you run `oh harness install <id>`. **Claude Code**, **Codex**, **Pi**, **OpenCode**, **Hermes**, and **Grok Build** install this way. The install lands in `~/.local` inside the persistent home volume, so it survives a container recreate. No harness is baked into the image. **T3 Code** is on demand: the `/t3` skill (or `npx t3`) fetches it and serves a browser UI on port 3773. Inside the sandbox, run `oh tool install herdr`, then run `herdr`, then launch whichever agent you prefer from its panes and switch between them at any time. Reserve tmux for Open Harness's managed/headless cron, gateway, and watchdog infrastructure.
+AGRO installs no agent CLI at boot. A harness enters the sandbox only when you run `agro harness install <id>`. **Claude Code**, **Codex**, **Pi**, **OpenCode**, **Hermes**, and **Grok Build** install this way. The install lands in `~/.local` inside the persistent home volume, so it survives a container recreate. No harness is baked into the image. **T3 Code** is on demand: the `/t3` skill (or `npx t3`) fetches it and serves a browser UI on port 3773. Inside the sandbox, run `agro tool install herdr`, then run `herdr`, then launch whichever agent you prefer from its panes and switch between them at any time. Reserve tmux for AGRO's managed/headless gateway, tunnel, and detached cron-fire infrastructure; systemd supervises the cron runtime itself.
 
-Open Harness is the harness; the **agent** is your call. To go beyond the catalog, install via `npm` / `pip` / `cargo` inside the sandbox or edit the Dockerfile. For Pi+Slack specifically, the recommended path is the `pi-messenger-bridge` npm package — see [Slack integration](../integrations/slack.md). The product surface is one developer, one project, one agent — not racing or stacking multiple CLIs against each other.
+AGRO is the harness; the **agent** is your call. To go beyond the catalog, install via `npm` / `pip` / `cargo` inside the sandbox or edit the Dockerfile. For Pi+Slack specifically, the recommended path is the `pi-messenger-bridge` npm package — see [Slack integration](../integrations/slack.md). The product surface is one developer, one project, one agent — not racing or stacking multiple CLIs against each other.
 
 ## Installing a harness
 
-`oh harness install <id>` is the only door. It probes the running sandbox,
+`agro harness install <id>` is the only door. It probes the running sandbox,
 installs the CLI into `~/.local` in the persistent home volume, and reports. It
-reads and writes no `oh.json` field. It never rebuilds or restarts the sandbox.
+writes no project `agro.json` field. It never rebuilds or restarts the sandbox.
 
 ```bash
-oh harness list                 # what exists, and what is installed
-oh harness install opencode     # install into the running sandbox
-oh harness status hermes        # one harness
+agro harness list                 # what exists, and what is installed
+agro harness install opencode     # install into the running sandbox
+agro harness uninstall opencode   # remove it again
+agro harness status hermes        # one harness
 ```
 
-The command needs a running sandbox. If the sandbox is not running, it says so
-and exits non-zero. Start the sandbox with `oh sandbox install docker`, then re-run it.
+### Installing on the host
 
-`oh harness` works from inside the sandbox too. There it installs into the
+When the sandbox is not running, `install` offers a host installation. A host
+with no container runtime takes the same path: `agro` treats an unspawnable
+runtime as an unreachable sandbox and installs on the host. The host path needs
+no Docker.
+
+An interactive run asks for confirmation. Answer `n` to install nothing; the
+command then exits non-zero and points at `agro sandbox`. A non-interactive run
+needs `--host` or `--path`. Without either flag it keeps the refusal, so scripts
+see the same exit code as before.
+
+The host path uses two distinct locations.
+
+| Location | What it holds | How you choose it |
+|---|---|---|
+| Harness root | An existing AGRO workspace, which carries the control plane | `--workspace <name>` or `--path <dir>`, else the recorded `harnessRoot`, else `~/.agro/workspaces/harness` |
+| Install prefix | The harness binaries, at `<prefix>/bin` | Always `~/.local` for the invoking user |
+
+The command creates no workspace. Create the implicit workspace first with
+`agro workspace create`, or create a named workspace with `agro workspace create <name>` — see
+[Lifecycle commands → Host workspaces](../lifecycle-commands.md#host-workspaces-agro-workspace).
+When the resolved harness root holds no git checkout, the command exits 1. The
+refusal lists every workspace that exists and names `agro workspace create`.
+
+The command installs the harness into `~/.local`. It writes nothing into the
+workspace, so the checkout stays clean. Every harness lands in the same normal
+per-user prefix. If `~/.local/bin` is not on your `PATH`, the command prints the
+`export PATH` line to add.
+
+```bash
+agro workspace create                               # create the implicit harness workspace
+agro workspace create acme                          # create a named workspace first
+agro harness install claude-code --workspace acme   # install from ~/.agro/workspaces/acme
+agro harness install claude-code --host             # install from the resolved default root
+agro harness install claude-code --path /srv/agro   # install from /srv/agro, outside the registry
+```
+
+Work from the harness root. A harness started outside an AGRO checkout finds no
+`AGENTS.md`, no `.agro/skills/`, no hooks and no task state, so `cd` into the
+harness root before you start the harness. The command prints the launch line as
+its last line, in the form `cd <root> && <binary>`. For a harness that declares a
+bypass-permissions flag, the line carries that flag, because a first-run
+folder-trust prompt can ignore the project `defaultMode`.
+
+A successful install records two things in `~/.agro/config.json`: `harnessRoot`,
+the selected workspace root, and a `hostHarnesses` entry for the harness carrying the
+prefix and the binary it created. Neither is recorded when the install fails.
+
+A host install selects a workspace with `--workspace <name>` or `--path <dir>`.
+A successful install records that root as `harnessRoot`. The recorded root is
+sticky: every later host install reports the recorded root and selects it again,
+without asking for a name. Pass `--workspace <name>` or `--path <dir>` to select
+another workspace; a successful install records the new value.
+
+Harness root precedence:
+
+1. `--workspace <name>` or `--path <dir>` — pass one, not both
+2. `harnessRoot` in `~/.agro/config.json`
+3. `~/.agro/workspaces/harness`
+
+Each candidate must already hold a git checkout. The command clones nothing.
+
+A host workspace is a named registry entry, exactly like a sandbox:
+
+```
+~/.agro/
+├── config.json           host config
+├── sandboxes/  <name>/   sandbox registry
+└── workspaces/ <name>/   host workspace registry
+```
+
+`agro workspace create <name>` writes that entry, and no other command writes
+one. The name becomes a path segment, so it obeys the sandbox name rule:
+lowercase letters, digits and dashes, starting with a letter or a digit.
+`agro workspace create` refuses any other name and creates nothing.
+`agro workspace list` prints every entry and marks the recorded `harnessRoot`.
+
+The state home itself is never the harness root. A checkout at `~/.agro` or
+`~/.oh` makes `~` resolve as a project root with two generations, which blocks
+every `agro` command run from `~`.
+
+The host path refuses in three cases, and it moves nothing by itself.
+
+| Case | What it says |
+|---|---|
+| `~/.oh` exists and `~/.agro` does not | host state now lives in `~/.agro`; migrate first with `agro migrate --home` |
+| `~/.oh` and `~/.agro` both exist | the state home is split; merge it with `agro migrate --home` |
+| The resolved harness root is `~/.oh` or `~/.agro` itself | move that directory out, for example `mv ~/.agro ~/agro` |
+
+Before it installs, the command runs `link-providers.sh --init` in the harness
+root, exactly as the sandbox entrypoint does on every boot. A failure fails the
+install and names the command to run.
+
+An `on-demand` harness installs nothing on the host. The command says so and
+exits 0.
+
+`agro harness` works from inside the sandbox too. There it installs into the
 environment you are already in, and `list`/`status` report the CLIs actually
 present rather than `?`. See
 [Lifecycle commands → Where you are standing when you type `agro`](../lifecycle-commands.md#where-you-are-standing-when-you-type-agro).
@@ -34,32 +129,95 @@ Flags:
 | Flag | Effect |
 |---|---|
 | `--json` | `list` and `status` only: machine-readable output |
+| `--host` | `install` only: install on the host when the sandbox is not running |
+| `--workspace <name>` | `install` only: select the existing host workspace `~/.agro/workspaces/<name>`; implies `--host` |
+| `--path <dir>` | `install` only: select an existing harness root outside the registry; implies `--host` |
+| `--force` | `uninstall` only: remove on the host with no recorded install |
+
+`list` and `status` reject `--host` and `--path`. When the sandbox is not
+running they probe the host install prefix `~/.local`, but only once a harness
+root holds a workspace or that prefix exists. They never clone. Each row carries
+a `location` of `sandbox`, `host`, or `unknown`, and the table names the probed
+prefix.
+
+## Updating a harness
+
+Two paths update a harness in the sandbox. Both land in `/home/sandbox/.local`
+in the persistent home volume.
+
+```bash
+agro harness install claude-code   # re-run the door; installs the latest version
+claude update                      # the harness updates itself
+```
+
+The harness self-update path works because npm's global prefix in the sandbox is
+`/home/sandbox/.local`, not `/usr/local`. The sandbox image exports
+`NPM_CONFIG_PREFIX="$NPM_USER_PREFIX"`, so a bare `npm install -g` from a
+harness updater writes to the home volume and the update survives a container
+recreate.
+
+Never run a harness update through `sudo`. The harness binaries are not on
+sudo's `secure_path`, so `sudo claude update` reports `command not found`. A
+root-owned global install would also land outside the home volume and disappear
+on the next recreate.
+
+A container created before this prefix existed picks it up at the next boot: the
+entrypoint adds the export to the home mount's shell profile.
+
+## Removing a harness
+
+`agro harness uninstall <id>` undoes an install. It resolves its target exactly
+as `install` does: the running sandbox when one is reachable, the host when none
+is.
+
+In the sandbox it removes from `/home/sandbox/.local` with no further checks,
+because AGRO owns that prefix outright.
+
+On the host it removes only what it recorded. The `hostHarnesses` entry written
+by a successful host install names the prefix, and `uninstall` removes from that
+prefix — never from a freshly computed one, so moving your home directory cannot
+make it miss or hit the wrong path. With no record it refuses and exits non-zero,
+because the binary may be one you installed yourself. `--force` removes from
+`~/.local` anyway. A successful removal deletes the record; a failed one leaves
+it in place.
+
+An interactive run confirms the harness and the exact prefix before it removes
+anything. A non-interactive run proceeds, so scripts keep working. A harness that
+is not installed reports so and exits 0 without removing anything, and clears a
+stale record if one exists. An `on-demand` harness reports that there is nothing
+to remove and exits 0.
+
+```bash
+agro harness uninstall opencode           # sandbox if running, else the host record
+agro harness uninstall opencode --force   # host removal with no record, from ~/.local
+```
 
 Each catalog entry has a `kind`. `installable` harnesses install through the
 verb. `on-demand` harnesses (T3 Code) are fetched by `npx` at each run and are
 never installed. There is no other install path, and no configuration key
 selects one.
 
-An install persists because the home volume persists. `oh destroy` removes that
+An install persists because the home volume persists. `agro destroy` removes that
 volume, and the install with it.
 
 ## Supported agents
 
 | Agent | Role | Start command | Source |
 |---|---|---|---|
-| [Claude Code](./claude-code.md) | Anthropic's terminal coding agent | `claude` | `oh harness install claude-code` |
-| [Codex](./codex.md) | OpenAI's CLI coding agent | `codex` | `oh harness install codex` |
-| [OpenCode](./opencode.md) | Terminal coding agent with OpenAI OAuth support | `opencode` | `oh harness install opencode` |
-| [Pi](./pi.md) | Lightweight, customizable agent | `pi` | `oh harness install pi` |
-| [Hermes](./hermes.md) | Nous Research's self-improving terminal agent | `hermes` | `oh harness install hermes` |
-| [Grok Build](./grok-build.md) | xAI's proprietary Grok Build terminal agent | `grok` | `oh harness install grok-build` |
-| [Muse Code](./muse-code.md) | Meta's terminal coding agent | `muse` | `oh harness install muse-code` |
+| [Claude Code](./claude-code.md) | Anthropic's terminal coding agent | `claude` | `agro harness install claude-code` |
+| [Codex](./codex.md) | OpenAI's CLI coding agent | `codex` | `agro harness install codex` |
+| [OpenCode](./opencode.md) | Terminal coding agent with OpenAI OAuth support | `opencode` | `agro harness install opencode` |
+| [Pi](./pi.md) | Lightweight, customizable agent | `pi` | `agro harness install pi` |
+| [Hermes](./hermes.md) | Nous Research's self-improving terminal agent | `hermes` | `agro harness install hermes` |
+| [Grok Build](./grok-build.md) | xAI's proprietary Grok Build terminal agent | `grok` | `agro harness install grok-build` |
+| [Muse Code](./muse-code.md) | Meta's terminal coding agent | `muse` | `agro harness install muse-code` |
+| [Antigravity CLI](./antigravity-cli.md) | Google's terminal coding agent | `agy` | `agro harness install antigravity-cli` |
 | [T3 Code](./t3code.md) | Browser UI over Claude/Codex/OpenCode (port 3773) | `/t3` or `npx t3` | on demand, no install |
 
 ## Verifying installation
 
 ```bash
-# Each CLI is present only after `oh harness install <id>`:
+# Each CLI is present only after `agro harness install <id>`:
 claude --version
 codex --version
 pi --version
@@ -67,13 +225,14 @@ opencode --version
 hermes --version
 grok --version
 muse --version
+agy --version
 
 npx t3 --version        # T3 Code — on demand, fetched by npx
 ```
 
 ## Authentication
 
-Install a harness with `oh harness install <id>`, then authenticate it. Authenticate at least one harness before use:
+Install a harness with `agro harness install <id>`, then authenticate it. Authenticate at least one harness before use:
 
 - **Claude Code**: run `claude` and follow the OAuth prompt (see [Claude Code](./claude-code.md)).
 - **Codex**: run `codex login` (see [Codex](./codex.md)).
@@ -82,6 +241,7 @@ Install a harness with `oh harness install <id>`, then authenticate it. Authenti
 - **Hermes**: run `hermes setup` (see [Hermes](./hermes.md)).
 - **Muse Code**: run `muse login` inside the sandbox, or provide `META_API_KEY` to the launching process (see [Muse Code](./muse-code.md)).
 - **Grok Build**: run `grok login --device-auth` for headless/remote auth, `grok login` for interactive OAuth, or set `XAI_API_KEY` as a fallback (see [Grok Build](./grok-build.md)). Cached `~/.grok/auth.json` takes precedence over `XAI_API_KEY`.
+- **Antigravity CLI**: run `agy` and complete Google Sign-In; a remote sandbox prints an authorization URL and accepts a pasted code (see [Antigravity CLI](./antigravity-cli.md)). AGRO has not yet validated login inside the sandbox.
 - **T3 Code**: authenticate one of Claude / Codex / OpenCode first, then run `/t3` (or `npx t3`) and open the printed pairing URL (see [T3 Code](./t3code.md)).
 
 ## Default surfaces
@@ -91,7 +251,7 @@ Two optional surfaces cover most day-to-day use:
 - **Pi+Slack** — chat with the agent from Slack instead of the terminal.
 - **T3 Code** — browser UI on port `3773` driving Claude / Codex / OpenCode.
 
-Each runs in its own named tmux session per [`.oh/skills/t3/references/sandbox-processes.md`](https://github.com/mifunedev/agro/blob/development/.oh/skills/t3/references/sandbox-processes.md). For the two browser surfaces, open them in **VS Code's Simple Browser** (`Ctrl+Shift+P` → `Simple Browser: Show`; `Cmd+Shift+P` on macOS) so the live UI sits in a tab next to the code you're editing.
+Each runs in its own named tmux session per [`.agro/skills/t3/references/sandbox-processes.md`](https://github.com/mifunedev/agro/blob/development/.agro/skills/t3/references/sandbox-processes.md). For the two browser surfaces, open them in **VS Code's Simple Browser** (`Ctrl+Shift+P` → `Simple Browser: Show`; `Cmd+Shift+P` on macOS) so the live UI sits in a tab next to the code you're editing.
 
 ### Pi+Slack
 
