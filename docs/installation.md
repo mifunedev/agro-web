@@ -377,13 +377,54 @@ system path is unwritable from a running sandbox. Consequences worth knowing:
 | Grok Build | `grok` | xAI's proprietary Grok Build CLI (`@xai-official/grok@0.2.39`, Node >=20) | `agro harness install grok-build` |
 | T3 Code | `npx t3` | Browser UI over Claude/Codex/OpenCode | on demand, no install |
 
-Tools follow the same rule. `herdr`, `cloudflared`, `agent-browser`, and
-`tailscale` are `kind: "installable"` and enter the sandbox only through
-`agro tool install <name>`. `gh` and the Docker CLI are `kind: "baked-in"`: they
+Tools follow the same rule. `herdr`, `cloudflared`, `agent-browser`,
+`tailscale`, and `code-server` are `kind: "installable"` and enter the sandbox only
+through `agro tool install <name>`. `gh` and the Docker CLI are `kind: "baked-in"`: they
 are in the image, and `agro tool install` refuses them. Every install is
 idempotent, and none needs an image rebuild. `agro tool install agent-browser`
 downloads about 1 GB, so it asks for confirmation first; `--yes` accepts that
 download in a non-interactive run and changes nothing else.
+
+When no sandbox is reachable, `agro tool install` and `agro tool uninstall` act on
+the host, with two limits. First, each tool declares whether it installs on the
+host. `agent-browser`, `herdr`, `cloudflared`, `microsandbox`, `tailscale`,
+`code-server`, `docker-engine`, and `desktop` do. `gh` and the Docker CLI do not, because
+the image provides them. Second, a host install needs Linux, because every tool
+installer is Debian-specific; on any other platform the command refuses and names
+the platform. A host install needs an existing workspace — `--path <dir>`, then
+`harnessRoot` in `~/.agro/config.json`, then `~/.agro/workspaces/harness` — and
+exits 1 when none resolves. It records the installed id under `hostTools` in
+`~/.agro/config.json`. `agro tool uninstall` removes only what that record names;
+`--force` removes from `~/.local` without a record.
+
+Most host tools install into `~/.local` for the invoking user. `docker-engine`
+and `desktop` are root-level: they install system packages as root.
+`agro tool list` marks them `(root)`.
+
+| Tool | Host install | Level | Sandbox |
+|------|--------------|-------|---------|
+| `code-server` | pinned, checksum-verified release in `~/.local/lib/code-server-<version>`, linked from `~/.local/bin/code-server` | invoking user | installs into `~/.local` |
+| `docker-engine` | Docker Engine and the Compose plugin from Docker's apt repository for Ubuntu; adds the invoking user to the `docker` group | root | refused; names `access.dockerSocket` |
+| `desktop` | XFCE and XRDP, plus system Tailscale from Tailscale's apt repository; serves TCP 3389 only through Tailscale | root | refused |
+
+When you are not root, a root-level install runs its installer through `sudo -n`.
+When `sudo -n true` fails, the command exits 1 and changes nothing. The message
+names `<id>` and passwordless `sudo`.
+`docker-engine` and `desktop` install on the host only. Run
+`agro tool install docker-engine --host` or `agro tool install desktop --host`.
+`agro tool uninstall` refuses both. To remove `docker-engine` or `desktop`, see
+[Remove a root-level tool](#remove-a-root-level-tool).
+After a `docker-engine` install, log in again to use the `docker` group.
+
+To use the desktop:
+
+1. Run `agro tool install desktop --host`.
+2. Run `sudo tailscale up`, and sign in to your tailnet.
+3. Run `sudo passwd <user>` to set the password that XRDP asks for.
+4. Connect an RDP client to `<tailscale-ip>:3389`. Get the address with
+   `tailscale ip -4`.
+
+The desktop install changes no SSH firewall rule and sets no password.
 
 Installing `tailscale` places the `tailscale` and `tailscaled` binaries in
 `~/.local/bin` and nothing more. It starts no daemon and joins no tailnet.
@@ -393,6 +434,90 @@ userspace-networking mode and runs `tailscale up` interactively — see
 Its node identity and daemon state live in `~/.tailscale`, inside the single
 `/home/sandbox` mount, so the node does not re-authenticate on every container
 recreate.
+
+#### Remove a root-level tool
+
+`agro tool uninstall docker-engine` and `agro tool uninstall desktop` exit 1 and
+change nothing. `agro` does not remove system packages that it installed as root,
+because other software can depend on those packages. Run the steps below on the
+host to remove a root-level tool by hand.
+
+To remove `docker-engine`:
+
+1. Remove the Docker packages:
+
+   ```bash
+   sudo apt-get purge -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+   ```
+
+2. Remove Docker's apt repository and key, then refresh the package index:
+
+   ```bash
+   sudo rm -f /etc/apt/sources.list.d/docker.list /etc/apt/keyrings/docker.asc
+   sudo apt-get update
+   ```
+
+3. Remove your user from the `docker` group. Log in again to apply the change.
+
+   ```bash
+   sudo gpasswd -d "$USER" docker
+   ```
+
+4. **Warning:** `apt-get purge` does not delete `/var/lib/docker`. The directory
+   `/var/lib/docker` holds every image, container, and volume on the host. The next command deletes
+   every image, container, and volume. To keep that data, skip this step.
+
+   ```bash
+   sudo rm -rf /var/lib/docker /var/lib/containerd
+   ```
+
+To remove `desktop`:
+
+1. Stop XRDP before you remove the firewall rule. TCP 3389 then stays closed.
+
+   ```bash
+   sudo systemctl disable --now xrdp
+   ```
+
+2. Remove the desktop packages:
+
+   ```bash
+   sudo apt-get purge -y xrdp xorgxrdp xfce4 xfce4-goodies
+   ```
+
+3. Remove the packages that only the desktop needed. Read the list that
+   `apt-get` prints. Confirm only when the list holds no package that you use.
+
+   ```bash
+   sudo apt-get autoremove
+   ```
+
+4. Remove the XRDP firewall rule. When the table `inet agro_xrdp` is not loaded,
+   `nft` exits 1. Continue with the next step.
+
+   ```bash
+   sudo rm -f /etc/systemd/system/xrdp.service.d/agro-tailscale-only.conf /etc/xrdp/agro-tailscale-only.nft
+   sudo systemctl daemon-reload
+   sudo nft delete table inet agro_xrdp
+   ```
+
+5. Remove the XFCE session file that the install wrote:
+
+   ```bash
+   rm -f ~/.xsession
+   ```
+
+6. **Warning:** If Tailscale was on the host before you ran
+   `agro tool install desktop --host`, keep Tailscale and stop here. The install
+   did not install Tailscale on that host. If you connect to the host over
+   Tailscale, the next commands end that connection.
+
+   ```bash
+   sudo systemctl disable --now tailscaled
+   sudo apt-get purge -y tailscale
+   sudo rm -f /etc/apt/sources.list.d/tailscale.list /usr/share/keyrings/tailscale-archive-keyring.gpg
+   sudo apt-get update
+   ```
 
 ### Runtimes & package managers
 

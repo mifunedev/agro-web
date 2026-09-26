@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "project": "agro-web",
+  "branchName": "docs/63-host-tools-workspace-ref",
+  "description": "Document agro workspace create --ref and the host tools (code-server, docker-engine, desktop), root-level installs, and their removal (#63).",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Document `agro workspace` and `--ref`",
+      "description": "As an operator, I want the public docs to describe `agro workspace create --ref`, so that I can pin a workspace to a release.",
+      "acceptanceCriteria": [
+        "`docs/lifecycle-commands.md` has a `## Host workspaces: \\`agro workspace\\`` section. The section copies the harness section of the same name from `docs/lifecycle-commands.md` on mifunedev/agro `development`, including the `--ref <ref>` bullet.",
+        "The verb table in `docs/lifecycle-commands.md` has the row for `agro workspace create [<name>] [--path <dir>] [--ref <ref>] [--json]` and `agro workspace list [--json]`.",
+        "`pnpm build` exits 0.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "`bash /home/sandbox/harness/.agro/skills/ste/scripts/ste-check.sh <abs path>` reports no finding on a line that this story adds.",
+        "The rendered page shows the new section. Verify in browser using agent-browser skill."
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "AC1 executed: `## Host workspaces: agro workspace` section added (lines 161-207); diff against harness origin/development section differs only in one link rewritten to GitHub (web has no overview#installing-on-the-host). AC2 executed: verb-table row diff exit 0. AC3 executed: pnpm build exit 0 on the task branch. AC4 executed: check:docs-drift PASS 42 files. AC5 executed: ste-check findings on the page are all on pre-existing lines. AC6 executed: agent-browser on `docusaurus serve` shows the section and the --ref bullet; evidence/workspace-ref.png.",
+      "dependsOn": [],
+      "files": [
+        "docs/lifecycle-commands.md"
+      ],
+      "commit": "f475eff"
+    },
+    {
+      "id": "US-002",
+      "title": "Document the host tools and root-level installs",
+      "description": "As an operator, I want the public docs to list the new host tools, so that I know each install level and removal path.",
+      "acceptanceCriteria": [
+        "The tools paragraph in `docs/installation.md` names `code-server` as `kind: \"installable\"`.",
+        "`docs/installation.md` has the host install text from the harness `docs/installation.md` on mifunedev/agro `development` after #1203 merges: the two host install limits, the host tool table for `code-server`, `docker-engine`, and `desktop` with a `Level` column, the `sudo -n` rule, and the four desktop steps.",
+        "The table marks `docker-engine` and `desktop` as `root`, and the text states that `agro tool list` marks them `(root)`.",
+        "`docs/installation.md` has the \"Remove a root-level tool\" section from #1203, and the text states that `agro tool uninstall` refuses both root-level tools.",
+        "`pnpm build` exits 0.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "`bash /home/sandbox/harness/.agro/skills/ste/scripts/ste-check.sh <abs path>` reports no finding on a line that this story adds.",
+        "The rendered page shows the host tool table and the removal section. Verify in browser using agent-browser skill."
+      ],
+      "priority": 2,
+      "passes": true,
+      "notes": "AC1-AC4 executed: harness origin/development docs/installation.md lines 225-273 (tools paragraph with code-server, host install limits, Level table, sudo -n rule, desktop steps) and 274-356 (Remove a root-level tool) are byte-identical in the web page (diff empty). Divergence: the removal section is placed after the web tailscale paragraph so no unrelated paragraph renders under its heading (harness fix tracked in mifunedev/agro#1205). AC5 executed: pnpm build exit 0 on the task branch. AC6 executed: check:docs-drift PASS. AC7 executed: no ste-check finding on lines 380-521. AC8 executed: agent-browser shows the Level table and the removal section with the warning before the delete; evidence/host-tools-table.png, evidence/remove-root-tool.png.",
+      "dependsOn": [],
+      "files": [
+        "docs/installation.md"
+      ],
+      "commit": "a46a626"
+    }
+  ]
+}
