@@ -9,14 +9,14 @@ Claude Code is Anthropic's terminal-based AI coding agent. It reads your codebas
 
 ## Purpose
 
-Claude Code is the general-purpose agent most Open Harness operators install first. It handles everything from one-off file edits to multi-file refactors, test generation, and debugging. It works best for tasks that benefit from a persistent conversational loop where you can steer the agent mid-task.
+Claude Code is the general-purpose agent most AGRO operators install first. It handles everything from one-off file edits to multi-file refactors, test generation, and debugging. It works best for tasks that benefit from a persistent conversational loop where you can steer the agent mid-task.
 
 ## Install
 
 Claude Code enters the sandbox only through the door:
 
 ```bash
-oh harness install claude-code
+agro harness install claude-code
 ```
 
 The verb installs the `@anthropic-ai/claude-code` package into the persistent home volume as the `sandbox` user:
@@ -30,6 +30,17 @@ Verify the install:
 ```bash
 claude --version
 ```
+
+## Update
+
+```bash
+claude update                        # the harness updates itself
+agro harness install claude-code     # or re-run the door
+```
+
+Both write to `/home/sandbox/.local`, because the sandbox exports
+`NPM_CONFIG_PREFIX` as that prefix. Do not use `sudo`: `claude` is not on sudo's
+`secure_path`, and a root-owned install would leave the home volume.
 
 ## Authentication
 
@@ -50,11 +61,15 @@ Credentials are stored in `~/.claude/.credentials.json` inside the sandbox (pers
 ## Optional Langfuse observability
 
 For optional Claude Code end-to-end traces, use Langfuse's official marketplace
-plugin and configure it at the Claude prompt; it is not a native OTEL or
-`.env` setup. The plugin is user-scoped and captures conversation and tool data,
-so disable it before sensitive sessions. See [Langfuse](../integrations/langfuse.md#claude-code)
-for the exact install/configure commands, endpoint choices, privacy boundary,
-and disable/uninstall steps.
+plugin. The plugin is not a native OTEL setup. Native OpenTelemetry export
+emits runtime spans, not prompts or cost. The plugin is user-scoped and
+captures conversation and tool data. Each trace carries the tag `claude-code`.
+
+Run `agro config langfuse` to configure the plugin. The wizard offers to install
+the plugin, writes the base URL and the trace environment into the `env` block
+of `~/.claude/settings.json`, and keeps both keys in one `0600` fragment. Run
+`agro langfuse disable` before a sensitive session. See
+[Langfuse](../integrations/langfuse.md#1-claude-code).
 
 ## Common usage
 
