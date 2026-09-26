@@ -50,6 +50,7 @@ sandbox.
 | `agro secret set <KEY> [--sandbox <name>]` · `agro secret list [--sandbox <name>]` | read and write the gitignored `.env` |
 | `agro gateway <pi\|hermes>` · `agro gateway status` | `.oh/scripts/gateway.sh` |
 | `agro harness` · `agro tool` | install and inspect harnesses and tooling |
+| `agro workspace create [<name>] [--path <dir>] [--ref <ref>] [--json]` · `agro workspace list [--json]` | create and list host AGRO workspaces under `~/.agro/workspaces/` — see below |
 | `agro cloud` | manage OpenHarness Cloud nodes |
 | `agro --help` · `agro --version` | usage and version |
 
@@ -156,6 +157,53 @@ or a tool enters the sandbox. Nothing installs at boot, so a fresh sandbox has
 no `herdr` until you run `agro tool install herdr`. Each install lands in
 `~/.local` in the persistent home volume; `agro destroy` removes it. See
 [Harnesses Overview](harnesses/overview.md#installing-a-harness).
+
+## Host workspaces: `agro workspace`
+
+A **host workspace** is an AGRO checkout under
+`${AGRO_HOME:-~/.agro}/workspaces/<name>/`. It carries the control plane that a
+harness on the host reads: `AGENTS.md`, `.agro/skills/`, the hooks, and task
+state. `agro workspace` is the only verb that creates one.
+
+```bash
+agro workspace create                     # clone into ~/.agro/workspaces/harness
+agro workspace create default             # clone into ~/.agro/workspaces/default
+agro workspace create acme                # clone into ~/.agro/workspaces/acme
+agro workspace create --path /srv/agro    # clone into /srv/agro, outside the registry
+agro workspace create --ref v0.15.0       # clone tag v0.15.0 into ~/.agro/workspaces/harness
+agro workspace list                       # every workspace, with the default marked
+agro workspace list --json                # the same rows as JSON
+```
+
+- `agro workspace create [<name>]` clones
+  `https://github.com/mifunedev/agro.git` into the target directory. The command
+  reuses a target that already holds a `.git` checkout, and clones nothing.
+- The implicit name is `harness`. Pass `default` to create a workspace named
+  `default`. The name becomes a path segment, so it obeys the sandbox name rule:
+  lowercase letters, digits and dashes, starting with a letter or a digit. The
+  command refuses any other name and creates nothing.
+- `--path <dir>` creates the workspace outside the registry. Pass a name or
+  `--path <dir>`, never both.
+- `--ref <ref>` clones the branch or tag `<ref>` instead of the default branch.
+  A tag gives a detached checkout. If `<ref>` does not exist, the command exits
+  1, names the ref, and leaves no target directory. The command reuses a target
+  that already holds a `.git` checkout and does not change its ref. `list`
+  refuses `--ref`.
+- `create` records no default. The command leaves `harnessRoot` in
+  `~/.agro/config.json` unchanged. Only a host install writes that key.
+- `agro workspace list` reports every child of `~/.agro/workspaces/` that obeys
+  the name rule and holds a `.git` marker. The `DEFAULT` column marks the
+  workspace that `harnessRoot` names. An empty registry prints one hint that
+  names `agro workspace create`.
+- `create` refuses two host states. A state home split across `~/.oh` and
+  `~/.agro` refuses, and `agro migrate --home` repairs that split. A target
+  directory equal to the state home refuses, and the message names the move to
+  run.
+
+`agro harness install --host` and `agro tool install --host` create no workspace.
+Each verb resolves an existing workspace and exits 1 when none resolves. The
+refusal lists every workspace that exists and names `agro workspace create`. See
+[Harnesses Overview](https://github.com/mifunedev/agro/blob/main/docs/harnesses/overview.md#installing-on-the-host).
 
 ## `agro destroy` and its confirmation policy
 
