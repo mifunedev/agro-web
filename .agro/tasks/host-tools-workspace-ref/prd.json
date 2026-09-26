@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "project": "agro-web",
+  "branchName": "docs/63-host-tools-workspace-ref",
+  "description": "Document agro workspace create --ref and the host tools (code-server, docker-engine, desktop), root-level installs, and their removal (#63).",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Document `agro workspace` and `--ref`",
+      "description": "As an operator, I want the public docs to describe `agro workspace create --ref`, so that I can pin a workspace to a release.",
+      "acceptanceCriteria": [
+        "`docs/lifecycle-commands.md` has a `## Host workspaces: \\`agro workspace\\`` section. The section copies the harness section of the same name from `docs/lifecycle-commands.md` on mifunedev/agro `development`, including the `--ref <ref>` bullet.",
+        "The verb table in `docs/lifecycle-commands.md` has the row for `agro workspace create [<name>] [--path <dir>] [--ref <ref>] [--json]` and `agro workspace list [--json]`.",
+        "`pnpm build` exits 0.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "`bash /home/sandbox/harness/.agro/skills/ste/scripts/ste-check.sh <abs path>` reports no finding on a line that this story adds.",
+        "The rendered page shows the new section. Verify in browser using agent-browser skill."
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/lifecycle-commands.md"
+      ]
+    },
+    {
+      "id": "US-002",
+      "title": "Document the host tools and root-level installs",
+      "description": "As an operator, I want the public docs to list the new host tools, so that I know each install level and removal path.",
+      "acceptanceCriteria": [
+        "The tools paragraph in `docs/installation.md` names `code-server` as `kind: \"installable\"`.",
+        "`docs/installation.md` has the host install text from the harness `docs/installation.md` on mifunedev/agro `development` after #1203 merges: the two host install limits, the host tool table for `code-server`, `docker-engine`, and `desktop` with a `Level` column, the `sudo -n` rule, and the four desktop steps.",
+        "The table marks `docker-engine` and `desktop` as `root`, and the text states that `agro tool list` marks them `(root)`.",
+        "`docs/installation.md` has the \"Remove a root-level tool\" section from #1203, and the text states that `agro tool uninstall` refuses both root-level tools.",
+        "`pnpm build` exits 0.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "`bash /home/sandbox/harness/.agro/skills/ste/scripts/ste-check.sh <abs path>` reports no finding on a line that this story adds.",
+        "The rendered page shows the host tool table and the removal section. Verify in browser using agent-browser skill."
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/installation.md"
+      ]
+    }
+  ]
+}
