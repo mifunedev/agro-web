@@ -1,0 +1,680 @@
+{
+  "schemaVersion": 1,
+  "project": "agro-web",
+  "branchName": "task/65-harness-docs-sync",
+  "description": "Sync the site docs/ with the harness docs/ at mifunedev/agro 587f5524: prepare the drift gate, add the three linked harness pages, and copy the 32 shared pages under the copy rule in prd.md.",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Allow the harness uses of retired tokens in the drift gate",
+      "description": "As a site maintainer, I want the drift gate to accept the harness text, so that a verbatim copy passes `pnpm run check:docs-drift`.",
+      "acceptanceCriteria": [
+        "`ALLOW` in `scripts/check-docs-drift.mjs` has one entry for each of these file and token pairs, each with a `why`: `harnesses/overview.md` and `lifecycle-commands.md` with the pre-systemd container lifecycle token (`link-providers.sh --init` is the supported repair flag), and `agro-compatibility.md` with the pre-systemd container lifecycle token and the `get-oh.sh` token (the page names retired items to say that they are retired).",
+        "`RETIRED` does not change.",
+        "`pnpm test` exits 0.",
+        "`pnpm run check:docs-drift` exits 0."
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "scripts/check-docs-drift.mjs"
+      ]
+    },
+    {
+      "id": "US-002",
+      "title": "Add the Antigravity CLI harness page",
+      "description": "As an operator, I want the Antigravity CLI page on the site, so that the links from the harness table and the quickstart resolve.",
+      "acceptanceCriteria": [
+        "`docs/harnesses/antigravity-cli.md` exists and follows the copy rule.",
+        "The front matter has `sidebar_position: 9`.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/harnesses/antigravity-cli` shows the heading \"Antigravity CLI\". Verify in browser using agent-browser skill."
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/harnesses/antigravity-cli.md"
+      ]
+    },
+    {
+      "id": "US-003",
+      "title": "Add the AGRO naming page",
+      "description": "As an operator, I want the AGRO naming page on the site, so that the pages that link to it resolve.",
+      "acceptanceCriteria": [
+        "`docs/agro-compatibility.md` exists and follows the copy rule.",
+        "The front matter has `sidebar_position: 15`.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/agro-compatibility` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/agro-compatibility.md"
+      ]
+    },
+    {
+      "id": "US-004",
+      "title": "Replace the `.oh/` layout page with the `.agro/` layout page",
+      "description": "As an operator, I want the directory layout page to describe `.agro/`, so that the site matches the harness.",
+      "acceptanceCriteria": [
+        "`docs/oh-directory-layout.md` does not exist.",
+        "`docs/agro-directory-layout.md` exists, follows the copy rule, and has `sidebar_position: 11`.",
+        "`docusaurus.config.ts` has the redirect `{ from: \"/docs/oh-directory-layout\", to: \"/docs/agro-directory-layout\" }`.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/agro-directory-layout` shows the harness H1, and `/docs/oh-directory-layout` redirects to it. Verify in browser using agent-browser skill."
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/oh-directory-layout.md",
+        "docs/agro-directory-layout.md",
+        "docusaurus.config.ts"
+      ]
+    },
+    {
+      "id": "US-005",
+      "title": "Sync `docs/integrations/langfuse.md`",
+      "description": "As an operator, I want `docs/integrations/langfuse.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/integrations/langfuse.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/integrations/langfuse` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/integrations/langfuse.md"
+      ]
+    },
+    {
+      "id": "US-006",
+      "title": "Sync `docs/installation.md`",
+      "description": "As an operator, I want `docs/installation.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/installation.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/installation` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [
+        "US-002",
+        "US-003"
+      ],
+      "files": [
+        "docs/installation.md"
+      ]
+    },
+    {
+      "id": "US-007",
+      "title": "Sync `docs/lifecycle-commands.md`",
+      "description": "As an operator, I want `docs/lifecycle-commands.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/lifecycle-commands.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/lifecycle-commands` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [
+        "US-001",
+        "US-003"
+      ],
+      "files": [
+        "docs/lifecycle-commands.md"
+      ]
+    },
+    {
+      "id": "US-008",
+      "title": "Sync `docs/quickstart.md`",
+      "description": "As an operator, I want `docs/quickstart.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/quickstart.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/quickstart` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [
+        "US-002",
+        "US-003"
+      ],
+      "files": [
+        "docs/quickstart.md"
+      ]
+    },
+    {
+      "id": "US-009",
+      "title": "Sync `docs/deployment-prebuilt-image.md`",
+      "description": "As an operator, I want `docs/deployment-prebuilt-image.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/deployment-prebuilt-image.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/deployment-prebuilt-image` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [
+        "US-004"
+      ],
+      "files": [
+        "docs/deployment-prebuilt-image.md"
+      ]
+    },
+    {
+      "id": "US-010",
+      "title": "Sync `docs/configuration.md`",
+      "description": "As an operator, I want `docs/configuration.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/configuration.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/configuration` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 10,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [
+        "US-004"
+      ],
+      "files": [
+        "docs/configuration.md"
+      ]
+    },
+    {
+      "id": "US-011",
+      "title": "Sync `docs/runtimes/microsandbox.md`",
+      "description": "As an operator, I want `docs/runtimes/microsandbox.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/runtimes/microsandbox.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/runtimes/microsandbox` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 11,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/runtimes/microsandbox.md"
+      ]
+    },
+    {
+      "id": "US-012",
+      "title": "Sync `docs/harnesses/overview.md`",
+      "description": "As an operator, I want `docs/harnesses/overview.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/harnesses/overview.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/harnesses/overview` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 12,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [
+        "US-001",
+        "US-002"
+      ],
+      "files": [
+        "docs/harnesses/overview.md"
+      ]
+    },
+    {
+      "id": "US-013",
+      "title": "Sync `docs/integrations/slack.md`",
+      "description": "As an operator, I want `docs/integrations/slack.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/integrations/slack.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/integrations/slack` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 13,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/integrations/slack.md"
+      ]
+    },
+    {
+      "id": "US-014",
+      "title": "Sync `docs/contributing.md`",
+      "description": "As an operator, I want `docs/contributing.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/contributing.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/contributing` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 14,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/contributing.md"
+      ]
+    },
+    {
+      "id": "US-015",
+      "title": "Sync `docs/harnesses/hermes.md`",
+      "description": "As an operator, I want `docs/harnesses/hermes.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/harnesses/hermes.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/harnesses/hermes` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 15,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/harnesses/hermes.md"
+      ]
+    },
+    {
+      "id": "US-016",
+      "title": "Sync `docs/glossary.md`",
+      "description": "As an operator, I want `docs/glossary.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/glossary.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/glossary` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 16,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/glossary.md"
+      ]
+    },
+    {
+      "id": "US-017",
+      "title": "Sync `docs/security-considerations.md`",
+      "description": "As an operator, I want `docs/security-considerations.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/security-considerations.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/security-considerations` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 17,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/security-considerations.md"
+      ]
+    },
+    {
+      "id": "US-018",
+      "title": "Sync `docs/harnesses/pi.md`",
+      "description": "As an operator, I want `docs/harnesses/pi.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/harnesses/pi.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/harnesses/pi` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 18,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/harnesses/pi.md"
+      ]
+    },
+    {
+      "id": "US-019",
+      "title": "Sync `docs/integrations/github.md`",
+      "description": "As an operator, I want `docs/integrations/github.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/integrations/github.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/integrations/github` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 19,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [
+        "US-003"
+      ],
+      "files": [
+        "docs/integrations/github.md"
+      ]
+    },
+    {
+      "id": "US-020",
+      "title": "Sync `docs/connecting.md`",
+      "description": "As an operator, I want `docs/connecting.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/connecting.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/connecting` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 20,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/connecting.md"
+      ]
+    },
+    {
+      "id": "US-021",
+      "title": "Sync `docs/harnesses/codex.md`",
+      "description": "As an operator, I want `docs/harnesses/codex.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/harnesses/codex.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/harnesses/codex` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 21,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/harnesses/codex.md"
+      ]
+    },
+    {
+      "id": "US-022",
+      "title": "Sync `docs/runtimes/overview.md`",
+      "description": "As an operator, I want `docs/runtimes/overview.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/runtimes/overview.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/runtimes/overview` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 22,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/runtimes/overview.md"
+      ]
+    },
+    {
+      "id": "US-023",
+      "title": "Sync `docs/integrations/sshd.md`",
+      "description": "As an operator, I want `docs/integrations/sshd.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/integrations/sshd.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/integrations/sshd` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 23,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/integrations/sshd.md"
+      ]
+    },
+    {
+      "id": "US-024",
+      "title": "Sync `docs/harnesses/muse-code.md`",
+      "description": "As an operator, I want `docs/harnesses/muse-code.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/harnesses/muse-code.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/harnesses/muse-code` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 24,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/harnesses/muse-code.md"
+      ]
+    },
+    {
+      "id": "US-025",
+      "title": "Sync `docs/runtimes/docker.md`",
+      "description": "As an operator, I want `docs/runtimes/docker.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/runtimes/docker.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/runtimes/docker` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 25,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/runtimes/docker.md"
+      ]
+    },
+    {
+      "id": "US-026",
+      "title": "Sync `docs/intro.md`",
+      "description": "As an operator, I want `docs/intro.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/intro.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 26,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/intro.md"
+      ]
+    },
+    {
+      "id": "US-027",
+      "title": "Sync `docs/harnesses/claude-code.md`",
+      "description": "As an operator, I want `docs/harnesses/claude-code.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/harnesses/claude-code.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/harnesses/claude-code` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 27,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/harnesses/claude-code.md"
+      ]
+    },
+    {
+      "id": "US-028",
+      "title": "Sync `docs/integrations/herdr.md`",
+      "description": "As an operator, I want `docs/integrations/herdr.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/integrations/herdr.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/integrations/herdr` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 28,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/integrations/herdr.md"
+      ]
+    },
+    {
+      "id": "US-029",
+      "title": "Sync `docs/harnesses/grok-build.md`",
+      "description": "As an operator, I want `docs/harnesses/grok-build.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/harnesses/grok-build.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/harnesses/grok-build` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 29,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/harnesses/grok-build.md"
+      ]
+    },
+    {
+      "id": "US-030",
+      "title": "Sync `docs/open-core.md`",
+      "description": "As an operator, I want `docs/open-core.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/open-core.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/open-core` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 30,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/open-core.md"
+      ]
+    },
+    {
+      "id": "US-031",
+      "title": "Sync `docs/harnesses/opencode.md`",
+      "description": "As an operator, I want `docs/harnesses/opencode.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/harnesses/opencode.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/harnesses/opencode` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 31,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/harnesses/opencode.md"
+      ]
+    },
+    {
+      "id": "US-032",
+      "title": "Sync `docs/integrations/pi-fff.md`",
+      "description": "As an operator, I want `docs/integrations/pi-fff.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/integrations/pi-fff.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/integrations/pi-fff` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 32,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/integrations/pi-fff.md"
+      ]
+    },
+    {
+      "id": "US-033",
+      "title": "Sync `docs/integrations/debugmcp.md`",
+      "description": "As an operator, I want `docs/integrations/debugmcp.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/integrations/debugmcp.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/integrations/debugmcp` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 33,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/integrations/debugmcp.md"
+      ]
+    },
+    {
+      "id": "US-034",
+      "title": "Sync `docs/resources.md`",
+      "description": "As an operator, I want `docs/resources.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/resources.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/resources` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 34,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/resources.md"
+      ]
+    },
+    {
+      "id": "US-035",
+      "title": "Sync `docs/harnesses/t3code.md`",
+      "description": "As an operator, I want `docs/harnesses/t3code.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/harnesses/t3code.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/harnesses/t3code` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 35,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/harnesses/t3code.md"
+      ]
+    },
+    {
+      "id": "US-036",
+      "title": "Sync `docs/property-testing.md`",
+      "description": "As an operator, I want `docs/property-testing.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/property-testing.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/property-testing` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 36,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/property-testing.md"
+      ]
+    }
+  ]
+}
