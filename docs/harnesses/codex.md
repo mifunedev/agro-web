@@ -16,7 +16,7 @@ Codex is designed for autonomous operation. Give it a task and it works through 
 Codex enters the sandbox only through the door:
 
 ```bash
-oh harness install codex
+agro harness install codex
 ```
 
 The verb installs the `@openai/codex` package into the persistent home volume as the `sandbox` user:
@@ -30,6 +30,41 @@ Verify the install:
 ```bash
 codex --version
 ```
+
+## Update
+
+```bash
+codex update                   # the harness updates itself
+agro harness install codex     # or re-run the door
+```
+
+Both write to `/home/sandbox/.local`, because the sandbox exports
+`NPM_CONFIG_PREFIX` as that prefix. Do not use `sudo`: `codex` is not on sudo's
+`secure_path`, and a root-owned install would leave the home volume.
+
+### Host installation with a different npm prefix
+
+On an authorized host, check which Codex executable the shell selects:
+
+```bash
+command -v codex
+readlink -f "$(command -v codex)"
+npm prefix -g
+codex --version
+```
+
+If the executable resolves under `$HOME/.local` but `npm prefix -g` reports
+another directory, a bare `npm install -g @openai/codex` updates a different
+installation. Update the selected installation instead:
+
+```bash
+npm install -g --prefix "$HOME/.local" @openai/codex@latest
+hash -r
+codex --version
+```
+
+Run these commands on the host only with approval for host file and credential
+access. Inside the sandbox, use `agro harness install codex`.
 
 ## Authentication
 
@@ -76,6 +111,21 @@ Run inside a dedicated tmux session:
 tmux new-session -d -s agent-codex 'codex --dangerously-bypass-approvals-and-sandbox "your task here"'
 tmux attach -t agent-codex
 ```
+
+## Optional Langfuse observability
+
+[Langfuse](../integrations/langfuse.md#3-codex) traces Codex turns, tool calls,
+and cost through the official `codex-observability-plugin`. The plugin stays off
+until you enable tracing, and the plugin sets no trace tag of its own.
+
+Run `agro config langfuse` to configure the plugin. The wizard offers to install
+the plugin and writes `~/.codex/langfuse.json` with `enabled`, the `codex` tag,
+and the trace environment, at mode `0600`. That file holds no credential, and
+the wizard never edits `~/.codex/config.toml`.
+
+One step stays manual. Start `codex` once interactively and approve the
+**Uploading Codex trace to Langfuse** hook. Codex prompts for hook trust only in
+interactive mode, and an untrusted hook never runs.
 
 ## Tips
 
