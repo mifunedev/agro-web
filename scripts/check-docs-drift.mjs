@@ -256,6 +256,26 @@ export const ALLOW = [
     token: "bare `oh sandbox`",
     why: "names the namespace the runtime catalog lives under",
   },
+  {
+    file: "harnesses/overview.md",
+    token: "the pre-systemd container lifecycle",
+    why: "names --init as the supported link-providers.sh repair flag, not the retired Docker init flag",
+  },
+  {
+    file: "lifecycle-commands.md",
+    token: "the pre-systemd container lifecycle",
+    why: "names --init as the supported link-providers.sh repair flag, not the retired Docker init flag",
+  },
+  {
+    file: "agro-compatibility.md",
+    token: "the pre-systemd container lifecycle",
+    why: "the page names retired items to say that they are retired",
+  },
+  {
+    file: "agro-compatibility.md",
+    token: "get-oh.sh",
+    why: "the page names retired items to say that they are retired",
+  },
 ];
 
 const LEGACY_IDENTITY = {

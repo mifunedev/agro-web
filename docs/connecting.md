@@ -1,5 +1,4 @@
 ---
-id: connecting
 slug: /connecting
 sidebar_position: 5
 title: "Connecting to the Sandbox"
@@ -13,33 +12,32 @@ The sandbox is a Docker container running on your host (or a remote server). Get
 
 | Option | Command / action | Port forwarding to laptop |
 |--------|-----------------|--------------------------|
-| **A — Terminal** | `oh shell` from the host | None — plain shell only |
-| **B — VSCode Attach (local)** | Dev Containers extension → "Attach to Running Container" → `openharness` | Automatic while attached |
+| **A — Terminal** | `agro shell` from the host | None — plain shell only |
+| **B — VSCode Attach (local)** | Dev Containers extension → "Attach to Running Container" → your sandbox name from `agro sandbox list` | Automatic while attached |
 | **C — VSCode Remote-SSH + Attach (remote host)** | SSH into your host in VSCode, then Attach to Container | Automatic while attached |
 | **D — Direct SSH (opt-in)** | `ssh -p 2222 sandbox@localhost` after enabling the sshd overlay | None — SSH shell only (tunnel/proxy separately) |
 
 ### Option A — Terminal
 
 ```bash
-cd ~/.openharness
-oh shell
+agro shell <name>
 ```
-Pass an optional container name to attach to a different running container, e.g. `oh shell portfolio-advisor`. `oh shell` always attaches as the `sandbox` user; if the target container has no such user, use `docker exec -it -u <user> <container> zsh` instead.
+Pass an optional container name to attach to a different running container, e.g. `agro shell portfolio-advisor`. `agro shell` always attaches as the `sandbox` user; if the target container has no such user, use `docker exec -it -u <user> <container> zsh` instead.
 
-You land inside the container as the `sandbox` user. A fresh sandbox has no `herdr`: run `oh tool install herdr`, then `herdr`, then launch CLI agents and complete interactive setup from its panes. Container ports are **not** forwarded to your laptop — you cannot open `localhost:3000` in your browser via this method alone.
+You land inside the container as the `sandbox` user. A fresh sandbox has no `herdr`: run `agro tool install herdr`, then `herdr`, then launch CLI agents and complete interactive setup from its panes. Container ports are **not** forwarded to your laptop — you cannot open `localhost:3000` in your browser via this method alone.
 
 > **Attach, do not "Reopen in Container".** *Dev Containers: Reopen in Container*
 > reads `.devcontainer/devcontainer.json`, which names `docker-compose.yml` alone,
-> so it bypasses `.oh/scripts/docker-compose.sh` and applies **no compose overlays** —
+> so it bypasses `.agro/scripts/docker-compose.sh` and applies **no compose overlays** —
 > no SSH, no host Docker socket, no Hermes dashboard, nothing from
-> `composeOverrides[]`. Provision with `oh sandbox install docker`, then attach. Details:
+> `composeOverrides[]`. Provision with `agro sandbox install docker`, then attach. Details:
 > [lifecycle commands](lifecycle-commands.md#vs-code-reopen-in-container-applies-no-overlays).
 
 ### Option B — VSCode Attach to Running Container (local host)
 
 1. Install the [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension.
 2. Open the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`) → **Dev Containers: Attach to Running Container**.
-3. Select **openharness**.
+3. Select your sandbox name from `agro sandbox list`.
 
 VSCode opens a remote window connected to the container and **automatically forwards container ports to `localhost`** on your laptop for the duration of the session.
 
@@ -48,7 +46,7 @@ VSCode opens a remote window connected to the container and **automatically forw
 If the sandbox runs on a remote server:
 
 1. Connect to the server via **Remote-SSH** in VSCode.
-2. From that SSH window, follow Option B to attach to the `openharness` container.
+2. From that SSH window, follow Option B to attach to your sandbox container.
 
 Port forwarding works identically — VSCode tunnels the container ports through the SSH connection to your laptop `localhost`. No manual `ssh -L` required.
 
@@ -65,13 +63,13 @@ Auth is public-key by default and the host bind is loopback-only. This is the
 foundation for routing multiple tenants' containers behind one nginx proxy on a
 single VM. Full setup — enabling the overlay, adding your key, the port-collision
 preflight, and the nginx multi-tenant recipe — is in
-[Integrations → SSH](integrations/sshd.md).
+[Integrations → SSH](/docs/integrations/sshd).
 
 ## Why VSCode Attach is the recommended path
 
 Attaching via VSCode is the easiest way to reach container UIs on your laptop browser. The auto-forwarding is session-scoped: ports appear under the **Ports** panel while attached and disappear when you close or detach from the VSCode window.
 
-If you only need a terminal (no browser UI), Option A is fine. Whichever attach path you choose, make `oh tool install herdr` and then `herdr` the first commands in the sandbox.
+If you only need a terminal (no browser UI), Option A is fine. Whichever attach path you choose, make `agro tool install herdr` and then `herdr` the first commands in the sandbox.
 
 ## What happens when you close VSCode
 
@@ -89,7 +87,7 @@ If you need a port reachable beyond your laptop — for example, to share a prev
 
 **1. Compose overlay binding `0.0.0.0`**
 
-Add a custom compose file that binds the port on all interfaces and merge it in via `composeOverrides[]` in `.oh/config.json` (gitignored):
+Add a custom compose file that binds the port on all interfaces and merge it in via `composeOverrides[]` in `.agro/config.json` (gitignored):
 
 ```yaml
 # docker-compose.my-expose.yml
@@ -109,7 +107,7 @@ For **private** access from your own devices — including a phone — use Tails
 
 **3. Direct SSH + nginx multi-tenant routing**
 
-To SSH straight into the container — and to route several tenants' containers through one nginx reverse proxy on a single VM — enable the opt-in `sshd` overlay. See [Integrations → SSH](integrations/sshd.md).
+To SSH straight into the container — and to route several tenants' containers through one nginx reverse proxy on a single VM — enable the opt-in `sshd` overlay. See [Integrations → SSH](/docs/integrations/sshd).
 
 ## Mobile access over Tailscale
 
@@ -119,9 +117,9 @@ This is the supported path for reaching T3 Code from a phone, and the supported 
 
 `tailscaled` runs **inside the sandbox container**, in userspace-networking mode, as the unprivileged `sandbox` user. The container is the tailnet node.
 
-- No `NET_ADMIN`, no `/dev/net/tun`, no `privileged: true`, no host socket mount. Userspace networking needs none of them, and Tailscale Serve is fully supported in that mode. The sandbox does carry `cap_add: SYS_ADMIN` and `security_opt: apparmor=unconfined` — that grant exists so `systemd` can mount its own cgroup2 hierarchy as PID 1, is unrelated to Tailscale, and gives it no networking capability. The reviewed trade-off is in [security considerations](security-considerations.md) §4 Caveat 3.
+- No `NET_ADMIN`, no `/dev/net/tun`, no `privileged: true`, no host socket mount. Userspace networking needs none of them, and Tailscale Serve is fully supported in that mode.
 - **No host port is published.** T3 Code stays on container loopback `127.0.0.1:3773`. Tailscale Serve inside the container proxies tailnet HTTPS to that loopback address. A device outside the tailnet has nothing to reach.
-- **There is no compose change at all.** `oh tool install tailscale` is the only door, and nothing installs Tailscale at boot. Node identity and daemon state live in `/home/sandbox/.tailscale`, inside the single `/home/sandbox` mount, so the node does not re-authenticate on every container recreate without any per-tool volume.
+- **There is no compose change at all.** `agro tool install tailscale` is the only door, and nothing installs Tailscale at boot. Node identity and daemon state live in `/home/sandbox/.tailscale`, inside the single `/home/sandbox` mount, so the node does not re-authenticate on every container recreate without any per-tool volume.
 - Because the container is the node, the MagicDNS name your phone saved does not change when you move the workspace to another VM.
 
 Installing the binary does **not** join a tailnet. Nothing runs `tailscaled` or `tailscale up` for you. Joining is an explicit human act.
@@ -130,7 +128,7 @@ Installing the binary does **not** join a tailnet. Nothing runs `tailscaled` or 
 
 On the remote host:
 
-- The sandbox is running (`oh ps`).
+- The sandbox is running (`agro ps`).
 - Node in the sandbox satisfies T3 Code's range `^22.16 || ^23.11 || >=24.10` (`node -v`).
 - A provider is authenticated in the sandbox (`claude`, `codex login`, or `opencode auth login`).
 - A Tailscale account and a tailnet you control.
@@ -145,17 +143,17 @@ The phone and the sandbox must share one tailnet. There is no other reachability
 ### Step 1 — Install Tailscale in the sandbox
 
 ```bash
-oh tool install tailscale
+agro tool install tailscale
 ```
 
 This installs the binary into the running sandbox, from the tool catalog, which is the sole owner of the pinned version and its checksums. It is idempotent, and it needs no image rebuild. The install lands in `~/.local/bin` inside the persistent home volume, so it survives a container recreate.
 
-The command needs a running sandbox. If the sandbox is not running, start it with `oh sandbox install docker --name <name>`, then re-run the command. Nothing about networking activates until you start the daemon in the next step.
+The command needs a running sandbox. If the sandbox is not running, start it with `agro sandbox install docker --name <name>`, then re-run the command. Nothing about networking activates until you start the daemon in the next step.
 
 Check the state at any time:
 
 ```bash
-oh tool status tailscale
+agro tool status tailscale
 ```
 
 ### Step 2 — Start the daemon
@@ -245,7 +243,7 @@ Then delete the device in the Tailscale admin console. Revoking a phone's own ta
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
-| `/t3 start --tailscale` reports Tailscale missing | binary not installed | `oh tool install tailscale`, then `oh sandbox install docker --name <name>` if the sandbox was down |
+| `/t3 start --tailscale` reports Tailscale missing | binary not installed | `agro tool install tailscale`, then `agro sandbox install docker --name <name>` if the sandbox was down |
 | `tailscale status` fails to reach the daemon | `tailscaled` not running | repeat step 2; check `tmux ls` for `agent-tailscaled` |
 | Backend state is not `Running` / "logged out" | node never joined, or was logged out | `tailscale up` and complete the browser login |
 | No `ts.net` URL in the T3 output | Serve was not configured | confirm `tailscale status` is `Running`, then restart with `/t3 start --tailscale` |
@@ -262,7 +260,7 @@ Then delete the device in the Tailscale admin console. Revoking a phone's own ta
 If your host policy forbids a daemon inside the container, you can instead run `tailscaled` on the remote host and route the sandbox port through it. This is **not** the supported path and the harness does not manage it:
 
 - It requires publishing `3773` from the container to the host, which widens exposure on any multi-tenant or internet-facing VM.
-- `oh tool install tailscale` installs and versions the binary *inside* the sandbox, so `oh tool status tailscale` would not describe the host daemon.
+- `agro tool install tailscale` installs and versions the binary *inside* the sandbox, so `agro tool status tailscale` would not describe the host daemon.
 - The tailnet node becomes the host, so the MagicDNS name changes when you move the workspace to another machine.
 
 You own the configuration and the exposure in that layout.
@@ -280,7 +278,7 @@ Cloudflared remains the right tool for public preview sharing. It is not the mob
 
 ## tmux session naming
 
-Every long-running process above container init runs in a named tmux session. The exception is the container's own supervision: `systemd` is PID 1 and owns `openharness-bootstrap.service` and `openharness-cron.service`. The cron *runtime* is a systemd service; the jobs it fires with `tmux: true` are still tmux sessions. The naming convention is `<category>-<identifier>`:
+All long-running processes inside the sandbox run in named tmux sessions. The naming convention is `<category>-<identifier>`:
 
 | Category | Example | Purpose |
 |----------|---------|---------|
@@ -288,11 +286,11 @@ Every long-running process above container init runs in a named tmux session. Th
 | `agent-` | `agent-watcher`, `agent-batch`, `agent-t3code`, `agent-tailscaled` | Headless / long-running agent processes (interactive CLIs are foreground, not tmux) |
 | `app-` | `app-api` | Dev servers |
 
-For the full convention see [`.oh/skills/t3/references/sandbox-processes.md`](https://github.com/mifunedev/agro/blob/development/.oh/skills/t3/references/sandbox-processes.md).
+For the full convention see [`.agro/skills/t3/references/sandbox-processes.md`](https://github.com/mifunedev/agro/blob/development/.agro/skills/t3/references/sandbox-processes.md).
 
 ## End-to-end recipe
 
-This recipe assumes the sandbox is already running (`oh ps` confirms the `openharness` container is up). Steps run inside the sandbox unless noted.
+This recipe assumes the sandbox is already running (`agro ps <name>` confirms your sandbox container is up). Steps run inside the sandbox unless noted.
 
 ### Step 1 — Attach via VSCode
 
@@ -300,7 +298,7 @@ Follow Option B (or C for a remote host). The Ports panel in VSCode shows forwar
 
 ### Step 2 — Configure Slack
 
-Create/update the Slack app from `.pi/install/slack-manifest.json`, set `PI_SLACK_APP_TOKEN` / `PI_SLACK_BOT_TOKEN` in `.devcontainer/.env`, then manage the Pi-side bridge session with `/msg-bridge` from inside `client-slack-pi`. Trust/channel admin is handled by challenge auth plus manifest-backed Slack admin commands, not separate Pi commands. The `client-slack-pi` session starts automatically on container boot; manage it with `gateway pi` (`gateway pi --restart` to pick up token edits, `gateway status` to check). The tracked `.pi/msg-bridge.json` (`autoConnect`, `auth.trustedUsers`) is an optional headless pre-seed. For the full walkthrough see [Integrations → Slack](/docs/integrations/slack).
+Create/update the Slack app from `.pi/install/slack-manifest.yaml`, set `PI_SLACK_APP_TOKEN` / `PI_SLACK_BOT_TOKEN` in `.devcontainer/.env`, then manage the Pi-side bridge session with `/msg-bridge` from inside `client-slack-pi`. Trust/channel admin is handled by challenge auth plus manifest-backed Slack admin commands, not separate Pi commands. The `client-slack-pi` session starts automatically on container boot; manage it with `gateway pi` (`gateway pi --restart` to pick up token edits, `gateway status` to check). The tracked `.pi/msg-bridge.json` (`autoConnect`, `auth.trustedUsers`) is an optional headless pre-seed. For the full walkthrough see [Integrations → Slack](/docs/integrations/slack).
 
 After the bridge is up, verify it is live:
 

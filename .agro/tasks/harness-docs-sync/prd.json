@@ -1,0 +1,718 @@
+{
+  "schemaVersion": 1,
+  "project": "agro-web",
+  "branchName": "task/65-harness-docs-sync",
+  "description": "Sync the site docs/ with the harness docs/ at mifunedev/agro 587f5524: prepare the drift gate, add the three linked harness pages, and copy the 32 shared pages under the copy rule in prd.md.",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Allow the harness uses of retired tokens in the drift gate",
+      "description": "As a site maintainer, I want the drift gate to accept the harness text, so that a verbatim copy passes `pnpm run check:docs-drift`.",
+      "acceptanceCriteria": [
+        "`ALLOW` in `scripts/check-docs-drift.mjs` has one entry for each of these file and token pairs, each with a `why`: `harnesses/overview.md` and `lifecycle-commands.md` with the pre-systemd container lifecycle token (`link-providers.sh --init` is the supported repair flag), and `agro-compatibility.md` with the pre-systemd container lifecycle token and the `get-oh.sh` token (the page names retired items to say that they are retired).",
+        "`RETIRED` does not change.",
+        "`pnpm test` exits 0.",
+        "`pnpm run check:docs-drift` exits 0."
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "Commit 73148ec. AC1 executed: diff shows four ALLOW entries with file, token, and why. AC2 reasoned: the diff does not touch RETIRED. AC3 executed: pnpm test exit 0 (42 pass, 0 fail). AC4 executed: pnpm run check:docs-drift exit 0 on the integrated branch.",
+      "dependsOn": [],
+      "files": [
+        "scripts/check-docs-drift.mjs"
+      ],
+      "commit": "73148ec"
+    },
+    {
+      "id": "US-002",
+      "title": "Add the Antigravity CLI harness page",
+      "description": "As an operator, I want the Antigravity CLI page on the site, so that the links from the harness table and the quickstart resolve.",
+      "acceptanceCriteria": [
+        "`docs/harnesses/antigravity-cli.md` exists and follows the copy rule.",
+        "The front matter has `sidebar_position: 9`.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/harnesses/antigravity-cli` shows the heading \"Antigravity CLI\". Verify in browser using agent-browser skill."
+      ],
+      "priority": 2,
+      "passes": true,
+      "notes": "Commit 14e5e7c. Copy rule executed: diff against 587f5524:docs/harnesses/antigravity-cli.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/harnesses/antigravity-cli renders H1 'Antigravity CLI' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [],
+      "files": [
+        "docs/harnesses/antigravity-cli.md"
+      ],
+      "commit": "14e5e7c"
+    },
+    {
+      "id": "US-003",
+      "title": "Add the AGRO naming page",
+      "description": "As an operator, I want the AGRO naming page on the site, so that the pages that link to it resolve.",
+      "acceptanceCriteria": [
+        "`docs/agro-compatibility.md` exists and follows the copy rule.",
+        "The front matter has `sidebar_position: 15`.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/agro-compatibility` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 3,
+      "passes": true,
+      "notes": "Commit ecae74f. Copy rule executed: diff against 587f5524:docs/agro-compatibility.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/agro-compatibility renders H1 'AGRO naming: the cutover is complete' (OK), evidence/browser-h1.tsv. Depends on US-001 for the drift gate; integrated after it.",
+      "dependsOn": [
+        "US-001"
+      ],
+      "files": [
+        "docs/agro-compatibility.md"
+      ],
+      "commit": "ecae74f"
+    },
+    {
+      "id": "US-004",
+      "title": "Replace the `.oh/` layout page with the `.agro/` layout page",
+      "description": "As an operator, I want the directory layout page to describe `.agro/`, so that the site matches the harness.",
+      "acceptanceCriteria": [
+        "`docs/oh-directory-layout.md` does not exist.",
+        "`docs/agro-directory-layout.md` exists, follows the copy rule, and has `sidebar_position: 11`.",
+        "`docusaurus.config.ts` has the redirect `{ from: \"/docs/oh-directory-layout\", to: \"/docs/agro-directory-layout\" }`.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/agro-directory-layout` shows the harness H1, and `/docs/oh-directory-layout` redirects to it. Verify in browser using agent-browser skill."
+      ],
+      "priority": 4,
+      "passes": true,
+      "notes": "Commit 8dec6be. Copy rule executed: diff against 587f5524:docs/agro-directory-layout.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/agro-directory-layout renders H1 '.agro/ directory layout' (OK), evidence/browser-h1.tsv. Redirect executed: /docs/oh-directory-layout lands on /docs/agro-directory-layout (evidence/redirect.txt).",
+      "dependsOn": [],
+      "files": [
+        "docs/oh-directory-layout.md",
+        "docs/agro-directory-layout.md",
+        "docusaurus.config.ts"
+      ],
+      "commit": "8dec6be"
+    },
+    {
+      "id": "US-005",
+      "title": "Sync `docs/integrations/langfuse.md`",
+      "description": "As an operator, I want `docs/integrations/langfuse.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/integrations/langfuse.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/integrations/langfuse` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 5,
+      "passes": true,
+      "notes": "Commit c225353. Copy rule executed: diff against 587f5524:docs/integrations/langfuse.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/integrations/langfuse renders H1 '\ud83d\udd2d Langfuse' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [],
+      "files": [
+        "docs/integrations/langfuse.md"
+      ],
+      "commit": "c225353"
+    },
+    {
+      "id": "US-006",
+      "title": "Sync `docs/installation.md`",
+      "description": "As an operator, I want `docs/installation.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/installation.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/installation` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 6,
+      "passes": true,
+      "notes": "Commit 2ad3fa5. Copy rule executed: diff against 587f5524:docs/installation.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/installation renders H1 'Installation' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [
+        "US-002",
+        "US-003"
+      ],
+      "files": [
+        "docs/installation.md"
+      ],
+      "commit": "2ad3fa5"
+    },
+    {
+      "id": "US-007",
+      "title": "Sync `docs/lifecycle-commands.md`",
+      "description": "As an operator, I want `docs/lifecycle-commands.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/lifecycle-commands.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/lifecycle-commands` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 7,
+      "passes": true,
+      "notes": "Commit 33f320e. Copy rule executed: diff against 587f5524:docs/lifecycle-commands.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/lifecycle-commands renders H1 'Lifecycle commands (agro)' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [
+        "US-001",
+        "US-003"
+      ],
+      "files": [
+        "docs/lifecycle-commands.md"
+      ],
+      "commit": "33f320e"
+    },
+    {
+      "id": "US-008",
+      "title": "Sync `docs/quickstart.md`",
+      "description": "As an operator, I want `docs/quickstart.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/quickstart.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/quickstart` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 8,
+      "passes": true,
+      "notes": "Commit 4e7d21f. Copy rule executed: diff against 587f5524:docs/quickstart.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/quickstart renders H1 'Quickstart' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [
+        "US-002",
+        "US-003"
+      ],
+      "files": [
+        "docs/quickstart.md"
+      ],
+      "commit": "4e7d21f"
+    },
+    {
+      "id": "US-009",
+      "title": "Sync `docs/deployment-prebuilt-image.md`",
+      "description": "As an operator, I want `docs/deployment-prebuilt-image.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/deployment-prebuilt-image.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/deployment-prebuilt-image` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 9,
+      "passes": true,
+      "notes": "Commit 2f2b629. Copy rule executed: diff against 587f5524:docs/deployment-prebuilt-image.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/deployment-prebuilt-image renders H1 'Creating a sandbox: agro sandbox install docker' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [
+        "US-004"
+      ],
+      "files": [
+        "docs/deployment-prebuilt-image.md"
+      ],
+      "commit": "2f2b629"
+    },
+    {
+      "id": "US-010",
+      "title": "Sync `docs/configuration.md`",
+      "description": "As an operator, I want `docs/configuration.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/configuration.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/configuration` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 10,
+      "passes": true,
+      "notes": "Commit 8fa91b7. Copy rule executed: diff against 587f5524:docs/configuration.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/configuration renders H1 'Configuration' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [
+        "US-004"
+      ],
+      "files": [
+        "docs/configuration.md"
+      ],
+      "commit": "8fa91b7"
+    },
+    {
+      "id": "US-011",
+      "title": "Sync `docs/runtimes/microsandbox.md`",
+      "description": "As an operator, I want `docs/runtimes/microsandbox.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/runtimes/microsandbox.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/runtimes/microsandbox` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 11,
+      "passes": true,
+      "notes": "Commit 0dde2ab. Copy rule executed: diff against 587f5524:docs/runtimes/microsandbox.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/runtimes/microsandbox renders H1 'MicroSandbox' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [],
+      "files": [
+        "docs/runtimes/microsandbox.md"
+      ],
+      "commit": "0dde2ab"
+    },
+    {
+      "id": "US-012",
+      "title": "Sync `docs/harnesses/overview.md`",
+      "description": "As an operator, I want `docs/harnesses/overview.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/harnesses/overview.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/harnesses/overview` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 12,
+      "passes": true,
+      "notes": "Commit 66f0d8d. Copy rule executed: diff against 587f5524:docs/harnesses/overview.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/harnesses/overview renders H1 'Harnesses Overview' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [
+        "US-001",
+        "US-002"
+      ],
+      "files": [
+        "docs/harnesses/overview.md"
+      ],
+      "commit": "66f0d8d"
+    },
+    {
+      "id": "US-013",
+      "title": "Sync `docs/integrations/slack.md`",
+      "description": "As an operator, I want `docs/integrations/slack.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/integrations/slack.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/integrations/slack` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 13,
+      "passes": true,
+      "notes": "Commit 7850581. Copy rule executed: diff against 587f5524:docs/integrations/slack.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/integrations/slack renders H1 'Slack' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [],
+      "files": [
+        "docs/integrations/slack.md"
+      ],
+      "commit": "7850581"
+    },
+    {
+      "id": "US-014",
+      "title": "Sync `docs/contributing.md`",
+      "description": "As an operator, I want `docs/contributing.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/contributing.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/contributing` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 14,
+      "passes": true,
+      "notes": "Commit 6eef8c1. Copy rule executed: diff against 587f5524:docs/contributing.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/contributing renders H1 'Contributing to AGRO' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [],
+      "files": [
+        "docs/contributing.md"
+      ],
+      "commit": "6eef8c1"
+    },
+    {
+      "id": "US-015",
+      "title": "Sync `docs/harnesses/hermes.md`",
+      "description": "As an operator, I want `docs/harnesses/hermes.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/harnesses/hermes.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/harnesses/hermes` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 15,
+      "passes": true,
+      "notes": "Commit b4fe9cf. Copy rule executed: diff against 587f5524:docs/harnesses/hermes.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/harnesses/hermes renders H1 'Hermes' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [],
+      "files": [
+        "docs/harnesses/hermes.md"
+      ],
+      "commit": "b4fe9cf"
+    },
+    {
+      "id": "US-016",
+      "title": "Sync `docs/glossary.md`",
+      "description": "As an operator, I want `docs/glossary.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/glossary.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/glossary` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 16,
+      "passes": true,
+      "notes": "Commit 3d8f1c3. Copy rule executed: diff against 587f5524:docs/glossary.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/glossary renders H1 'Glossary' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [],
+      "files": [
+        "docs/glossary.md"
+      ],
+      "commit": "3d8f1c3"
+    },
+    {
+      "id": "US-017",
+      "title": "Sync `docs/security-considerations.md`",
+      "description": "As an operator, I want `docs/security-considerations.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/security-considerations.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/security-considerations` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 17,
+      "passes": true,
+      "notes": "Commit 58d4929. Copy rule executed: diff against 587f5524:docs/security-considerations.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/security-considerations renders H1 'Security considerations' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [],
+      "files": [
+        "docs/security-considerations.md"
+      ],
+      "commit": "58d4929"
+    },
+    {
+      "id": "US-018",
+      "title": "Sync `docs/harnesses/pi.md`",
+      "description": "As an operator, I want `docs/harnesses/pi.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/harnesses/pi.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/harnesses/pi` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 18,
+      "passes": true,
+      "notes": "Commit d9d2124. Copy rule executed: diff against 587f5524:docs/harnesses/pi.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/harnesses/pi renders H1 'Pi' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [],
+      "files": [
+        "docs/harnesses/pi.md"
+      ],
+      "commit": "d9d2124"
+    },
+    {
+      "id": "US-019",
+      "title": "Sync `docs/integrations/github.md`",
+      "description": "As an operator, I want `docs/integrations/github.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/integrations/github.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/integrations/github` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 19,
+      "passes": true,
+      "notes": "Commit 13d0ff9. Copy rule executed: diff against 587f5524:docs/integrations/github.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/integrations/github renders H1 'GitHub' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [
+        "US-003"
+      ],
+      "files": [
+        "docs/integrations/github.md"
+      ],
+      "commit": "13d0ff9"
+    },
+    {
+      "id": "US-020",
+      "title": "Sync `docs/connecting.md`",
+      "description": "As an operator, I want `docs/connecting.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/connecting.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/connecting` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 20,
+      "passes": true,
+      "notes": "Commit b1d6b00. Copy rule executed: diff against 587f5524:docs/connecting.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/connecting renders H1 'Connecting to the Sandbox' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [],
+      "files": [
+        "docs/connecting.md"
+      ],
+      "commit": "b1d6b00"
+    },
+    {
+      "id": "US-021",
+      "title": "Sync `docs/harnesses/codex.md`",
+      "description": "As an operator, I want `docs/harnesses/codex.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/harnesses/codex.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/harnesses/codex` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 21,
+      "passes": true,
+      "notes": "Commit 5f9038c. Copy rule executed: diff against 587f5524:docs/harnesses/codex.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/harnesses/codex renders H1 'Codex' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [],
+      "files": [
+        "docs/harnesses/codex.md"
+      ],
+      "commit": "5f9038c"
+    },
+    {
+      "id": "US-022",
+      "title": "Sync `docs/runtimes/overview.md`",
+      "description": "As an operator, I want `docs/runtimes/overview.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/runtimes/overview.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/runtimes/overview` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 22,
+      "passes": true,
+      "notes": "Commit f4ec0df. Copy rule executed: diff against 587f5524:docs/runtimes/overview.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/runtimes/overview renders H1 'Runtimes Overview' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [],
+      "files": [
+        "docs/runtimes/overview.md"
+      ],
+      "commit": "f4ec0df"
+    },
+    {
+      "id": "US-023",
+      "title": "Sync `docs/integrations/sshd.md`",
+      "description": "As an operator, I want `docs/integrations/sshd.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/integrations/sshd.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/integrations/sshd` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 23,
+      "passes": true,
+      "notes": "Commit ec947dc. Copy rule executed: diff against 587f5524:docs/integrations/sshd.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/integrations/sshd renders H1 'SSH' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [],
+      "files": [
+        "docs/integrations/sshd.md"
+      ],
+      "commit": "ec947dc"
+    },
+    {
+      "id": "US-024",
+      "title": "Sync `docs/harnesses/muse-code.md`",
+      "description": "As an operator, I want `docs/harnesses/muse-code.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/harnesses/muse-code.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/harnesses/muse-code` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 24,
+      "passes": true,
+      "notes": "Commit 66423f2. Copy rule executed: diff against 587f5524:docs/harnesses/muse-code.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/harnesses/muse-code renders H1 'Muse Code' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [],
+      "files": [
+        "docs/harnesses/muse-code.md"
+      ],
+      "commit": "66423f2"
+    },
+    {
+      "id": "US-025",
+      "title": "Sync `docs/runtimes/docker.md`",
+      "description": "As an operator, I want `docs/runtimes/docker.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/runtimes/docker.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/runtimes/docker` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 25,
+      "passes": true,
+      "notes": "Commit f52e193. Copy rule executed: diff against 587f5524:docs/runtimes/docker.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/runtimes/docker renders H1 'Docker container' (OK), evidence/browser-h1.tsv. Divergence: the source autolink <https://docs.docker.com/engine/install/> fails the MDX build, so the line uses [url](url), as the old site copy did.",
+      "dependsOn": [],
+      "files": [
+        "docs/runtimes/docker.md"
+      ],
+      "commit": "f52e193"
+    },
+    {
+      "id": "US-026",
+      "title": "Sync `docs/intro.md`",
+      "description": "As an operator, I want `docs/intro.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/intro.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 26,
+      "passes": true,
+      "notes": "Commit 0515506. Copy rule executed: diff against 587f5524:docs/intro.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs renders H1 'AGRO' (OK), evidence/browser-h1.tsv. Repair 267a3cd0: the source anchor #3-sandbox-isolation... is stale in the harness; the link now uses #4-sandbox-isolation..., the current heading.",
+      "dependsOn": [],
+      "files": [
+        "docs/intro.md"
+      ],
+      "commit": "0515506"
+    },
+    {
+      "id": "US-027",
+      "title": "Sync `docs/harnesses/claude-code.md`",
+      "description": "As an operator, I want `docs/harnesses/claude-code.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/harnesses/claude-code.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/harnesses/claude-code` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 27,
+      "passes": true,
+      "notes": "Commit 7fd296a. Copy rule executed: diff against 587f5524:docs/harnesses/claude-code.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/harnesses/claude-code renders H1 'Claude Code' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [],
+      "files": [
+        "docs/harnesses/claude-code.md"
+      ],
+      "commit": "7fd296a"
+    },
+    {
+      "id": "US-028",
+      "title": "Sync `docs/integrations/herdr.md`",
+      "description": "As an operator, I want `docs/integrations/herdr.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/integrations/herdr.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/integrations/herdr` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 28,
+      "passes": true,
+      "notes": "Commit 93f18ff. Copy rule executed: diff against 587f5524:docs/integrations/herdr.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/integrations/herdr renders H1 'Herdr' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [],
+      "files": [
+        "docs/integrations/herdr.md"
+      ],
+      "commit": "93f18ff"
+    },
+    {
+      "id": "US-029",
+      "title": "Sync `docs/harnesses/grok-build.md`",
+      "description": "As an operator, I want `docs/harnesses/grok-build.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/harnesses/grok-build.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/harnesses/grok-build` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 29,
+      "passes": true,
+      "notes": "Commit 7c77d8d. Copy rule executed: diff against 587f5524:docs/harnesses/grok-build.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/harnesses/grok-build renders H1 'Grok Build' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [],
+      "files": [
+        "docs/harnesses/grok-build.md"
+      ],
+      "commit": "7c77d8d"
+    },
+    {
+      "id": "US-030",
+      "title": "Sync `docs/open-core.md`",
+      "description": "As an operator, I want `docs/open-core.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/open-core.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/open-core` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 30,
+      "passes": true,
+      "notes": "Commit ff8b525. Copy rule executed: diff against 587f5524:docs/open-core.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/open-core renders H1 'Open-core boundary' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [],
+      "files": [
+        "docs/open-core.md"
+      ],
+      "commit": "ff8b525"
+    },
+    {
+      "id": "US-031",
+      "title": "Sync `docs/harnesses/opencode.md`",
+      "description": "As an operator, I want `docs/harnesses/opencode.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/harnesses/opencode.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/harnesses/opencode` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 31,
+      "passes": true,
+      "notes": "Commit c6fc17e. Copy rule executed: diff against 587f5524:docs/harnesses/opencode.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/harnesses/opencode renders H1 'OpenCode' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [],
+      "files": [
+        "docs/harnesses/opencode.md"
+      ],
+      "commit": "c6fc17e"
+    },
+    {
+      "id": "US-032",
+      "title": "Sync `docs/integrations/pi-fff.md`",
+      "description": "As an operator, I want `docs/integrations/pi-fff.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/integrations/pi-fff.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/integrations/pi-fff` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 32,
+      "passes": true,
+      "notes": "Commit f8050c8. Copy rule executed: diff against 587f5524:docs/integrations/pi-fff.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/integrations/pi-fff renders H1 'Pi fff (file search)' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [],
+      "files": [
+        "docs/integrations/pi-fff.md"
+      ],
+      "commit": "f8050c8"
+    },
+    {
+      "id": "US-033",
+      "title": "Sync `docs/integrations/debugmcp.md`",
+      "description": "As an operator, I want `docs/integrations/debugmcp.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/integrations/debugmcp.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/integrations/debugmcp` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 33,
+      "passes": true,
+      "notes": "Commit 6c0d4a6. Copy rule executed: diff against 587f5524:docs/integrations/debugmcp.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/integrations/debugmcp renders H1 'DebugMCP' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [],
+      "files": [
+        "docs/integrations/debugmcp.md"
+      ],
+      "commit": "6c0d4a6"
+    },
+    {
+      "id": "US-034",
+      "title": "Sync `docs/resources.md`",
+      "description": "As an operator, I want `docs/resources.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/resources.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/resources` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 34,
+      "passes": true,
+      "notes": "Commit 112edea. Copy rule executed: diff against 587f5524:docs/resources.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/resources renders H1 'Resources' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [],
+      "files": [
+        "docs/resources.md"
+      ],
+      "commit": "112edea"
+    },
+    {
+      "id": "US-035",
+      "title": "Sync `docs/harnesses/t3code.md`",
+      "description": "As an operator, I want `docs/harnesses/t3code.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/harnesses/t3code.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/harnesses/t3code` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 35,
+      "passes": true,
+      "notes": "Commit 5c469de. Copy rule executed: diff against 587f5524:docs/harnesses/t3code.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/harnesses/t3code renders H1 'T3 Code' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [],
+      "files": [
+        "docs/harnesses/t3code.md"
+      ],
+      "commit": "5c469de"
+    },
+    {
+      "id": "US-036",
+      "title": "Sync `docs/property-testing.md`",
+      "description": "As an operator, I want `docs/property-testing.md` to match the harness page, so that the site describes the current AGRO.",
+      "acceptanceCriteria": [
+        "`docs/property-testing.md` follows the copy rule.",
+        "`pnpm build` exits 0, and the build log has no broken-link warning for this page.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/property-testing` shows the harness H1. Verify in browser using agent-browser skill."
+      ],
+      "priority": 36,
+      "passes": true,
+      "notes": "Commit 1dbe041. Copy rule executed: diff against 587f5524:docs/property-testing.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/property-testing renders H1 'Property-Based Testing Convention' (OK), evidence/browser-h1.tsv.",
+      "dependsOn": [],
+      "files": [
+        "docs/property-testing.md"
+      ],
+      "commit": "1dbe041"
+    }
+  ]
+}

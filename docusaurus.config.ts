@@ -99,6 +99,7 @@ const config: Config = {
           { from: "/docs/agents/opencode", to: "/docs/harnesses/opencode" },
           { from: "/docs/agents/pi", to: "/docs/harnesses/pi" },
           { from: "/docs/agents/t3code", to: "/docs/harnesses/t3code" },
+          { from: "/docs/oh-directory-layout", to: "/docs/agro-directory-layout" },
         ],
       },
     ],

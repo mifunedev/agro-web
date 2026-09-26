@@ -5,27 +5,25 @@ title: "Installation"
 
 # Installation
 
-Open Harness is a portable harness that boots an isolated Docker sandbox. The `agro` CLI is the only front door: it creates a sandbox (`agro sandbox install docker`) and drives the rest of the lifecycle; `oh update` equips a checkout with the control plane during the compatibility window. Two shapes exist — a sandbox on its own, running the published image, or a sandbox with a checkout bind-mounted into it (`--repo`) — and both use the same commands. See [lifecycle commands](lifecycle-commands.md) for the verb reference.
-
-Every `agro` verb is also available as `oh <verb>`: `oh` is the compatibility alias for the same executable, and the [AGRO compatibility contract](https://github.com/mifunedev/agro/blob/main/docs/agro-compatibility.md) states how long it stays. This page writes `agro`.
+AGRO is a portable harness that boots an isolated Docker sandbox. The `agro` CLI is the only front door. The CLI creates a sandbox (`agro sandbox install docker`) and drives the rest of the lifecycle. `agro vendor` equips a checkout with the control plane. Two shapes exist: a sandbox on its own that runs the published image, and a sandbox with a checkout bind-mounted into it. Both shapes use the same commands; `--checkout` selects the second shape. See [lifecycle commands](lifecycle-commands.md) for the verb reference.
 
 Installing this harness never means cloning it onto your host. There is no fork step, no host-side source checkout, and no managed clone directory. You install the CLI, create a sandbox, and work inside it.
 
-The CLI writes only what you ask it to: a registry entry under `~/.oh/sandboxes/<name>/`, and — when you run `oh update` — `.oh/` and `crons/` inside a checkout. It writes no `AGENTS.md`, no provider configuration, and no `.gitignore` line beyond the `.env` line `agro secret set` adds inside a git checkout. Those files are yours.
+The CLI writes only what you ask it to: a registry entry under `~/.agro/sandboxes/<name>/`, and — when you run `agro vendor` — `.agro/` and `crons/` inside a checkout. It writes no `AGENTS.md`, no provider configuration, and no `.gitignore` line beyond the `.env` line `agro secret set` adds inside a git checkout. Those files are yours.
 
 ## Prerequisites
 
 | Dependency | Required for | Install |
 |---|---|---|
 | Docker (with Compose plugin) | Sandbox image | [docs.docker.com/get-docker](https://docs.docker.com/get-docker/) |
-| git | Cloning a repo, and `oh update --from-remote` | [git-scm.com](https://git-scm.com/) |
+| git | Cloning a repo, and `agro vendor --from-remote` | [git-scm.com](https://git-scm.com/) |
 | Node.js ≥ 20 (22 recommended) | Running the `agro` CLI itself | [nodejs.org](https://nodejs.org/) — or let [`get-agro.sh`](#get-the-cli-agro) install nvm + Node 22 for you |
 
-That is the entire host requirement. Node runs `agro` and nothing else: pnpm, Python, and every AI CLI live inside the sandbox.
+These three dependencies make up the entire host requirement. Node runs `agro` and nothing else: pnpm, Python, and every AI CLI live inside the sandbox.
 
 ## Get the CLI: `agro`
 
-The CLI is published as [`@mifune/agro`](https://www.npmjs.com/package/@mifune/agro). With Node.js ≥ 20 on your host, install it globally or run it zero-install:
+The npm package [`@mifune/agro`](https://www.npmjs.com/package/@mifune/agro) publishes the CLI. With Node.js ≥ 20 on your host, install the package globally or run the package zero-install:
 
 ```bash
 npm install -g @mifune/agro          # puts `agro` on your PATH
@@ -47,29 +45,42 @@ curl -fsSL -o get-agro.sh https://agro.mifune.dev/get-agro.sh
 bash get-agro.sh
 ```
 
-If `agro` is not found after the piped form, add the install directory to the current shell's PATH: `export PATH="$HOME/.local/bin:$PATH"`. Environment overrides: `AGRO_BIN_DIR=<dir>` (install location, default `~/.local/bin`), `AGRO_JS_URL=<url>` (artifact URL), `AGRO_NVM_VERSION=<tag>` (nvm version for the Node install), `AGRO_GITHUB_REPO=<owner>/<repo>` (the repository whose latest GitHub release hosts the artifact, default `mifunedev/agro`), `AGRO_ASSUME_YES=1` (same as `--yes`); `--yes`/`--no` accept or decline the Node-install prompt. `get-agro.sh` reads only the `AGRO_*` names. There is no source-build fallback, so `get-agro.sh` has no ref override.
+If the shell cannot find `agro` after the piped form, add the install directory to the current shell's PATH: `export PATH="$HOME/.local/bin:$PATH"`. Environment overrides: `AGRO_BIN_DIR=<dir>` (install location, default `~/.local/bin`), `AGRO_JS_URL=<url>` (artifact URL), `AGRO_NVM_VERSION=<tag>` (nvm version for the Node install), `AGRO_ASSUME_YES=1` (same as `--yes`); `--yes`/`--no` accept or decline the Node-install prompt. Each `AGRO_<NAME>` falls back to the legacy `OH_<NAME>` spelling; when both hold values that differ, the AGRO value wins and a warning names the two keys. There is no source-build fallback, so `get-agro.sh` has no repository or ref override.
 
-Upgrade the installed CLI later with `agro update`; it upgrades the running executable through the mechanism that installed it (npm or `get-agro.sh`) and touches no project file. See [lifecycle commands](lifecycle-commands.md#upgrading-the-cli-agro-update).
+Upgrade the installed CLI later with `agro self-upgrade`. The upgrade follows the mechanism that installed the running executable (npm or `get-agro.sh`) and touches no project file. See [lifecycle commands](lifecycle-commands.md#upgrading-the-cli-agro-self-upgrade).
 
 ### Package and PATH rules
 
-- `@mifune/agro` ships only the `agro` executable. The retained legacy package `@mifune/openharness` ships only the `oh` executable. Its own manifest pins the exact `@mifune/agro` dependency version.
-- Both packages may be installed together. Installing or removing either never removes the other's executable.
+- `@mifune/agro` ships the single `agro` executable. The retired `@mifune/openharness` shim and its `oh` executable are no longer published.
 - `npx @mifune/agro <verb>` runs the CLI without a global install.
 - A standalone `get-agro.sh` install (`~/.local/bin/agro`) and an npm install can coexist. `agro update` upgrades the executable that is running, and it refuses when another `agro` is earlier on PATH than the one it would replace; remove or reorder one of them first.
-- `agro` reads and writes exactly the files `oh` does: `~/.oh/sandboxes/<name>/`, `oh.json`, `.oh/`, and `OH_*` variables. No `.agro/`, `agro.json`, or `~/.agro` is created.
+- State is AGRO-native only: `~/.agro/sandboxes/<name>/agro.json`, the `.agro/` control plane, and `AGRO_*` variables. The legacy `~/.oh` registry, `.oh/` control plane, `oh.json` and `OH_*` variables no longer resolve.
 
-### Compatibility entry point (`oh`)
+### Standalone install (`get-agro.sh`)
 
-`oh` remains installable for the whole compatibility window and runs the same bundle as `agro`. Get it from npm as [`@mifune/openharness`](https://www.npmjs.com/package/@mifune/openharness) — a shim that contains no CLI code and pins the exact `@mifune/agro` version it delegates to:
+Bootstrap with `get-agro.sh`. The script installs the single self-contained `agro` binary to `~/.local/bin/agro`. The script clones no repo and does not touch an existing `~/.agro` checkout. If Node.js ≥ 20 is missing, the script offers to install nvm + Node 22. The script then sources nvm, so `agro` works in the same shell:
 
 ```bash
-npm install -g @mifune/openharness   # puts `oh` on your PATH
-# ...or, without a global install:
-npx @mifune/openharness sandbox install docker
+curl -fsSL https://agro.mifune.dev/get-agro.sh | bash
 ```
 
-The curl bootstrap installs only `agro`; use [`get-agro.sh`](#get-the-cli-agro). `oh update` is the project-payload command, not a self-upgrade: to upgrade the `oh` shim, run `npm install -g @mifune/openharness` again, or move to `@mifune/agro` and use `agro update`.
+`source <(curl -fsSL https://agro.mifune.dev/get-agro.sh)` installs *and* puts `agro` on the running shell's PATH. After the plain piped form, `export PATH="$HOME/.local/bin:$PATH"` does the same. Review-first alternative:
+
+```bash
+curl -fsSL -o get-agro.sh https://agro.mifune.dev/get-agro.sh
+# Review get-agro.sh in your editor or pager before running it.
+bash get-agro.sh
+```
+
+Environment overrides:
+
+- `AGRO_BIN_DIR=<dir>`: install location, default `~/.local/bin`.
+- `AGRO_JS_URL=<url>`: prebuilt bundle URL.
+- `AGRO_GITHUB_REPO=<org>/<fork>` / `AGRO_GITHUB_REF=<ref>`: source for `get-agro.sh`'s build fallback. `get-agro.sh` reads `AGRO_GITHUB_REPO` only to pick the release that hosts its artifacts.
+- `AGRO_NVM_VERSION=<tag>`: nvm version for the Node install.
+- `--yes`/`--no`: auto-accept or decline the Node-install prompt.
+
+`agro vendor` is the project-payload command, not a self-upgrade. Use `agro self-upgrade` (or its `agro update` alias) to upgrade the installed CLI.
 
 ## Create the sandbox
 
@@ -79,19 +90,23 @@ The curl bootstrap installs only `agro`; use [`get-agro.sh`](#get-the-cli-agro).
 agro sandbox install docker
 ```
 
-The wizard asks for the sandbox name, timezone, git identity, SSH (and its host port), and the host Docker socket, then writes `~/.oh/sandboxes/<name>/oh.json`. `--yes` keeps every default and asks nothing. Edit one field later with `agro config set --sandbox <name> <field> <value>`, and set a secret with `agro secret set --sandbox <name> <KEY>`. See [Configuration](./configuration.md) for the field reference, and the comments in `.example.env` for every allow-listed secret.
+The wizard asks for the sandbox name, timezone, git identity, SSH (and its host port), and the host Docker socket, then writes `~/.agro/sandboxes/<name>/agro.json`. `--yes` keeps every default and asks nothing. Edit one field later with `agro config set --sandbox <name> <field> <value>`, and set a secret with `agro secret set --sandbox <name> <KEY>`. See [Configuration](./configuration.md) for the field reference, and the comments in `.example.env` for every allow-listed secret.
 
-Bind an existing checkout with `--repo` when you want the sandbox to work on your own project:
+`--checkout <dir>` takes a host path. The CLI binds that directory at `/home/sandbox/harness`. Bind an existing checkout when you want the sandbox to work on your own project:
 
 ```bash
-agro sandbox install docker --repo "$PWD" --name <your-project>
+agro sandbox install docker --checkout "$PWD" --name <your-project>
 ```
+
+The CLI selects build mode only when `<dir>/.devcontainer/Dockerfile` exists. A `--checkout` path without that file binds the directory and runs the published image. The flag `--repo` and the `agro.json` field `repo` remain supported aliases for `--checkout` and `checkout`.
+
+`--checkout` does not control where the sandbox persists. To persist `/home/sandbox` at a host path, pass `--home-mount <dir>` at create time. See [Persistent storage](#persistent-storage).
 
 ### What the sandbox runs
 
-`agro sandbox install docker` materialises the compose files and the wrapper into the entry, then runs `.oh/scripts/docker-compose.sh up -d`, which resolves the compose overlays your `oh.json` selects. Running `docker compose -f .devcontainer/docker-compose.yml up -d --build` by hand skips that resolution and applies **no** overlays.
+`agro sandbox install docker` materialises the compose files and the wrapper into the entry, then runs `.agro/scripts/docker-compose.sh up -d`, which resolves the compose overlays your `agro.json` selects. Running `docker compose -f .devcontainer/docker-compose.yml up -d --build` by hand skips that resolution and applies **no** overlays.
 
-With `--repo` and `image.mode` set to `build`, a cold Docker cache takes around ten minutes; subsequent starts are a few seconds. The default is to pull the published release image instead — see [`agro sandbox install docker`](deployment-prebuilt-image.md) for the image-mode recipe and the `--image` / `--no-build` flags.
+The CLI sets `image.mode` to `build` only when the `--checkout` path holds `.devcontainer/Dockerfile`. In build mode a cold Docker cache takes around ten minutes; subsequent starts are a few seconds. The default is to pull the published release image instead — see [`agro sandbox install docker`](deployment-prebuilt-image.md) for the image-mode recipe and the `--image` / `--no-build` flags.
 
 Check the sandbox health before attaching:
 
@@ -100,7 +115,7 @@ docker ps --filter "name=<name>" --format "{{.Names}} {{.Status}}"
 docker inspect --format '{{json .State.Health}}' <name>
 ```
 
-A healthy sandbox reports the systemd units `openharness-bootstrap.service` and `openharness-cron.service` as active; optional Slack and Hermes dashboard tmux sessions are checked only when configured. To debug a failure from inside the container, run `bash /home/sandbox/harness/.oh/scripts/sandbox-healthcheck.sh` for the exact unit or session at fault, then `systemctl status openharness-cron.service` and `journalctl -u openharness-cron.service` for the detail. For a temporary local escape hatch, add a Compose override with `services.sandbox.healthcheck.disable: true`; do not commit that override unless you are deliberately changing the harness health policy.
+A healthy sandbox reports the systemd units `agro-bootstrap.service` and `agro-cron.service` as active. The healthcheck checks the optional Slack and Hermes dashboard tmux sessions only when you configure those sessions. To debug a failure from inside the container, run `bash /home/sandbox/harness/.agro/scripts/sandbox-healthcheck.sh` for the exact unit or session at fault. For a temporary local escape hatch, add a Compose override with `services.sandbox.healthcheck.disable: true`. Do not commit that override unless you deliberately change the harness health policy.
 
 ### Open a shell
 
@@ -108,227 +123,50 @@ A healthy sandbox reports the systemd units `openharness-bootstrap.service` and 
 agro shell <name>
 ```
 
-Omit the name when exactly one sandbox is registered, or when you are standing in the checkout it was created for. `agro sandbox list` prints every registered name.
+Omit the name when the registry holds exactly one sandbox, or when you stand in the checkout that a sandbox binds. `agro sandbox list` prints every registered name.
 
-`agro config repo` (and `oh config repo`) creates a repository and re-points `origin` for the retired clone-and-own recipe. It stays supported through the [AGRO compatibility](https://github.com/mifunedev/agro/blob/main/docs/agro-compatibility.md) window and is not the current onboarding path.
+### GitHub authentication and repository work
 
-## Optional compatibility and historical installer workflows
+Creating the sandbox needs no GitHub account, and local sandbox use stays available without one. Pushing, creating a repository, and opening a pull request need one. First, complete the GitHub-login prerequisite inside the sandbox: `gh auth login`, `gh auth setup-git`, `gh auth status`, and an account check. Only then hand the workspace to a coding agent. [Quickstart → Authenticate GitHub before any repository work](./quickstart.md#authenticate-github-before-any-repository-work) holds the five steps and the two optional agent prompts (private versioning; AGRO contribution). [GitHub auth](./integrations/github.md) holds command-level detail and recovery. [Contributing](./contributing.md) holds the contribution workflow.
 
-The current path is [Get the CLI](#get-the-cli-agro), then [Create the sandbox](#create-the-sandbox). The sections below keep clone, fork, `install.sh`, and `config repo` recipes for compatibility. They are not required.
-
-### Self-hosting: existing clone
-
-If you've already cloned your fork — or cloned upstream and re-pointed the remote — run the installer from inside the directory. It auto-detects the local repo and skips any network clone:
-
-```bash
-cd <your-clone>
-bash .oh/scripts/install.sh
-```
-
-The installer prompts for sandbox name, timezone, and git identity, writes the non-secrets to the tracked `oh.json` and any secrets to the gitignored root `.env`, and starts the sandbox. No `OH_GITHUB_REPO` environment variable required.
-
-### Fork-and-clone
-
-1. Fork `mifunedev/agro` on GitHub.
-2. Clone your fork:
-   ```bash
-   git clone --recurse-submodules https://github.com/<your-org>/<your-fork>.git && cd <your-fork>
-   ```
-3. Run the installer — it detects the local clone automatically:
-   ```bash
-   bash .oh/scripts/install.sh
-   ```
-   The installer requires Node.js ≥ 20 and installs `oh`, bootstrapping Node via
-   nvm if it is missing, so it no longer leaves you with a Node-free host. Your
-   answers are written to `oh.json` (see [Configuration](./configuration.md)); the
-   gitignored `.env` receives only secrets.
-
-### Clone-and-own: private origin and upstream (historical) {#clone-and-own-private-origin-and-upstream-recommended}
-
-This recipe is a compatibility workflow. The current path does not clone the harness onto the host.
-
-The historical path for a long-lived harness: clone upstream, make
-**your** repo the `origin`, and keep `mifunedev/agro` as `upstream` so you can
-pull framework updates and open PRs back. Creating the private repo and setting the
-remotes happens **inside the sandbox**, after GitHub auth, so the SSH key generated
-there is the one used for pushes.
-
-1. Clone upstream, create a sandbox against that checkout, and open a shell (`agro` from npm or `get-agro.sh` — see [Get the CLI](#get-the-cli-agro)):
-   ```bash
-   git clone --recurse-submodules https://github.com/mifunedev/agro.git ~/.openharness
-   cd ~/.openharness
-   agro sandbox install docker --repo "$PWD" --name openharness
-                          # wizard: name, timezone, git identity, SSH, Docker socket
-   agro shell openharness   # attach as the sandbox user
-   agro tool install herdr  # a fresh sandbox has no herdr
-   herdr                  # first inside-sandbox command
-   ```
-   The answers are written to `~/.oh/sandboxes/openharness/oh.json`, not into the
-   checkout. Secrets go to that entry's `.env` with
-   `agro secret set --sandbox openharness <KEY>`.
-2. **Inside the initial Herdr pane**, authenticate GitHub over SSH — choose SSH as the protocol
-   and let `gh` generate a key (details: [GitHub auth](./integrations/github.md)):
-   ```bash
-   gh auth login       # GitHub.com → SSH → generate a new SSH key → paste a token
-   gh auth setup-git
-   ```
-3. Still inside the sandbox, create your own **private** repo, make it `origin`, and
-   keep the upstream you cloned from — all over SSH so the key from step 2 is used:
-   ```bash
-   agro config repo
-   ```
-   `agro config repo` asks for the owner, name, and visibility (default private), then
-   creates the repo, renames the existing `origin` to `openharness`, points `origin`
-   at yours, and pushes. It never runs unless you answer yes in that run: any
-   non-interactive shell skips it. If `gh` is missing or
-   unauthenticated it prints these commands instead of running them — the manual
-   fallback, which names the preserved upstream remote `upstream`:
-   ```bash
-   gh repo create <your-user>/openharness --private
-   git remote set-url origin git@github.com:<your-user>/openharness.git
-   git remote add upstream git@github.com:mifunedev/agro.git
-   git push -u origin HEAD
-   ```
-   Pull framework updates later with `git fetch upstream && git merge upstream/development`;
-   contribute back by opening PRs from your repo to `mifunedev/agro`.
-
-> Prefer HTTPS or an installer-driven bring-up? Re-point origin to your repo with
-> `git remote set-url origin https://github.com/<your-org>/<your-repo>.git` and run
-> `bash .oh/scripts/install.sh` instead of `oh sandbox install docker` — the
-> installer detects the local clone automatically.
-
-### One-line installer (historical)
-
-`install.sh` clones the harness repository. It is not the current onboarding path.
-
-```bash
-curl -fsSL https://agro.mifune.dev/install.sh | bash
-```
-
-### Review-first install
-
-Keep the one-liner for fast setup, but use this dependency-free flow when you want to inspect the remote installer first:
-
-```bash
-curl -fsSL -o openharness-install.sh https://agro.mifune.dev/install.sh
-# Review openharness-install.sh in your editor or pager before running it.
-bash openharness-install.sh
-```
-
-Open Harness requires Docker with Compose, Git, and Node.js ≥ 20 (see [Prerequisites](#prerequisites)). The installer bootstraps Node itself when it is missing.
-
-The installer:
-
-1. Verifies Docker and git are present, and installs Node ≥ 20 and the `oh` CLI when they are missing.
-2. Clones the repo into `~/.openharness` (or pulls latest if the directory already exists).
-3. Prompts for sandbox name, timezone, and git identity, then writes the non-secrets to the tracked `oh.json`.
-4. Creates the gitignored, mode-`0600` root `.env` from the tracked `.example.env` when missing (all keys commented — inert until you edit), and links `.devcontainer/.env` to it so VS Code "Reopen in Container" reads the same file. Non-secret settings stay in the tracked `oh.json`.
-5. Provisions the sandbox (`oh sandbox install docker --repo <clone>`).
-6. Prints the next-step `oh` commands (open a shell, stop, tear down).
-
-### Environment overrides
-
-| Variable | Effect |
-|---|---|
-| `OH_GITHUB_REPO=<owner>/<repo>` | GitHub repository to clone (default: `mifunedev/openharness`, the compatibility name that GitHub redirects to `mifunedev/agro`). Set to your fork's slug to install your fork's code. |
-| `OH_GITHUB_REF=<git-ref>` | Pin the cloned repo to a specific tag, branch, or SHA instead of `main`. |
-| `OH_INSTALL_REF=<git-ref>` | Back-compat alias for `OH_GITHUB_REF`. Both names work; `OH_GITHUB_REF` takes precedence when both are set. |
-| `OH_ASSUME_YES=1` | Accept defaults at every prompt. |
-| `SANDBOX_NAME=<name>` | Skip the "Container name" prompt. |
-
-`SANDBOX_NAME` falls back to the default (`openharness`) when no TTY is available.
-
-### Forking this harness
-
-To install your fork instead of the upstream repo, run the installer directly from your fork's raw URL and set `OH_GITHUB_REPO` to your fork's slug:
-
-```bash
-OH_GITHUB_REPO=<your-org>/<your-fork> curl -fsSL \
-  https://raw.githubusercontent.com/<your-org>/<your-fork>/main/.oh/scripts/install.sh | bash
-```
-
-Review-first fork install:
-
-```bash
-curl -fsSL -o openharness-install.sh \
-  https://raw.githubusercontent.com/<your-org>/<your-fork>/main/.oh/scripts/install.sh
-# Review openharness-install.sh, then run it against your fork.
-OH_GITHUB_REPO=<your-org>/<your-fork> bash openharness-install.sh
-```
-
-If your fork uses a default branch other than `main`, set `OH_GITHUB_REF=<branch>` and replace `main` in the URL. Forks restructuring the build assets should also patch the local-run detection in `.oh/scripts/install.sh` (the `-f .devcontainer/docker-compose.yml` check) to match the new layout.
-
-### Manual clone (historical)
-
-Use this path only when you already need a harness checkout. The current onboarding path does not clone.
-
-### 1. Clone the repository
-
-```bash
-# Forkers: substitute your fork URL here.
-git clone --recurse-submodules https://github.com/mifunedev/agro.git
-cd openharness
-```
-
-### 2. Create the sandbox
-
-```bash
-agro sandbox install docker --repo "$PWD" --name openharness
-```
-
-The wizard asks for the sandbox name, timezone, git identity, SSH (and its host port), and the host Docker socket, then writes `~/.oh/sandboxes/openharness/oh.json`. `--yes` keeps every default and asks nothing. Edit one field later with `agro config set --sandbox openharness <field> <value>`, and set a secret with `agro secret set --sandbox openharness <KEY>`. See [Configuration](./configuration.md) for the field reference, and the comments in `.example.env` for every allow-listed secret.
-
-### 3. What the sandbox runs
-
-`agro sandbox install docker` materialises the compose files and the wrapper into the entry, then runs `.oh/scripts/docker-compose.sh up -d`, which resolves the compose overlays your `oh.json` selects. Running `docker compose -f .devcontainer/docker-compose.yml up -d --build` by hand skips that resolution and applies **no** overlays.
-
-With `--repo` and `image.mode` set to `build`, a cold Docker cache takes around ten minutes; subsequent starts are a few seconds. The default is to pull the published release image instead — see [`agro sandbox install docker`](deployment-prebuilt-image.md) for the image-mode recipe and the `--image` / `--no-build` flags.
-
-Check the sandbox health before attaching:
-
-```bash
-docker ps --filter "name=openharness" --format "{{.Names}} {{.Status}}"
-docker inspect --format '{{json .State.Health}}' openharness
-```
-
-A healthy sandbox reports the systemd units `openharness-bootstrap.service` and `openharness-cron.service` as active; optional Slack and Hermes dashboard tmux sessions are checked only when configured. To debug a failure from inside the container, run `bash /home/sandbox/harness/.oh/scripts/sandbox-healthcheck.sh` for the exact unit or session at fault, then `systemctl status openharness-cron.service` and `journalctl -u openharness-cron.service` for the detail. For a temporary local escape hatch, add a Compose override with `services.sandbox.healthcheck.disable: true`; do not commit that override unless you are deliberately changing the harness health policy.
-
-### 4. Open a shell
-
-```bash
-agro shell openharness
-```
-
-Omit the name when exactly one sandbox is registered, or when you are standing in the checkout it was created for. `agro sandbox list` prints every registered name.
+`agro config repo` (and `agro config repo`) creates a repository and re-points `origin` for the retired clone-and-own recipe. It stays supported through the [AGRO compatibility](./agro-compatibility.md) window and is not the canonical onboarding path.
 
 ## Equip an existing repo
 
-A sandbox created above runs the published image and needs no repository of yours. This section is optional: it equips **your existing project repo** with the control plane and drives the sandbox without keeping a harness checkout on your host. The host requirements are the same [Prerequisites](#prerequisites) — Docker, git, and Node ≥ 20 — and the CLI comes from [Get the CLI](#get-the-cli-agro). The published package is one single self-contained bundle: it carries the compose files and the wrapper a sandbox needs, and `oh update` carries the `.oh/` payload (falling back to an on-demand fetch, no repo clone). `agro update` upgrades the CLI; `oh update` vendors project files.
+A sandbox created above runs the published image and needs no repository of yours. This section covers the other shape. The other shape equips **your existing project repo** with the control plane and drives the sandbox. The other shape still keeps no harness checkout on your host. The host requirements match [Prerequisites](#prerequisites): Docker, git, and Node ≥ 20. The CLI comes from [Get the CLI](#get-the-cli-agro). The published package is one self-contained bundle. The bundle carries the compose files and the wrapper that a sandbox needs. `agro vendor` carries the `.agro/` payload and falls back to an on-demand fetch, with no repo clone.
 
 Then, in any project:
 
 ```bash
-agro sandbox install docker              # create a sandbox from the published image
-agro sandbox install docker --repo <dir> # ...or bind a checkout at /home/sandbox/harness
-agro sandbox list                        # name, runtime, status, repo
-agro shell <name>                        # zsh in the running container
-agro tool install herdr                  # install the terminal workspace — nothing installs at boot
-agro harness install pi                  # install an agent CLI the same way
+agro sandbox install docker                  # create a sandbox from the published image
+agro sandbox install docker --checkout <dir> # ...or bind a checkout at /home/sandbox/harness
+agro sandbox list                            # name, runtime, status, checkout
+agro shell <name>                            # zsh in the running container
+agro tool install herdr                      # install the terminal workspace — nothing installs at boot
+agro harness install pi                      # install an agent CLI the same way
 agro gateway status                      # manage messaging client sessions (pi|hermes)
 ```
 
-To equip your own checkout with the control plane, run `oh update` inside it:
+To equip your own checkout with the control plane, run `agro vendor` inside it:
 
 ```bash
 cd <your-project>
-oh update                            # vendors .oh/ + crons/ from the CLI's bundled payload
-oh update --from-remote --ref v0.6.0 # ...or shallow-clone a pinned payload instead
-oh update --from <local-checkout>    # ...or vendor from a built checkout, offline
+agro vendor                            # vendors .agro/ + crons/ from the CLI's bundled payload
+agro vendor --from-remote --ref v0.6.0 # ...or shallow-clone a pinned payload instead
+agro vendor --from <local-checkout>    # ...or vendor from a built checkout, offline
 ```
 
-`oh update` equips an empty directory and upgrades an equipped one with the same command; a second run reports it is already up to date. It writes only `.oh/` and `crons/` — never `oh.json`, `.env`, `AGENTS.md`, `.gitignore`, `.devcontainer/`, or a provider directory. It never prompts. Payload precedence is `--from` > `--from-remote` > the CLI's bundled payload > a remote fetch announced on one line. `--from-remote` fetches over public HTTPS only — private or credential-prompting remotes fail fast (`GIT_TERMINAL_PROMPT=0`).
+`agro vendor` equips an empty directory and upgrades an equipped one with the same command; a second run reports that the directory is already up to date. It writes only `.agro/` and `crons/` — never `agro.json`, `.env`, `AGENTS.md`, `.gitignore`, `.devcontainer/`, or a provider directory. It never prompts. Payload precedence is `--from` > `--from-remote` > the CLI's bundled payload > a remote fetch announced on one line. `--from-remote` fetches over public HTTPS only — private or credential-prompting remotes fail fast (`GIT_TERMINAL_PROMPT=0`).
 
-A checkout bound with `--repo` mounts at `/home/sandbox/harness`. Without `--repo` the sandbox runs `ghcr.io/mifunedev/agro:latest` and seeds its workspace from the image — see [`agro sandbox install docker`](deployment-prebuilt-image.md) for that recipe and the `--image` / `--no-build` flags.
+A checkout equipped by an earlier release carries `.agro/` and `agro.json`, and both keep resolving. Move that checkout to the AGRO names when you choose:
+
+```bash
+cd <your-project>
+agro migrate --check   # print the plan, change nothing
+agro migrate           # .agro/ -> .agro/, agro.json -> agro.json, provider links re-pointed
+```
+
+A checkout bound with `--checkout` mounts at `/home/sandbox/harness`. Without `--checkout` the sandbox runs `ghcr.io/mifunedev/agro:<CLI version>` and seeds its workspace from the image. See [`agro sandbox install docker`](deployment-prebuilt-image.md) for that recipe and the `--image` / `--no-build` flags.
 
 ## Next step
 
@@ -338,17 +176,24 @@ Once installed, proceed to the [Quickstart](./quickstart.md) to authenticate ins
 
 The sandbox image ships a complete development environment. The required host dependencies are Docker with the Compose plugin, Git, and Node.js ≥ 20 (see [Prerequisites](#prerequisites)).
 
-Project-local Pi packages are loaded from `.pi/settings.json`; the defaults include `@tintinweb/pi-subagents`, `@tintinweb/pi-tasks`, `@narumitw/pi-goal`, `@narumitw/pi-codex-usage@0.6.2` for `/codex-status` plus fixed statusline usage timers, `@tifan/pi-recap` for `/recap` plus automatic idle/resume session summaries, `@trevonistrevon/pi-loop` for Monitor/Loop tools, and `@guwidoe/pi-prompt-suggester` for next-prompt suggestions.
+Pi loads project-local packages from `.pi/settings.json`. The defaults include:
+
+- `@tintinweb/pi-subagents`
+- `@tintinweb/pi-tasks`
+- `@narumitw/pi-goal`
+- `@narumitw/pi-codex-usage@0.6.2` for `/codex-status` plus fixed statusline usage timers
+- `@trevonistrevon/pi-loop` for Monitor/Loop tools
+- `@guwidoe/pi-prompt-suggester` for next-prompt suggestions
 
 ### Base image
 
 Debian Trixie (slim), the current Debian stable. The `sandbox` user has passwordless sudo.
 
-Docker's apt repository tracks the `trixie` suite, and it is now the only third-party apt source in the image. cloudflared used to force a `bookworm` suite here because Cloudflare publishes no Trixie suite (`pkg.cloudflare.com/cloudflared/dists/trixie` returns HTTP 404); moving it to a pinned, checksum-verified binary in the tool catalog removed that exception.
+Docker's apt repository tracks the `trixie` suite. Docker's repository is now the only third-party apt source in the image. cloudflared used to force a `bookworm` suite here, because Cloudflare publishes no Trixie suite (`pkg.cloudflare.com/cloudflared/dists/trixie` returns HTTP 404). AGRO now ships cloudflared as a pinned, checksum-verified binary from its tool catalog, and that move removed the exception.
 
 ### AI agent CLIs
 
-No agent CLI is baked into the image, and nothing installs one at boot. A
+The image contains no agent CLI, and nothing installs one at boot. A
 harness enters the sandbox only when you run `agro harness install <id>`, which
 installs into `~/.local` — inside the home mount — as the `sandbox` user. That
 placement is what makes an in-place upgrade possible: a copy in a root-owned
@@ -375,6 +220,7 @@ system path is unwritable from a running sandbox. Consequences worth knowing:
 | Hermes | `hermes` | Nous Research's self-improving agent CLI | `agro harness install hermes` |
 | [Muse Code](harnesses/muse-code.md) | `muse` | Meta's native terminal coding agent | `agro harness install muse-code` |
 | Grok Build | `grok` | xAI's proprietary Grok Build CLI (`@xai-official/grok@0.2.39`, Node >=20) | `agro harness install grok-build` |
+| [Antigravity CLI](harnesses/antigravity-cli.md) | `agy` | Google's terminal coding agent, installed from `https://antigravity.google/cli/install.sh` (aliased to `agy --dangerously-skip-permissions`) | `agro harness install antigravity-cli` |
 | T3 Code | `npx t3` | Browser UI over Claude/Codex/OpenCode | on demand, no install |
 
 Tools follow the same rule. `herdr`, `cloudflared`, `agent-browser`,
@@ -425,6 +271,23 @@ To use the desktop:
    `tailscale ip -4`.
 
 The desktop install changes no SSH firewall rule and sets no password.
+
+On the host, `agent-browser` installs a pinned release binary into `~/.local/bin`
+and never calls the operating system package manager. The installer does not download a
+browser. After the binary lands, the installer looks for an existing
+Chromium-family browser in this order: `AGENT_BROWSER_EXECUTABLE_PATH`,
+`google-chrome`, `google-chrome-stable`, `chromium`, `chromium-browser`,
+`brave-browser`, `microsoft-edge`. When none is present the install exits
+nonzero and names the remedy. Set the browser explicitly with:
+
+```bash
+export AGENT_BROWSER_EXECUTABLE_PATH=/path/to/chrome
+```
+
+agent-browser drives Chromium over CDP and Safari over WebDriver. Firefox is not
+a supported target. In the sandbox, the behavior stays the same: `agro tool install
+agent-browser` downloads Chrome for Testing and the browser libraries that Chrome needs,
+which is why that path asks to confirm about 1 GB first.
 
 Installing `tailscale` places the `tailscale` and `tailscaled` binaries in
 `~/.local/bin` and nothing more. It starts no daemon and joins no tailnet.
@@ -530,11 +393,11 @@ To remove `desktop`:
 
 ### DevOps & infrastructure
 
-`agro tool list` reports which of these are present, and `agro tool status <name>`
-adds a version where the tool has a verified version flag. Herdr and cloudflared
+`agro tool list` reports which tools below are present, and `agro tool status <name>`
+adds a version where a tool has a verified version flag. Herdr and cloudflared
 are `kind: "installable"` — `agro tool install <name>` puts a pinned,
-checksum-verified binary into `~/.local/bin`, and upgrades it in place. The rest
-are baked into the image, so there is nothing to install.
+checksum-verified binary into `~/.local/bin`, and upgrades it in place. The image
+already contains the rest, so the rest needs no install.
 
 | Tool | Purpose |
 |------|---------|
@@ -567,6 +430,7 @@ The sandbox user's `.bashrc` includes convenience aliases:
 ```
 claude  → claude --dangerously-skip-permissions
 codex   → codex --dangerously-bypass-approvals-and-sandbox
+agy     → agy --dangerously-skip-permissions
 ```
 
 ### Persistent storage
@@ -576,35 +440,41 @@ GitHub CLI token, the SSH keys, shell history, and any state a tool writes
 anywhere in `~` — persists through a **single mount at `/home/sandbox`**.
 
 By default Docker manages it as the named volume `<sandbox-name>_workspace`.
-Set `storage.homePath` in `oh.json` to an absolute **host** path and the same
+Set `storage.homePath` in `agro.json` to an absolute **host** path and the same
 mount becomes a bind, so you can back the sandbox home up, inspect it, or move
 it between machines:
 
 ```bash
-agro config set --sandbox <name> storage.homePath /srv/openharness-home
+agro config set --sandbox <name> storage.homePath /srv/agro-home
 ```
+
+Set the same path at create time with
+`agro sandbox install docker --home-mount <dir>`. After the named volume
+`<name>_workspace` exists, `agro config set storage.homePath` refuses the
+change. The next start would swap the mount source and orphan every file in
+that volume. Pass `--force` to override the refusal.
 
 Leave `storage.homePath` unset to keep the Docker-managed volume. Use a
 **dedicated, empty** directory — the sandbox takes ownership of everything in
 it, so never point it at your own host `$HOME`.
 
 The repository checkout is bind-mounted at `/home/sandbox/harness`, nested
-inside that mount. Its location is fixed, not configurable.
+inside that mount. No setting changes that location.
 
 The image ships its baked home at `/opt/home-seed`. On every boot the entrypoint
 copies in each **top-level** entry the mount does not already have, and never
-touches one it does — not even its permissions. A fresh mount comes up complete;
+touches an entry the mount has — not even the permissions of that entry. A fresh mount comes up complete;
 an image upgrade adds whatever new top-level entries it introduced (a new agent
-CLI's `~/.newtool`, say) and leaves everything you already have alone. It does
-not merge new files into a directory the mount already has, which is what the
-per-tool volumes did before.
+CLI's `~/.newtool`, say) and leaves everything you already have alone. The entrypoint
+does not merge new files into a directory the mount already has; the per-tool
+volumes did that merge before.
 
-Hermes is split: when the `hermes` binary is present (after
+Hermes differs: when the `hermes` binary is present (after
 `agro harness install hermes`), `HERMES_HOME` is the project-local
-bind-mounted `~/harness/.hermes/` directory. The entrypoint links `.hermes/skills/openharness` to the tracked
-shared skill directory (`.oh/skills/`) so Hermes sees the same harness skills as
-Claude, Codex, and Pi without copying them into runtime state. Project-local
-runtime contents are gitignored except `.hermes/README.md`.
+bind-mounted `~/harness/.hermes/` directory. The entrypoint links `.hermes/skills/agro` to the tracked
+shared skill directory (`.agro/skills/`) so Hermes sees the same harness skills as
+Claude, Codex, and Pi without copying them into runtime state. `.gitignore` excludes
+the project-local runtime contents except `.hermes/README.md`.
 
 `agro destroy` and `docker compose down -v` delete the named volume and everything
 in it — provider credentials included; use `agro stop` when you want them to
@@ -614,32 +484,32 @@ it, and `agro destroy` says so.
 #### Migrating from the per-tool volumes
 
 Releases before this change kept eleven separate volumes (`claude-auth`,
-`config-dir`, `ssh-config`, and so on). They are not migrated automatically.
+`config-dir`, `ssh-config`, and eight others). AGRO does not migrate those volumes automatically.
 **Before** upgrading, copy the old home out of the still-running container:
 
 ```bash
-mkdir -p /srv/openharness-home
-docker cp <sandbox-name>:/home/sandbox/. /srv/openharness-home
-rm -rf /srv/openharness-home/harness
-agro config set --sandbox <sandbox-name> storage.homePath /srv/openharness-home
+mkdir -p /srv/agro-home
+docker cp <sandbox-name>:/home/sandbox/. /srv/agro-home
+rm -rf /srv/agro-home/harness
+agro config set --sandbox <sandbox-name> storage.homePath /srv/agro-home
 ```
 
 The trailing `/.` matters: without it `docker cp` places the copy at
-`/srv/openharness-home/sandbox/` instead of unpacking its contents, and the
-sandbox comes up freshly seeded as though nothing was migrated. The `rm -rf`
+`/srv/agro-home/sandbox/` instead of unpacking its contents, and the
+sandbox comes up freshly seeded as though no migration happened. The `rm -rf`
 drops the copy of the repository checkout — `docker cp` reads through the bind
 mount, so the archive includes `harness/` with its `.git` and `node_modules`,
-which can be several GB and is shadowed by the checkout bind at runtime anyway.
+which can reach multiple GB. The checkout bind shadows that copy at runtime anyway.
 
 Then rebuild. To stay on a Docker-managed volume instead, copy that directory
 into the new volume once:
 
 ```bash
-docker run --rm -v <sandbox-name>_workspace:/to -v /srv/openharness-home:/from \
+docker run --rm -v <sandbox-name>_workspace:/to -v /srv/agro-home:/from \
   alpine cp -a /from/. /to/
 ```
 
-Skipping this loses every agent login and the SSH keys; nothing else breaks, and
-you simply sign in again.
+If you skip this step, you lose every agent login and the SSH keys. Nothing else
+breaks, and you sign in again.
 
-Downstream harness packs and Pi extensions can introduce additional volumes or bind-mount overlays by adding paths to `composeOverrides[]` in the tracked `oh.json`. That list is the one place overlay paths live, and only `oh` applies it: VS Code "Reopen in Container" reads `.devcontainer/docker-compose.yml` alone and applies [no overlays at all](lifecycle-commands.md#vs-code-reopen-in-container-applies-no-overlays).
+Downstream harness packs and Pi extensions can introduce additional volumes or bind-mount overlays by adding paths to `composeOverrides[]` in the tracked `agro.json`. That list is the one place for overlay paths, and only `agro` applies the list. VS Code "Reopen in Container" reads `.devcontainer/docker-compose.yml` alone and applies [no overlays at all](lifecycle-commands.md#vs-code-reopen-in-container-applies-no-overlays).

@@ -31,7 +31,7 @@ server that **any MCP-capable harness** can drive — breakpoints, stepping, var
 inspection, expression evaluation. Claude Code and Codex are pre-registered against it in this
 repo, so either can use it; it is **not** part of any single agent's auth and is unnecessary
 for the pure-terminal path. It becomes available when you take the **VS Code
-attach-to-container route** after `oh sandbox install docker` (the operator-attached path is **confirmed
+attach-to-container route** after `agro sandbox install docker` (the operator-attached path is **confirmed
 working** — validated on `oh-remote`, 2026-06-23):
 
 1. **Install the DebugMCP extension on the machine running VS Code** (your laptop, or the
@@ -39,7 +39,7 @@ working** — validated on `oh-remote`, 2026-06-23):
    **microsoft/DebugMCP** (`ozzafar.debugmcpextension`, v2.0.1) and install it there. It
    activates in the workspace/remote extension host, so it must be present where the IDE runs.
 2. **Attach VS Code to the running container** — Dev Containers → *Attach to Running
-   Container* → `openharness` (local), or Remote-SSH to the host first and then attach
+   Container* → `agro` (local), or Remote-SSH to the host first and then attach
    ([Connecting to the Sandbox](../connecting.md)). The attach provisions the VS Code server *inside* the
    container — the binary the headless image lacks.
 3. On attach the extension activates and binds the MCP server on `http://localhost:3001/mcp`.
@@ -252,7 +252,7 @@ or isolate processes *inside* the container — any local process that can open
 and Host/Origin validation as a narrower, browser-specific mitigation.
 
 A future `/really-debug` companion skill is a **design consideration only**:
-were it built, it would auto-install via the `.oh/skills` source-of-truth
+were it built, it would auto-install via the `.agro/skills` source-of-truth
 plus the per-provider symlinks, but no such skill exists today and none is
 created by this integration.
 
