@@ -3,10 +3,9 @@ sidebar_position: 10
 title: "Open-core boundary"
 ---
 
-
 # Open-core boundary
 
-Open Harness ships under [Apache-2.0](https://github.com/mifunedev/agro/blob/main/LICENSE). Mifune's hosted control
+AGRO ships under [Apache-2.0](https://github.com/mifunedev/agro/blob/development/LICENSE). Mifune's hosted control
 plane is separate and proprietary. This page states that split explicitly so
 an evaluator does not have to infer it from the code.
 
@@ -15,7 +14,7 @@ an evaluator does not have to infer it from the code.
 | Apache-2.0 | Proprietary |
 |---|---|
 | The runtime | The Mifune Console |
-| The `oh` CLI and public SDKs | Provisioning and fleet-management control plane |
+| The `agro` CLI and public SDKs | Provisioning and fleet-management control plane |
 | Container definitions and public deployment integrations | Billing, enterprise policy, RBAC, hosted operations |
 | The harness spec and interop formats | — |
 
@@ -25,14 +24,14 @@ the runtime.
 
 ## Why Apache-2.0 rather than MIT
 
-Open Harness's documented adoption model is clone-and-own — companies fork
+AGRO's documented adoption model is clone-and-own — companies fork
 the repo into private infrastructure and extend it. MIT's bare copyright
 grant is sufficient for that but leaves three gaps Apache-2.0 closes:
 
 - an **explicit patent license** from every contributor for claims their
   contribution infringes,
 - **patent-retaliation termination** if a recipient sues over the project,
-- an **explicit withholding of trademark rights** ([§6](https://github.com/mifunedev/agro/blob/main/LICENSE)) — a
+- an **explicit withholding of trademark rights** ([§6](https://github.com/mifunedev/agro/blob/development/LICENSE)) — a
   fork may run and sell the software but may not present itself as *Mifune*.
 
 The trademark point is load-bearing precisely because clone-and-own is
@@ -53,5 +52,5 @@ and future releases; it does not revoke past grants.
 
 ## Related
 
-- [`LICENSE`](https://github.com/mifunedev/agro/blob/main/LICENSE) · [`NOTICE`](https://github.com/mifunedev/agro/blob/main/NOTICE)
+- [`LICENSE`](https://github.com/mifunedev/agro/blob/development/LICENSE) · [`NOTICE`](https://github.com/mifunedev/agro/blob/development/NOTICE)
 - [Security considerations](security-considerations.md)
