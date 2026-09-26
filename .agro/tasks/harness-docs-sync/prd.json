@@ -55,7 +55,9 @@
       "priority": 3,
       "passes": false,
       "notes": "",
-      "dependsOn": [],
+      "dependsOn": [
+        "US-001"
+      ],
       "files": [
         "docs/agro-compatibility.md"
       ]

@@ -46,6 +46,8 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Description:** As an operator, I want the AGRO naming page on the site, so that the pages that link to it resolve.
 
+**Depends on:** US-001.
+
 **Acceptance Criteria:**
 
 - [ ] `docs/agro-compatibility.md` exists and follows the copy rule.
