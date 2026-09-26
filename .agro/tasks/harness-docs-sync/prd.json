@@ -15,12 +15,13 @@
         "`pnpm run check:docs-drift` exits 0."
       ],
       "priority": 1,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit 73148ec. AC1 executed: diff shows four ALLOW entries with file, token, and why. AC2 reasoned: the diff does not touch RETIRED. AC3 executed: pnpm test exit 0 (42 pass, 0 fail). AC4 executed: pnpm run check:docs-drift exit 0 on the integrated branch.",
       "dependsOn": [],
       "files": [
         "scripts/check-docs-drift.mjs"
-      ]
+      ],
+      "commit": "73148ec"
     },
     {
       "id": "US-002",
@@ -34,12 +35,13 @@
         "The rendered page at `/docs/harnesses/antigravity-cli` shows the heading \"Antigravity CLI\". Verify in browser using agent-browser skill."
       ],
       "priority": 2,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit 14e5e7c. Copy rule executed: diff against 587f5524:docs/harnesses/antigravity-cli.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/harnesses/antigravity-cli renders H1 'Antigravity CLI' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [],
       "files": [
         "docs/harnesses/antigravity-cli.md"
-      ]
+      ],
+      "commit": "14e5e7c"
     },
     {
       "id": "US-003",
@@ -53,14 +55,15 @@
         "The rendered page at `/docs/agro-compatibility` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 3,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit ecae74f. Copy rule executed: diff against 587f5524:docs/agro-compatibility.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/agro-compatibility renders H1 'AGRO naming: the cutover is complete' (OK), evidence/browser-h1.tsv. Depends on US-001 for the drift gate; integrated after it.",
       "dependsOn": [
         "US-001"
       ],
       "files": [
         "docs/agro-compatibility.md"
-      ]
+      ],
+      "commit": "ecae74f"
     },
     {
       "id": "US-004",
@@ -75,14 +78,15 @@
         "The rendered page at `/docs/agro-directory-layout` shows the harness H1, and `/docs/oh-directory-layout` redirects to it. Verify in browser using agent-browser skill."
       ],
       "priority": 4,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit 8dec6be. Copy rule executed: diff against 587f5524:docs/agro-directory-layout.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/agro-directory-layout renders H1 '.agro/ directory layout' (OK), evidence/browser-h1.tsv. Redirect executed: /docs/oh-directory-layout lands on /docs/agro-directory-layout (evidence/redirect.txt).",
       "dependsOn": [],
       "files": [
         "docs/oh-directory-layout.md",
         "docs/agro-directory-layout.md",
         "docusaurus.config.ts"
-      ]
+      ],
+      "commit": "8dec6be"
     },
     {
       "id": "US-005",
@@ -95,12 +99,13 @@
         "The rendered page at `/docs/integrations/langfuse` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 5,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit c225353. Copy rule executed: diff against 587f5524:docs/integrations/langfuse.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/integrations/langfuse renders H1 '\ud83d\udd2d Langfuse' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [],
       "files": [
         "docs/integrations/langfuse.md"
-      ]
+      ],
+      "commit": "c225353"
     },
     {
       "id": "US-006",
@@ -113,15 +118,16 @@
         "The rendered page at `/docs/installation` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 6,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit 2ad3fa5. Copy rule executed: diff against 587f5524:docs/installation.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/installation renders H1 'Installation' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [
         "US-002",
         "US-003"
       ],
       "files": [
         "docs/installation.md"
-      ]
+      ],
+      "commit": "2ad3fa5"
     },
     {
       "id": "US-007",
@@ -134,15 +140,16 @@
         "The rendered page at `/docs/lifecycle-commands` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 7,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit 33f320e. Copy rule executed: diff against 587f5524:docs/lifecycle-commands.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/lifecycle-commands renders H1 'Lifecycle commands (agro)' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [
         "US-001",
         "US-003"
       ],
       "files": [
         "docs/lifecycle-commands.md"
-      ]
+      ],
+      "commit": "33f320e"
     },
     {
       "id": "US-008",
@@ -155,15 +162,16 @@
         "The rendered page at `/docs/quickstart` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 8,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit 4e7d21f. Copy rule executed: diff against 587f5524:docs/quickstart.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/quickstart renders H1 'Quickstart' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [
         "US-002",
         "US-003"
       ],
       "files": [
         "docs/quickstart.md"
-      ]
+      ],
+      "commit": "4e7d21f"
     },
     {
       "id": "US-009",
@@ -176,14 +184,15 @@
         "The rendered page at `/docs/deployment-prebuilt-image` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 9,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit 2f2b629. Copy rule executed: diff against 587f5524:docs/deployment-prebuilt-image.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/deployment-prebuilt-image renders H1 'Creating a sandbox: agro sandbox install docker' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [
         "US-004"
       ],
       "files": [
         "docs/deployment-prebuilt-image.md"
-      ]
+      ],
+      "commit": "2f2b629"
     },
     {
       "id": "US-010",
@@ -196,14 +205,15 @@
         "The rendered page at `/docs/configuration` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 10,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit 8fa91b7. Copy rule executed: diff against 587f5524:docs/configuration.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/configuration renders H1 'Configuration' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [
         "US-004"
       ],
       "files": [
         "docs/configuration.md"
-      ]
+      ],
+      "commit": "8fa91b7"
     },
     {
       "id": "US-011",
@@ -216,12 +226,13 @@
         "The rendered page at `/docs/runtimes/microsandbox` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 11,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit 0dde2ab. Copy rule executed: diff against 587f5524:docs/runtimes/microsandbox.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/runtimes/microsandbox renders H1 'MicroSandbox' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [],
       "files": [
         "docs/runtimes/microsandbox.md"
-      ]
+      ],
+      "commit": "0dde2ab"
     },
     {
       "id": "US-012",
@@ -234,15 +245,16 @@
         "The rendered page at `/docs/harnesses/overview` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 12,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit 66f0d8d. Copy rule executed: diff against 587f5524:docs/harnesses/overview.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/harnesses/overview renders H1 'Harnesses Overview' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [
         "US-001",
         "US-002"
       ],
       "files": [
         "docs/harnesses/overview.md"
-      ]
+      ],
+      "commit": "66f0d8d"
     },
     {
       "id": "US-013",
@@ -255,12 +267,13 @@
         "The rendered page at `/docs/integrations/slack` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 13,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit 7850581. Copy rule executed: diff against 587f5524:docs/integrations/slack.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/integrations/slack renders H1 'Slack' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [],
       "files": [
         "docs/integrations/slack.md"
-      ]
+      ],
+      "commit": "7850581"
     },
     {
       "id": "US-014",
@@ -273,12 +286,13 @@
         "The rendered page at `/docs/contributing` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 14,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit 6eef8c1. Copy rule executed: diff against 587f5524:docs/contributing.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/contributing renders H1 'Contributing to AGRO' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [],
       "files": [
         "docs/contributing.md"
-      ]
+      ],
+      "commit": "6eef8c1"
     },
     {
       "id": "US-015",
@@ -291,12 +305,13 @@
         "The rendered page at `/docs/harnesses/hermes` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 15,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit b4fe9cf. Copy rule executed: diff against 587f5524:docs/harnesses/hermes.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/harnesses/hermes renders H1 'Hermes' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [],
       "files": [
         "docs/harnesses/hermes.md"
-      ]
+      ],
+      "commit": "b4fe9cf"
     },
     {
       "id": "US-016",
@@ -309,12 +324,13 @@
         "The rendered page at `/docs/glossary` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 16,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit 3d8f1c3. Copy rule executed: diff against 587f5524:docs/glossary.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/glossary renders H1 'Glossary' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [],
       "files": [
         "docs/glossary.md"
-      ]
+      ],
+      "commit": "3d8f1c3"
     },
     {
       "id": "US-017",
@@ -327,12 +343,13 @@
         "The rendered page at `/docs/security-considerations` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 17,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit 58d4929. Copy rule executed: diff against 587f5524:docs/security-considerations.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/security-considerations renders H1 'Security considerations' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [],
       "files": [
         "docs/security-considerations.md"
-      ]
+      ],
+      "commit": "58d4929"
     },
     {
       "id": "US-018",
@@ -345,12 +362,13 @@
         "The rendered page at `/docs/harnesses/pi` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 18,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit d9d2124. Copy rule executed: diff against 587f5524:docs/harnesses/pi.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/harnesses/pi renders H1 'Pi' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [],
       "files": [
         "docs/harnesses/pi.md"
-      ]
+      ],
+      "commit": "d9d2124"
     },
     {
       "id": "US-019",
@@ -363,14 +381,15 @@
         "The rendered page at `/docs/integrations/github` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 19,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit 13d0ff9. Copy rule executed: diff against 587f5524:docs/integrations/github.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/integrations/github renders H1 'GitHub' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [
         "US-003"
       ],
       "files": [
         "docs/integrations/github.md"
-      ]
+      ],
+      "commit": "13d0ff9"
     },
     {
       "id": "US-020",
@@ -383,12 +402,13 @@
         "The rendered page at `/docs/connecting` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 20,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit b1d6b00. Copy rule executed: diff against 587f5524:docs/connecting.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/connecting renders H1 'Connecting to the Sandbox' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [],
       "files": [
         "docs/connecting.md"
-      ]
+      ],
+      "commit": "b1d6b00"
     },
     {
       "id": "US-021",
@@ -401,12 +421,13 @@
         "The rendered page at `/docs/harnesses/codex` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 21,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit 5f9038c. Copy rule executed: diff against 587f5524:docs/harnesses/codex.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/harnesses/codex renders H1 'Codex' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [],
       "files": [
         "docs/harnesses/codex.md"
-      ]
+      ],
+      "commit": "5f9038c"
     },
     {
       "id": "US-022",
@@ -419,12 +440,13 @@
         "The rendered page at `/docs/runtimes/overview` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 22,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit f4ec0df. Copy rule executed: diff against 587f5524:docs/runtimes/overview.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/runtimes/overview renders H1 'Runtimes Overview' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [],
       "files": [
         "docs/runtimes/overview.md"
-      ]
+      ],
+      "commit": "f4ec0df"
     },
     {
       "id": "US-023",
@@ -437,12 +459,13 @@
         "The rendered page at `/docs/integrations/sshd` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 23,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit ec947dc. Copy rule executed: diff against 587f5524:docs/integrations/sshd.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/integrations/sshd renders H1 'SSH' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [],
       "files": [
         "docs/integrations/sshd.md"
-      ]
+      ],
+      "commit": "ec947dc"
     },
     {
       "id": "US-024",
@@ -455,12 +478,13 @@
         "The rendered page at `/docs/harnesses/muse-code` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 24,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit 66423f2. Copy rule executed: diff against 587f5524:docs/harnesses/muse-code.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/harnesses/muse-code renders H1 'Muse Code' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [],
       "files": [
         "docs/harnesses/muse-code.md"
-      ]
+      ],
+      "commit": "66423f2"
     },
     {
       "id": "US-025",
@@ -473,12 +497,13 @@
         "The rendered page at `/docs/runtimes/docker` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 25,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit f52e193. Copy rule executed: diff against 587f5524:docs/runtimes/docker.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/runtimes/docker renders H1 'Docker container' (OK), evidence/browser-h1.tsv. Divergence: the source autolink <https://docs.docker.com/engine/install/> fails the MDX build, so the line uses [url](url), as the old site copy did.",
       "dependsOn": [],
       "files": [
         "docs/runtimes/docker.md"
-      ]
+      ],
+      "commit": "f52e193"
     },
     {
       "id": "US-026",
@@ -491,12 +516,13 @@
         "The rendered page at `/docs` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 26,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit 0515506. Copy rule executed: diff against 587f5524:docs/intro.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs renders H1 'AGRO' (OK), evidence/browser-h1.tsv. Repair 267a3cd0: the source anchor #3-sandbox-isolation... is stale in the harness; the link now uses #4-sandbox-isolation..., the current heading.",
       "dependsOn": [],
       "files": [
         "docs/intro.md"
-      ]
+      ],
+      "commit": "0515506"
     },
     {
       "id": "US-027",
@@ -509,12 +535,13 @@
         "The rendered page at `/docs/harnesses/claude-code` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 27,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit 7fd296a. Copy rule executed: diff against 587f5524:docs/harnesses/claude-code.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/harnesses/claude-code renders H1 'Claude Code' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [],
       "files": [
         "docs/harnesses/claude-code.md"
-      ]
+      ],
+      "commit": "7fd296a"
     },
     {
       "id": "US-028",
@@ -527,12 +554,13 @@
         "The rendered page at `/docs/integrations/herdr` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 28,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit 93f18ff. Copy rule executed: diff against 587f5524:docs/integrations/herdr.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/integrations/herdr renders H1 'Herdr' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [],
       "files": [
         "docs/integrations/herdr.md"
-      ]
+      ],
+      "commit": "93f18ff"
     },
     {
       "id": "US-029",
@@ -545,12 +573,13 @@
         "The rendered page at `/docs/harnesses/grok-build` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 29,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit 7c77d8d. Copy rule executed: diff against 587f5524:docs/harnesses/grok-build.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/harnesses/grok-build renders H1 'Grok Build' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [],
       "files": [
         "docs/harnesses/grok-build.md"
-      ]
+      ],
+      "commit": "7c77d8d"
     },
     {
       "id": "US-030",
@@ -563,12 +592,13 @@
         "The rendered page at `/docs/open-core` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 30,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit ff8b525. Copy rule executed: diff against 587f5524:docs/open-core.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/open-core renders H1 'Open-core boundary' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [],
       "files": [
         "docs/open-core.md"
-      ]
+      ],
+      "commit": "ff8b525"
     },
     {
       "id": "US-031",
@@ -581,12 +611,13 @@
         "The rendered page at `/docs/harnesses/opencode` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 31,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit c6fc17e. Copy rule executed: diff against 587f5524:docs/harnesses/opencode.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/harnesses/opencode renders H1 'OpenCode' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [],
       "files": [
         "docs/harnesses/opencode.md"
-      ]
+      ],
+      "commit": "c6fc17e"
     },
     {
       "id": "US-032",
@@ -599,12 +630,13 @@
         "The rendered page at `/docs/integrations/pi-fff` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 32,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit f8050c8. Copy rule executed: diff against 587f5524:docs/integrations/pi-fff.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/integrations/pi-fff renders H1 'Pi fff (file search)' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [],
       "files": [
         "docs/integrations/pi-fff.md"
-      ]
+      ],
+      "commit": "f8050c8"
     },
     {
       "id": "US-033",
@@ -617,12 +649,13 @@
         "The rendered page at `/docs/integrations/debugmcp` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 33,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit 6c0d4a6. Copy rule executed: diff against 587f5524:docs/integrations/debugmcp.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/integrations/debugmcp renders H1 'DebugMCP' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [],
       "files": [
         "docs/integrations/debugmcp.md"
-      ]
+      ],
+      "commit": "6c0d4a6"
     },
     {
       "id": "US-034",
@@ -635,12 +668,13 @@
         "The rendered page at `/docs/resources` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 34,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit 112edea. Copy rule executed: diff against 587f5524:docs/resources.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/resources renders H1 'Resources' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [],
       "files": [
         "docs/resources.md"
-      ]
+      ],
+      "commit": "112edea"
     },
     {
       "id": "US-035",
@@ -653,12 +687,13 @@
         "The rendered page at `/docs/harnesses/t3code` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 35,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit 5c469de. Copy rule executed: diff against 587f5524:docs/harnesses/t3code.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/harnesses/t3code renders H1 'T3 Code' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [],
       "files": [
         "docs/harnesses/t3code.md"
-      ]
+      ],
+      "commit": "5c469de"
     },
     {
       "id": "US-036",
@@ -671,12 +706,13 @@
         "The rendered page at `/docs/property-testing` shows the harness H1. Verify in browser using agent-browser skill."
       ],
       "priority": 36,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit 1dbe041. Copy rule executed: diff against 587f5524:docs/property-testing.md holds only front matter and GitHub link lines. Integrated on the task branch at the final build: pnpm build exit 0 with zero broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). Browser executed with agent-browser on docusaurus serve: /docs/property-testing renders H1 'Property-Based Testing Convention' (OK), evidence/browser-h1.tsv.",
       "dependsOn": [],
       "files": [
         "docs/property-testing.md"
-      ]
+      ],
+      "commit": "1dbe041"
     }
   ]
 }

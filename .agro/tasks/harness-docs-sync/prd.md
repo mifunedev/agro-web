@@ -25,10 +25,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `ALLOW` in `scripts/check-docs-drift.mjs` has one entry for each of these file and token pairs, each with a `why`: `harnesses/overview.md` and `lifecycle-commands.md` with the pre-systemd container lifecycle token (`link-providers.sh --init` is the supported repair flag), and `agro-compatibility.md` with the pre-systemd container lifecycle token and the `get-oh.sh` token (the page names retired items to say that they are retired).
-- [ ] `RETIRED` does not change.
-- [ ] `pnpm test` exits 0.
-- [ ] `pnpm run check:docs-drift` exits 0.
+- [x] `ALLOW` in `scripts/check-docs-drift.mjs` has one entry for each of these file and token pairs, each with a `why`: `harnesses/overview.md` and `lifecycle-commands.md` with the pre-systemd container lifecycle token (`link-providers.sh --init` is the supported repair flag), and `agro-compatibility.md` with the pre-systemd container lifecycle token and the `get-oh.sh` token (the page names retired items to say that they are retired).
+- [x] `RETIRED` does not change.
+- [x] `pnpm test` exits 0.
+- [x] `pnpm run check:docs-drift` exits 0.
 
 ### US-002: Add the Antigravity CLI harness page
 
@@ -36,11 +36,11 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/harnesses/antigravity-cli.md` exists and follows the copy rule.
-- [ ] The front matter has `sidebar_position: 9`.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/harnesses/antigravity-cli` shows the heading "Antigravity CLI". Verify in browser using agent-browser skill.
+- [x] `docs/harnesses/antigravity-cli.md` exists and follows the copy rule.
+- [x] The front matter has `sidebar_position: 9`.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/harnesses/antigravity-cli` shows the heading "Antigravity CLI". Verify in browser using agent-browser skill.
 
 ### US-003: Add the AGRO naming page
 
@@ -50,11 +50,11 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/agro-compatibility.md` exists and follows the copy rule.
-- [ ] The front matter has `sidebar_position: 15`.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/agro-compatibility` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/agro-compatibility.md` exists and follows the copy rule.
+- [x] The front matter has `sidebar_position: 15`.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/agro-compatibility` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-004: Replace the `.oh/` layout page with the `.agro/` layout page
 
@@ -62,12 +62,12 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/oh-directory-layout.md` does not exist.
-- [ ] `docs/agro-directory-layout.md` exists, follows the copy rule, and has `sidebar_position: 11`.
-- [ ] `docusaurus.config.ts` has the redirect `{ from: "/docs/oh-directory-layout", to: "/docs/agro-directory-layout" }`.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/agro-directory-layout` shows the harness H1, and `/docs/oh-directory-layout` redirects to it. Verify in browser using agent-browser skill.
+- [x] `docs/oh-directory-layout.md` does not exist.
+- [x] `docs/agro-directory-layout.md` exists, follows the copy rule, and has `sidebar_position: 11`.
+- [x] `docusaurus.config.ts` has the redirect `{ from: "/docs/oh-directory-layout", to: "/docs/agro-directory-layout" }`.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/agro-directory-layout` shows the harness H1, and `/docs/oh-directory-layout` redirects to it. Verify in browser using agent-browser skill.
 
 ### US-005: Sync `docs/integrations/langfuse.md`
 
@@ -75,10 +75,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/integrations/langfuse.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/integrations/langfuse` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/integrations/langfuse.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/integrations/langfuse` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-006: Sync `docs/installation.md`
 
@@ -88,10 +88,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/installation.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/installation` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/installation.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/installation` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-007: Sync `docs/lifecycle-commands.md`
 
@@ -101,10 +101,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/lifecycle-commands.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/lifecycle-commands` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/lifecycle-commands.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/lifecycle-commands` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-008: Sync `docs/quickstart.md`
 
@@ -114,10 +114,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/quickstart.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/quickstart` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/quickstart.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/quickstart` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-009: Sync `docs/deployment-prebuilt-image.md`
 
@@ -127,10 +127,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/deployment-prebuilt-image.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/deployment-prebuilt-image` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/deployment-prebuilt-image.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/deployment-prebuilt-image` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-010: Sync `docs/configuration.md`
 
@@ -140,10 +140,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/configuration.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/configuration` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/configuration.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/configuration` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-011: Sync `docs/runtimes/microsandbox.md`
 
@@ -151,10 +151,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/runtimes/microsandbox.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/runtimes/microsandbox` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/runtimes/microsandbox.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/runtimes/microsandbox` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-012: Sync `docs/harnesses/overview.md`
 
@@ -164,10 +164,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/harnesses/overview.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/harnesses/overview` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/harnesses/overview.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/harnesses/overview` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-013: Sync `docs/integrations/slack.md`
 
@@ -175,10 +175,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/integrations/slack.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/integrations/slack` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/integrations/slack.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/integrations/slack` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-014: Sync `docs/contributing.md`
 
@@ -186,10 +186,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/contributing.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/contributing` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/contributing.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/contributing` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-015: Sync `docs/harnesses/hermes.md`
 
@@ -197,10 +197,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/harnesses/hermes.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/harnesses/hermes` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/harnesses/hermes.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/harnesses/hermes` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-016: Sync `docs/glossary.md`
 
@@ -208,10 +208,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/glossary.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/glossary` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/glossary.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/glossary` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-017: Sync `docs/security-considerations.md`
 
@@ -219,10 +219,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/security-considerations.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/security-considerations` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/security-considerations.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/security-considerations` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-018: Sync `docs/harnesses/pi.md`
 
@@ -230,10 +230,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/harnesses/pi.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/harnesses/pi` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/harnesses/pi.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/harnesses/pi` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-019: Sync `docs/integrations/github.md`
 
@@ -243,10 +243,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/integrations/github.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/integrations/github` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/integrations/github.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/integrations/github` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-020: Sync `docs/connecting.md`
 
@@ -254,10 +254,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/connecting.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/connecting` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/connecting.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/connecting` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-021: Sync `docs/harnesses/codex.md`
 
@@ -265,10 +265,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/harnesses/codex.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/harnesses/codex` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/harnesses/codex.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/harnesses/codex` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-022: Sync `docs/runtimes/overview.md`
 
@@ -276,10 +276,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/runtimes/overview.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/runtimes/overview` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/runtimes/overview.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/runtimes/overview` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-023: Sync `docs/integrations/sshd.md`
 
@@ -287,10 +287,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/integrations/sshd.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/integrations/sshd` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/integrations/sshd.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/integrations/sshd` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-024: Sync `docs/harnesses/muse-code.md`
 
@@ -298,10 +298,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/harnesses/muse-code.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/harnesses/muse-code` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/harnesses/muse-code.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/harnesses/muse-code` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-025: Sync `docs/runtimes/docker.md`
 
@@ -309,10 +309,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/runtimes/docker.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/runtimes/docker` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/runtimes/docker.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/runtimes/docker` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-026: Sync `docs/intro.md`
 
@@ -320,10 +320,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/intro.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/intro.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-027: Sync `docs/harnesses/claude-code.md`
 
@@ -331,10 +331,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/harnesses/claude-code.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/harnesses/claude-code` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/harnesses/claude-code.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/harnesses/claude-code` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-028: Sync `docs/integrations/herdr.md`
 
@@ -342,10 +342,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/integrations/herdr.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/integrations/herdr` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/integrations/herdr.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/integrations/herdr` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-029: Sync `docs/harnesses/grok-build.md`
 
@@ -353,10 +353,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/harnesses/grok-build.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/harnesses/grok-build` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/harnesses/grok-build.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/harnesses/grok-build` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-030: Sync `docs/open-core.md`
 
@@ -364,10 +364,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/open-core.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/open-core` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/open-core.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/open-core` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-031: Sync `docs/harnesses/opencode.md`
 
@@ -375,10 +375,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/harnesses/opencode.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/harnesses/opencode` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/harnesses/opencode.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/harnesses/opencode` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-032: Sync `docs/integrations/pi-fff.md`
 
@@ -386,10 +386,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/integrations/pi-fff.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/integrations/pi-fff` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/integrations/pi-fff.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/integrations/pi-fff` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-033: Sync `docs/integrations/debugmcp.md`
 
@@ -397,10 +397,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/integrations/debugmcp.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/integrations/debugmcp` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/integrations/debugmcp.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/integrations/debugmcp` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-034: Sync `docs/resources.md`
 
@@ -408,10 +408,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/resources.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/resources` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/resources.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/resources` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-035: Sync `docs/harnesses/t3code.md`
 
@@ -419,10 +419,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/harnesses/t3code.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/harnesses/t3code` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/harnesses/t3code.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/harnesses/t3code` shows the harness H1. Verify in browser using agent-browser skill.
 
 ### US-036: Sync `docs/property-testing.md`
 
@@ -430,10 +430,10 @@ diff <(grep -vE '^(sidebar_position|slug):' docs/<p>) <(git -C /home/sandbox/har
 
 **Acceptance Criteria:**
 
-- [ ] `docs/property-testing.md` follows the copy rule.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/property-testing` shows the harness H1. Verify in browser using agent-browser skill.
+- [x] `docs/property-testing.md` follows the copy rule.
+- [x] `pnpm build` exits 0, and the build log has no broken-link warning for this page.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/property-testing` shows the harness H1. Verify in browser using agent-browser skill.
 
 ## Summary
 
@@ -507,10 +507,11 @@ None.
 
 ## Acceptance Criteria
 
-- [ ] Each story has `passes: true` in `prd.json`.
-- [ ] `pnpm build`, `pnpm test`, and `pnpm run check:docs-drift` exit 0 on the task branch.
-- [ ] The PR body closes #65.
+- [x] Each story has `passes: true` in `prd.json`.
+- [x] `pnpm build`, `pnpm test`, and `pnpm run check:docs-drift` exit 0 on the task branch.
+- [x] The PR body closes #65.
 
 ## Lessons
 
-Filled by the advisor before undraft.
+- Two harness pages break a verbatim site copy. Evidence: `docs/intro.md` links to the anchor `#3-sandbox-isolation--the-docker-socket-caveat--enforced-with-a-caveat`, but the heading is now section 4. `docs/runtimes/docker.md` uses the bare autolink `<https://docs.docker.com/engine/install/>`, and the MDX build rejects it. Outcome: proposed harness issue; the site copy carries both fixes in this PR.
+- The site-only pages `docs/docker-deployment.md` and `docs/model-selection.md` still use the Open Harness name and the `oh` command. The copy rule has no source for these pages. Evidence: both pages start with "Open Harness". Outcome: proposed agro-web issue; this PR changes only one stale anchor in `docs/docker-deployment.md`.
