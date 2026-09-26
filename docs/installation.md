@@ -426,6 +426,15 @@ To use the desktop:
 
 The desktop install changes no SSH firewall rule and sets no password.
 
+Installing `tailscale` places the `tailscale` and `tailscaled` binaries in
+`~/.local/bin` and nothing more. It starts no daemon and joins no tailnet.
+Networking activates only when a human starts `tailscaled` in
+userspace-networking mode and runs `tailscale up` interactively — see
+[Connecting → Mobile access over Tailscale](connecting.md#mobile-access-over-tailscale).
+Its node identity and daemon state live in `~/.tailscale`, inside the single
+`/home/sandbox` mount, so the node does not re-authenticate on every container
+recreate.
+
 #### Remove a root-level tool
 
 `agro tool uninstall docker-engine` and `agro tool uninstall desktop` exit 1 and
@@ -509,15 +518,6 @@ To remove `desktop`:
    sudo rm -f /etc/apt/sources.list.d/tailscale.list /usr/share/keyrings/tailscale-archive-keyring.gpg
    sudo apt-get update
    ```
-
-Installing `tailscale` places the `tailscale` and `tailscaled` binaries in
-`~/.local/bin` and nothing more. It starts no daemon and joins no tailnet.
-Networking activates only when a human starts `tailscaled` in
-userspace-networking mode and runs `tailscale up` interactively — see
-[Connecting → Mobile access over Tailscale](connecting.md#mobile-access-over-tailscale).
-Its node identity and daemon state live in `~/.tailscale`, inside the single
-`/home/sandbox` mount, so the node does not re-authenticate on every container
-recreate.
 
 ### Runtimes & package managers
 
