@@ -101,4 +101,5 @@ None.
 
 ## Lessons
 
-Filled by the advisor before undraft.
+- mifunedev/agro#1203 placed "Remove a root-level tool" in the middle of the harness tools text, so later paragraphs render under that heading. Evidence: the first US-002 copy put the tailscale paragraph under the removal heading. Outcome: fixed in this PR for the site; issue mifunedev/agro#1205 for the harness.
+- The site copy lags the harness on more pages than #63 names. Evidence: `docs/lifecycle-commands.md` still describes `oh update`. Outcome: issue #65.
