@@ -5,15 +5,15 @@ title: "OpenCode"
 
 # OpenCode
 
-OpenCode is a terminal coding agent that can run interactively or execute one-shot tasks. Like every other harness it installs into `~/.local` rather than the image, and only when you run `oh harness install opencode`.
+OpenCode is a terminal coding agent that can run interactively or execute one-shot tasks. Like every other harness it installs into `~/.local` rather than the image, and only when you run `agro harness install opencode`.
 
 ## Install
 
-`oh harness install <id>` is the only door. It installs OpenCode into the
+`agro harness install <id>` is the only door. It installs OpenCode into the
 already-running sandbox without a rebuild:
 
 ```bash
-oh harness install opencode
+agro harness install opencode
 ```
 
 Nothing installs OpenCode at boot, and no configuration key selects it. See
@@ -22,7 +22,7 @@ and what happens when the sandbox is not running.
 
 ### What the door runs
 
-Open Harness installs the upstream npm package into the home mount as the `sandbox` user:
+AGRO installs the upstream npm package into the home mount as the `sandbox` user:
 
 ```bash
 npm --prefix /home/sandbox/.local install -g opencode-ai
