@@ -1,0 +1,2 @@
+docker-deployment first docker run block has ghcr.io/mifunedev/agro:latest: true
+model-selection shows "AGRO currently consults": true

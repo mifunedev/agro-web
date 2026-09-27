@@ -5,7 +5,7 @@ title: "Choosing a Model"
 
 # Choosing a Model
 
-Open Harness currently consults [DeepSWE](https://deepswe.datacurve.ai/) as its public resource for gauging newly released coding models and informing the best model fit for a task. DeepSWE is an independent benchmark of frontier coding agents on original, long-horizon software-engineering tasks; Open Harness does not own or run it. Its public methodology and data are available in the [DeepSWE source repository](https://github.com/datacurve-ai/deep-swe).
+AGRO currently consults [DeepSWE](https://deepswe.datacurve.ai/) as its public resource for gauging newly released coding models and informing the best model fit for a task. DeepSWE is an independent benchmark of frontier coding agents on original, long-horizon software-engineering tasks; AGRO does not own or run it. Its public methodology and data are available in the [DeepSWE source repository](https://github.com/datacurve-ai/deep-swe).
 
 Treat DeepSWE as evidence, not an automatic model picker. Compare long-horizon SWE results together with cost, output-token, and agent-step context. A leaderboard rank alone does not determine the best model for your task.
 
