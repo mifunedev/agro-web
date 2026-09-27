@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "project": "agro-web",
+  "branchName": "task/67-site-only-pages-rename",
+  "description": "Rename AGRO on the two site-only docs pages",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Update the Docker deployment page to AGRO names",
+      "description": "As an operator, I want the Docker deployment recipe to use the AGRO names, so that the commands work on the current release.",
+      "acceptanceCriteria": [
+        "`docs/docker-deployment.md` uses these replacements, and changes no other text:",
+        "`grep -nE 'Open Harness|openharness|\\boh-[ab]\\b|\\.oh/|/opt/oh-|(^|[^a-z.-])oh (sandbox|shell|stop|destroy|harness|tool)' docs/docker-deployment.md` prints nothing.",
+        "`pnpm build` exits 0, and the build log has no broken-link or broken-anchor warning.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/docker-deployment` shows `ghcr.io/mifunedev/agro:latest` in its first `docker run` block. Verify in browser using agent-browser skill."
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/docker-deployment.md"
+      ]
+    },
+    {
+      "id": "US-002",
+      "title": "Update the model selection page to the AGRO name",
+      "description": "As an operator, I want the model selection page to use the AGRO name, so that the page matches the rest of the site.",
+      "acceptanceCriteria": [
+        "`docs/model-selection.md` replaces each `Open Harness` with `AGRO`, and changes no other text.",
+        "`grep -n 'Open Harness' docs/model-selection.md` prints nothing.",
+        "`pnpm build` exits 0, and the build log has no broken-link or broken-anchor warning.",
+        "`pnpm run check:docs-drift` exits 0.",
+        "The rendered page at `/docs/model-selection` shows \"AGRO currently consults\". Verify in browser using agent-browser skill."
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "docs/model-selection.md"
+      ]
+    }
+  ]
+}
