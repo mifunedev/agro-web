@@ -12,7 +12,7 @@ Issue: #67. Epic: mifunedev/agro#1206.
 
 **Acceptance Criteria:**
 
-- [ ] `docs/docker-deployment.md` uses these replacements, and changes no other text:
+- [x] `docs/docker-deployment.md` uses these replacements, and changes no other text:
 
   | Old | New |
   |---|---|
@@ -25,10 +25,10 @@ Issue: #67. Epic: mifunedev/agro#1206.
   | `/opt/oh-seed` | `/opt/agro-seed` |
   | `.oh/.image-seeded` | `.agro/.image-seeded` |
 
-- [ ] `grep -nE 'Open Harness|openharness|\boh-[ab]\b|\.oh/|/opt/oh-|(^|[^a-z.-])oh (sandbox|shell|stop|destroy|harness|tool)' docs/docker-deployment.md` prints nothing.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link or broken-anchor warning.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/docker-deployment` shows `ghcr.io/mifunedev/agro:latest` in its first `docker run` block. Verify in browser using agent-browser skill.
+- [x] `grep -nE 'Open Harness|openharness|\boh-[ab]\b|\.oh/|/opt/oh-|(^|[^a-z.-])oh (sandbox|shell|stop|destroy|harness|tool)' docs/docker-deployment.md` prints nothing.
+- [x] `pnpm build` exits 0, and the build log has no broken-link or broken-anchor warning.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/docker-deployment` shows `ghcr.io/mifunedev/agro:latest` in its first `docker run` block. Verify in browser using agent-browser skill.
 
 ### US-002: Update the model selection page to the AGRO name
 
@@ -36,11 +36,11 @@ Issue: #67. Epic: mifunedev/agro#1206.
 
 **Acceptance Criteria:**
 
-- [ ] `docs/model-selection.md` replaces each `Open Harness` with `AGRO`, and changes no other text.
-- [ ] `grep -n 'Open Harness' docs/model-selection.md` prints nothing.
-- [ ] `pnpm build` exits 0, and the build log has no broken-link or broken-anchor warning.
-- [ ] `pnpm run check:docs-drift` exits 0.
-- [ ] The rendered page at `/docs/model-selection` shows "AGRO currently consults". Verify in browser using agent-browser skill.
+- [x] `docs/model-selection.md` replaces each `Open Harness` with `AGRO`, and changes no other text.
+- [x] `grep -n 'Open Harness' docs/model-selection.md` prints nothing.
+- [x] `pnpm build` exits 0, and the build log has no broken-link or broken-anchor warning.
+- [x] `pnpm run check:docs-drift` exits 0.
+- [x] The rendered page at `/docs/model-selection` shows "AGRO currently consults". Verify in browser using agent-browser skill.
 
 ## Summary
 
@@ -104,10 +104,10 @@ None.
 
 ## Acceptance Criteria
 
-- [ ] US-001 and US-002 have `passes: true` in `prd.json`.
-- [ ] CI is green on the PR.
-- [ ] The PR body closes #67.
+- [x] US-001 and US-002 have `passes: true` in `prd.json`.
+- [x] CI is green on the PR.
+- [x] The PR body closes #67.
 
 ## Lessons
 
-Filled by the advisor before undraft.
+None.

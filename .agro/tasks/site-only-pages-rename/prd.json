@@ -16,12 +16,13 @@
         "The rendered page at `/docs/docker-deployment` shows `ghcr.io/mifunedev/agro:latest` in its first `docker run` block. Verify in browser using agent-browser skill."
       ],
       "priority": 1,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit 30077f5d, fast-forwarded onto the task branch. AC1 executed: the diff (39 lines each way) holds only the table replacements. AC2 executed: the grep prints nothing (exit 1). AC3 and AC4 executed on the task branch: pnpm build exit 0 with 0 broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). AC5 executed: agent-browser on docusaurus serve finds ghcr.io/mifunedev/agro:latest in the first docker run block (evidence/browser.txt).",
       "dependsOn": [],
       "files": [
         "docs/docker-deployment.md"
-      ]
+      ],
+      "commit": "30077f5d"
     },
     {
       "id": "US-002",
@@ -35,12 +36,13 @@
         "The rendered page at `/docs/model-selection` shows \"AGRO currently consults\". Verify in browser using agent-browser skill."
       ],
       "priority": 2,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Commit e9c04b50. AC1 executed: the diff changes 1 line, both Open Harness to AGRO. AC2 executed: the grep prints nothing (exit 1). AC3 and AC4 executed on the task branch: pnpm build exit 0 with 0 broken-link or broken-anchor warnings; pnpm run check:docs-drift exit 0 (44 files). AC5 executed: agent-browser finds AGRO currently consults on /docs/model-selection (evidence/browser.txt).",
       "dependsOn": [],
       "files": [
         "docs/model-selection.md"
-      ]
+      ],
+      "commit": "e9c04b50"
     }
   ]
 }
