@@ -1,7 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { addTitleFrontmatter, prefixCategoryDocId, rewriteOutboundLinks, transformPage } from "./sync-agro-docs.mjs";
+import {
+  addSidebarPosition,
+  addTitleFrontmatter,
+  prefixCategoryDocId,
+  readmeOrder,
+  rewriteOutboundLinks,
+  transformPage,
+} from "./sync-agro-docs.mjs";
 
 const TAG = "v0.18.1";
 const BLOB = `https://github.com/mifunedev/agro/blob/${TAG}`;
@@ -73,4 +80,38 @@ test("a category link names the doc by its id under docs/agro/", () => {
   });
   const plain = '{ "label": "Integrations" }';
   assert.equal(prefixCategoryDocId(plain, "agro"), plain);
+});
+
+test("readmeOrder lists relative .md links in order, first occurrence wins", () => {
+  const readme = [
+    "- [Intro](intro.md)",
+    "- [Quick](./quickstart.md#top) · [Intro again](intro.md)",
+    "- [Out](../.agro/x.md) [Web](https://x.dev/a.md) [Abs](/docs/a.md) [Img](logo.png)",
+    "```md",
+    "[Fenced](fenced.md)",
+    "```",
+    "- [Codex](harnesses/codex.md \"Codex\")",
+  ].join("\n");
+  assert.deepEqual(readmeOrder(readme), ["intro.md", "quickstart.md", "harnesses/codex.md"]);
+});
+
+test("addSidebarPosition adds a position to frontmatter or creates frontmatter", () => {
+  assert.equal(
+    addSidebarPosition('---\ntitle: "Intro"\n---\n\n# Intro\n', 0),
+    '---\ntitle: "Intro"\nsidebar_position: 0\n---\n\n# Intro\n',
+  );
+  assert.equal(addSidebarPosition("Body\n", 3), "---\nsidebar_position: 3\n---\n\nBody\n");
+});
+
+test("addSidebarPosition keeps an existing position and skips an unlisted page", () => {
+  const page = "---\nsidebar_position: 7\n---\n\n# X\n";
+  assert.equal(addSidebarPosition(page, 2), page);
+  assert.equal(addSidebarPosition("# Y\n", undefined), "# Y\n");
+});
+
+test("transformPage adds title and position together", () => {
+  assert.equal(
+    transformPage("# Codex\n", "harnesses/codex.md", TAG, 12),
+    '---\ntitle: "Codex"\nsidebar_position: 12\n---\n\n# Codex\n',
+  );
 });

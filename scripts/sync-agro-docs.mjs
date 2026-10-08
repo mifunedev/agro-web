@@ -5,7 +5,7 @@ import { spawnSync } from "node:child_process";
 import { cp, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, join, posix, resolve } from "node:path";
+import { dirname, join, posix, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import process from "node:process";
 import { REPO, MirrorError, get, reportAndExit, resolveReleaseTag } from "./oh-source.mjs";
@@ -80,8 +80,33 @@ export function prefixCategoryDocId(json, prefix) {
   return `${JSON.stringify(category, null, 2)}\n`;
 }
 
-export function transformPage(text, pagePath, tag) {
-  return rewriteOutboundLinks(addTitleFrontmatter(text), pagePath, tag);
+export const INDEX = "README.md";
+
+export function readmeOrder(readme) {
+  const order = [];
+  mapOutsideFences(readme, (line) => {
+    for (const [, target] of line.matchAll(/\]\(\s*([^\s)#]+\.mdx?)(?:#[^\s)]*)?(?:\s+"[^"]*")?\s*\)/g)) {
+      if (SCHEME.test(target) || target.startsWith("/")) continue;
+      const path = posix.normalize(target);
+      if (path.startsWith("..") || order.includes(path)) continue;
+      order.push(path);
+    }
+    return line;
+  });
+  return order;
+}
+
+export function addSidebarPosition(text, position) {
+  if (position === undefined) return text;
+  const frontmatter = text.match(/^---\n([\s\S]*?)\n---\n/);
+  if (frontmatter && /^sidebar_position\s*:/m.test(frontmatter[1])) return text;
+  const field = `sidebar_position: ${position}`;
+  if (frontmatter) return text.replace(/^(---\n[\s\S]*?)\n---\n/, `$1\n${field}\n---\n`);
+  return `---\n${field}\n---\n\n${text}`;
+}
+
+export function transformPage(text, pagePath, tag, position) {
+  return rewriteOutboundLinks(addSidebarPosition(addTitleFrontmatter(text), position), pagePath, tag);
 }
 
 async function extractDocs(tag, fetchImpl, workDir) {
@@ -107,11 +132,15 @@ export async function syncAgroDocs({
   const workDir = await mkdtemp(join(tmpdir(), "agro-docs-"));
   try {
     const { url, docs } = await extractDocs(tag, fetchImpl, workDir);
+    const index = join(docs, INDEX);
+    const order = existsSync(index) ? readmeOrder(await readFile(index, "utf8")) : [];
+    await rm(index, { force: true });
     const files = await readdir(docs, { recursive: true });
     const pages = files.filter((f) => /\.mdx?$/.test(f));
     for (const file of pages) {
       const full = join(docs, file);
-      await writeFile(full, transformPage(await readFile(full, "utf8"), file, tag));
+      const position = order.indexOf(file.split(sep).join("/"));
+      await writeFile(full, transformPage(await readFile(full, "utf8"), file, tag, position < 0 ? undefined : position));
     }
     for (const file of files.filter((f) => posix.basename(f) === "_category_.json")) {
       const full = join(docs, file);
