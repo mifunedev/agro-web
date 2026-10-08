@@ -8,196 +8,133 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 
-import { MirrorError, rawBaseFor } from "./oh-source.mjs";
-import { SCRIPTS, syncFromResolvedCommit } from "./sync-external-scripts.mjs";
+import { MirrorError } from "./oh-source.mjs";
+import { INSTALLER, syncInstaller } from "./sync-external-scripts.mjs";
 
 const SCRIPT = fileURLToPath(import.meta.url);
 const ROOT = join(dirname(SCRIPT), "..");
 const SYNC = join(dirname(SCRIPT), "sync-external-scripts.mjs");
+const SOURCE_FILES = ["sync-external-scripts.mjs", "oh-source.mjs", "build-oh-cli.mjs"]
+  .map((name) => join(dirname(SCRIPT), name));
 
-function gitOk(args, cwd) {
-  const result = spawnSync("git", args, { cwd, encoding: "utf8" });
-  if (result.status !== 0) {
-    throw new Error(`git ${args.join(" ")}: ${result.stderr || result.stdout || result.status}`);
-  }
-  return (result.stdout || "").trim();
-}
+const INSTALLER_BODY = "#!/usr/bin/env bash\necho installer-v0.18.1\n";
 
-function writeScripts(dir, marker) {
-  const scripts = join(dir, ".agro", "scripts");
-  mkdirSync(scripts, { recursive: true });
-  writeFileSync(join(scripts, "get-agro.sh"), `#!/bin/sh\necho ${marker}-agro\n`);
-}
-
-function makeOrigin() {
-  const dir = mkdtempSync(join(tmpdir(), "oh-sync-origin-"));
-  gitOk(["init", "-b", "preview"], dir);
-  gitOk(["config", "user.email", "t@example.test"], dir);
-  gitOk(["config", "user.name", "fixture"], dir);
-  return dir;
-}
-
-function commitAll(dir, message) {
-  gitOk(["add", "."], dir);
-  gitOk(["commit", "-m", message], dir);
-  return gitOk(["rev-parse", "HEAD"], dir);
-}
-
-function gitShow(origin, sha, path) {
-  const result = spawnSync("git", ["show", `${sha}:${path}`], { cwd: origin, encoding: "utf8" });
-  if (result.status !== 0) return null;
-  return result.stdout;
-}
-
-function stubFetch(origin, resolvedSha) {
+function releaseFetch(assets) {
   const requested = [];
   const fetchImpl = async (url) => {
     const href = String(url);
     requested.push(href);
-    if (/\/repos\/[^/]+\/[^/]+\/commits\//.test(href)) {
-      return new Response(resolvedSha, { status: 200 });
-    }
-    const raw = href.match(/raw\.githubusercontent\.com\/[^/]+\/[^/]+\/([^/]+)\/(.+)$/);
-    if (!raw) return new Response("missing", { status: 404 });
-    const [, ref, path] = raw;
-    if (ref !== resolvedSha) {
-      return new Response("#!/bin/sh\necho MOVING_REF\n", { status: 200 });
-    }
-    const body = gitShow(origin, ref, path);
-    if (body == null) return new Response("missing", { status: 404 });
-    return new Response(body, { status: 200 });
+    const match = href.match(/^https:\/\/github\.com\/mifunedev\/agro\/releases\/download\/([^/]+)\/(.+)$/);
+    const body = match && assets[match[1]]?.[match[2]];
+    return body == null ? new Response("Not Found", { status: 404 }) : new Response(body, { status: 200 });
   };
   return { fetchImpl, requested };
 }
 
-test("the only Pages script endpoint is get-agro.sh", () => {
-  assert.deepEqual(
-    SCRIPTS.map((script) => script.dest),
-    ["static/get-agro.sh"],
-  );
-  assert.ok(SCRIPTS.every((script) => !script.src.includes("get-oh.sh")));
-  assert.ok(SCRIPTS.every((script) => !script.dest.includes("install.sh")));
-  assert.ok(SCRIPTS.every((script) => !script.src.includes("install.sh")));
+test("the release installer is served at install.sh and get-agro.sh", () => {
+  assert.equal(INSTALLER.asset, "install.sh");
+  assert.deepEqual(INSTALLER.dests, ["static/install.sh", "static/get-agro.sh"]);
 });
 
-test("downloads scripts by the resolved commit, not a moving branch URL", async () => {
-  const origin = makeOrigin();
-  const destRoot = mkdtempSync(join(tmpdir(), "oh-sync-out-"));
+test("no mirror source names the retired get-agro.sh source path", () => {
+  for (const file of SOURCE_FILES) {
+    assert.doesNotMatch(readFileSync(file, "utf8"), /\.agro\/scripts\/get-agro\.sh/, file);
+  }
+});
+
+test("the sync script carries no CDN redirect note for install.sh", () => {
+  assert.doesNotMatch(readFileSync(SYNC, "utf8"), /CDN|302/);
+});
+
+test("mirrors the release installer of the resolved tag to both paths", async () => {
+  const destRoot = mkdtempSync(join(tmpdir(), "agro-sync-out-"));
   try {
-    writeScripts(origin, "PINNED_A");
-    const shaA = commitAll(origin, "a");
-    writeScripts(origin, "MOVED_B");
-    const shaB = commitAll(origin, "b");
-    assert.notEqual(shaA, shaB);
-    const { fetchImpl, requested } = stubFetch(origin, shaA);
-    const logs = [];
-    const origLog = console.log;
-    console.log = (...args) => {
-      logs.push(args.map(String).join(" "));
-    };
-    let result;
-    try {
-      result = await syncFromResolvedCommit({ sha: shaA, fetchImpl, destRoot });
-    } finally {
-      console.log = origLog;
+    const { fetchImpl, requested } = releaseFetch({
+      "v0.18.1": { "install.sh": INSTALLER_BODY },
+      "v0.17.0": { "install.sh": "#!/bin/sh\necho OLD\n" },
+    });
+    const result = await syncInstaller({ resolve: async () => "v0.18.1", fetchImpl, destRoot });
+    assert.equal(result.tag, "v0.18.1");
+    assert.deepEqual(requested, ["https://github.com/mifunedev/agro/releases/download/v0.18.1/install.sh"]);
+    for (const dest of INSTALLER.dests) {
+      assert.equal(readFileSync(join(destRoot, dest), "utf8"), INSTALLER_BODY, dest);
     }
-    assert.equal(result.sha, shaA);
-    assert.ok(requested.every((url) => !url.includes("/preview/")));
-    assert.ok(requested.every((url) => !url.includes("/main/")));
-    assert.ok(requested.some((url) => url.includes(`/${shaA}/`)));
-    const agro = readFileSync(join(destRoot, "static/get-agro.sh"), "utf8");
-    assert.equal(agro, "#!/bin/sh\necho PINNED_A-agro\n");
-    assert.equal(existsSync(join(destRoot, "static/get-oh.sh")), false);
-    assert.ok(logs.some((line) => line.includes(shaA)));
-    assert.ok(logs.every((line) => !line.includes("MOVING_REF")));
-    assert.equal(rawBaseFor(shaA), `https://raw.githubusercontent.com/mifunedev/agro/${shaA}`);
   } finally {
-    rmSync(origin, { recursive: true, force: true });
     rmSync(destRoot, { recursive: true, force: true });
   }
 });
 
-test("moving-ref substitution is rejected as release evidence", async () => {
-  const origin = makeOrigin();
-  const destRoot = mkdtempSync(join(tmpdir(), "oh-sync-out-"));
+test("a ref that is not a release fails without writing the installer", async () => {
+  const destRoot = mkdtempSync(join(tmpdir(), "agro-sync-out-"));
   try {
-    writeScripts(origin, "PINNED_A");
-    const shaA = commitAll(origin, "a");
-    writeScripts(origin, "MOVED_B");
-    commitAll(origin, "b");
-    const requested = [];
-    const fetchImpl = async (url) => {
-      const href = String(url);
-      requested.push(href);
-      const raw = href.match(/raw\.githubusercontent\.com\/[^/]+\/[^/]+\/([^/]+)\/(.+)$/);
-      if (!raw) return new Response("missing", { status: 404 });
-      const [, ref, path] = raw;
-      if (ref !== shaA) {
-        return new Response("#!/bin/sh\necho MOVING_REF\n", { status: 200 });
-      }
-      const body = gitShow(origin, ref, path);
-      return new Response(body ?? "missing", { status: body ? 200 : 404 });
-    };
-    await syncFromResolvedCommit({ sha: shaA, fetchImpl, destRoot });
-    const agro = readFileSync(join(destRoot, "static/get-agro.sh"), "utf8");
-    assert.notEqual(agro, "#!/bin/sh\necho MOVING_REF\n");
-    assert.match(agro, /PINNED_A-agro/);
-    assert.ok(requested.every((url) => !/\/(main|preview)\//.test(url)));
+    const { fetchImpl } = releaseFetch({});
+    await assert.rejects(
+      () => syncInstaller({ resolve: async () => "main", fetchImpl, destRoot }),
+      (err) => {
+        assert.ok(err instanceof MirrorError);
+        assert.equal(err.transient, false);
+        assert.match(err.message, /release tag/);
+        return true;
+      },
+    );
+    for (const dest of INSTALLER.dests) assert.equal(existsSync(join(destRoot, dest)), false);
   } finally {
-    rmSync(origin, { recursive: true, force: true });
     rmSync(destRoot, { recursive: true, force: true });
   }
 });
 
-test("stale-asset fallback cannot satisfy release verification", async () => {
-  const destRoot = mkdtempSync(join(tmpdir(), "oh-sync-out-"));
-  const sha = "a".repeat(40);
+test("a body without a shebang is fatal", async () => {
+  const destRoot = mkdtempSync(join(tmpdir(), "agro-sync-out-"));
+  try {
+    const { fetchImpl } = releaseFetch({ "v0.18.1": { "install.sh": "<html>nope</html>" } });
+    await assert.rejects(
+      () => syncInstaller({ resolve: async () => "v0.18.1", fetchImpl, destRoot }),
+      /no shebang/,
+    );
+    for (const dest of INSTALLER.dests) assert.equal(existsSync(join(destRoot, dest)), false);
+  } finally {
+    rmSync(destRoot, { recursive: true, force: true });
+  }
+});
+
+test("a transient failure leaves the previous installer untouched", async () => {
+  const destRoot = mkdtempSync(join(tmpdir(), "agro-sync-out-"));
   try {
     mkdirSync(join(destRoot, "static"), { recursive: true });
-    writeFileSync(join(destRoot, "static/get-agro.sh"), "#!/bin/sh\necho STALE\n");
+    writeFileSync(join(destRoot, "static/install.sh"), "#!/bin/sh\necho STALE\n");
     const fetchImpl = async () => {
       throw Object.assign(new Error("ECONNRESET"), { code: "ECONNRESET" });
     };
     await assert.rejects(
-      () => syncFromResolvedCommit({ sha, fetchImpl, destRoot }),
-      (err) => {
-        assert.ok(err instanceof MirrorError);
-        assert.equal(err.transient, true);
-        return true;
-      },
+      () => syncInstaller({ resolve: async () => "v0.18.1", fetchImpl, destRoot }),
+      (err) => err instanceof MirrorError && err.transient === true,
     );
-    const leftover = readFileSync(join(destRoot, "static/get-agro.sh"), "utf8");
-    assert.equal(leftover, "#!/bin/sh\necho STALE\n");
-    assert.notEqual(leftover, `#!/bin/sh\necho ${sha}\n`);
+    assert.equal(readFileSync(join(destRoot, "static/install.sh"), "utf8"), "#!/bin/sh\necho STALE\n");
   } finally {
     rmSync(destRoot, { recursive: true, force: true });
   }
 });
 
-test("an invalid ref fails without writing scripts", async () => {
-  const destRoot = mkdtempSync(join(tmpdir(), "oh-sync-out-"));
+test("a release lookup failure writes nothing", async () => {
+  const destRoot = mkdtempSync(join(tmpdir(), "agro-sync-out-"));
   try {
     await assert.rejects(
-      () => syncFromResolvedCommit({
+      () => syncInstaller({
         destRoot,
         resolve: async () => {
-          throw new MirrorError("ref mifunedev/agro@missing does not resolve (HTTP 404)");
+          throw new MirrorError("latest release of mifunedev/agro does not resolve (HTTP 404)");
         },
       }),
-      (err) => {
-        assert.ok(err instanceof MirrorError);
-        assert.match(err.message, /does not resolve/);
-        return true;
-      },
+      /does not resolve/,
     );
-    assert.equal(existsSync(join(destRoot, "static/get-agro.sh")), false);
+    for (const dest of INSTALLER.dests) assert.equal(existsSync(join(destRoot, dest)), false);
   } finally {
     rmSync(destRoot, { recursive: true, force: true });
   }
 });
 
 test("a shell-metacharacter ref is rejected before fetch runs", () => {
-  const pwned = join(tmpdir(), `oh-sync-pwned-${process.pid}`);
+  const pwned = join(tmpdir(), `agro-sync-pwned-${process.pid}`);
   rmSync(pwned, { force: true });
   const result = spawnSync(process.execPath, [SYNC], {
     cwd: ROOT,
