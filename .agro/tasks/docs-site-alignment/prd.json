@@ -18,8 +18,8 @@
         "Typecheck passes"
       ],
       "priority": 1,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Executed on 8cc6ae4: (1) oh-source.test.mjs covers latest-release default and AGRO_SCRIPTS_REF override; build log shows mifunedev/agro@v0.18.1 with refs unset. (2) static/install.sh and static/get-agro.sh are byte-identical to releases/download/v0.18.1/install.sh (cmp exit 0); grep for .agro/scripts/get-agro.sh outside .agro/ and build/ exits 1. (3) agro.js downloaded from the release asset, not rebuilt; node static/agro.js --version prints 0.18.1. (4) grep -niE \"cdn|302\" sync-external-scripts.mjs finds nothing. (5) post-deploy curl HTTP 200 is a post-merge check, unverified. (6) pnpm test exit 0 (49 pass), pnpm build exit 0. (7) pnpm typecheck exit 0. Extra: pages.yml defaults to the latest release; README mirror section rewritten; oh.js still written from agro.js.",
       "dependsOn": [],
       "files": [
         "scripts/oh-source.mjs",
@@ -28,8 +28,11 @@
         "scripts/*.test.mjs",
         "static/install.sh",
         "static/get-agro.sh",
-        ".gitignore"
-      ]
+        ".gitignore",
+        ".github/workflows/pages.yml",
+        "README.md"
+      ],
+      "commit": "8cc6ae4"
     },
     {
       "id": "US-002",
