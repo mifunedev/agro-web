@@ -348,8 +348,8 @@
         "Typecheck passes"
       ],
       "priority": 14,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Executed on 41f99ca: (1) RETIRED lists get-agro.sh outside static/, agro migrate, agro start, oh-sbx, and oh <verb>; blog/ scanned with the dated-note exemption; docs/agro/ skipped; a probe post with `oh harness install pi` made check:docs-drift exit 1, removed after. Divergence: oh <verb> also applies to docs/ and blog/. (2) pages.yml runs check:docs-drift and check:ste on every event before pnpm run build; the deploy depends on the build job. (3) scripts/check-ste.mjs fetches ste-check.sh from mifunedev/agro at the resolved tag (v0.18.1) and scans docs/*.md, docs/console/, blog/, and visible text of src/pages/*.tsx; exit 0 on 23 files. (4) pnpm test exit 0, 82 pass, each new rule with positive and negative cases. (5) pnpm typecheck exit 0; pnpm build exit 0.",
       "dependsOn": [
         "US-004",
         "US-005",
@@ -365,8 +365,12 @@
       "files": [
         "scripts/check-docs-drift.mjs",
         "scripts/check-docs-drift.test.mjs",
-        ".github/workflows/pages.yml"
-      ]
+        ".github/workflows/pages.yml",
+        "scripts/check-ste.mjs",
+        "package.json",
+        "README.md"
+      ],
+      "commit": "41f99ca"
     },
     {
       "id": "US-015",
