@@ -1,52 +1,58 @@
 ---
-title: "How Open Harness embodies compound engineering"
-description: "A name finally landed on the thing the harness was already doing — every fix it makes leaves the next one easier. Here's where that lives in the code, and where it can go wrong."
+title: "How AGRO embodies compound engineering"
+description: "A name finally landed on a habit of the harness: each fix makes the next fix easier. Here is where that habit lives in the code, and how it can go wrong."
 date: 2026-06-04
 authors: [ryan]
 tags: [agents, compound-engineering, ai-engineering]
 slug: compound-engineering
 ---
 
-A few weeks ago I read [Every's compound-engineering guide](https://every.to/guides/compound-engineering) and had the slightly deflating experience of seeing someone name the thing I'd been building without a name for it. The core idea, as they put it, is that **"each unit of engineering work should make subsequent units easier—not harder."** Most codebases drift the other way: every feature injects complexity, and the system you work in gets worse the more you ship into it.
+:::note
 
-I read that and thought: that's the entire point of the harness. Not as a feature I should add — as the constraint that already shapes every file in it.
+Updated on 2026-10-08. Open Harness is now AGRO. This post uses the current names and commands.
 
-So this is a post about a concrete, working instance of compound engineering. Not the philosophy in the abstract — the actual files that make it true, and, because I'd rather be useful than breathless, the documented ways it goes wrong.
+:::
+
+A few weeks ago, I read [Every's compound-engineering guide](https://every.to/guides/compound-engineering). The guide gave a name to a practice that I had built without a name. That discovery deflated me a little. The guide states the core idea: **"each unit of engineering work should make subsequent units easier—not harder."** Most codebases drift the other way. Each feature adds complexity. The more you ship into a codebase, the worse the codebase gets.
+
+I read the line and thought: that idea is the entire point of the harness. The idea is not a feature that I should add. The idea is the constraint that already shapes each file in the harness.
+
+This post is about a concrete, working instance of compound engineering. The post skips the abstract philosophy. The post shows the files that make the idea true. The post also shows the documented failure modes, because I want to be useful, not breathless.
 
 <!-- truncate -->
 
 ## A note on the name
 
-Credit where it's due. The term comes from Kieran Klaassen at Every. The originating essay (August 2025, "My AI Had Already Fixed the Code Before I Saw It") actually spelled it **"compounding engineering"** — "building self-improving development systems where each iteration makes the next one faster, safer, and better" — and the canonical spelling later standardized to "compound engineering" in Every's guide. The line that stuck with me: *"AI engineering makes you faster today. Compounding engineering makes you faster tomorrow, and each day after."*
+Credit goes to Kieran Klaassen at Every for the term. The first essay appeared in August 2025 with the title "My AI Had Already Fixed the Code Before I Saw It." That essay spelled the term **"compounding engineering"**. The essay defined the term as "building self-improving development systems where each iteration makes the next one faster, safer, and better." Every's guide later made "compound engineering" the standard spelling. One line stayed with me: *"AI engineering makes you faster today. Compounding engineering makes you faster tomorrow, and each day after."*
 
-The guide also puts a number on the discipline: roughly **half** of engineering time goes to building features, and the other **half** goes to improving the system itself — review agents, documented patterns, test generators. That fifty-fifty split is the part people skip. It's also the part the harness is structurally built around.
+The guide also puts a number on the discipline. About **half** of engineering time goes to features. The other **half** goes to improvements of the development process itself: review agents, documented patterns, and test generators. People skip that fifty-fifty split. The structure of the harness centers on that split.
 
-## Where it lives in the harness
+## Where compound engineering lives in AGRO
 
-Open Harness is an orchestrator that manages a sandboxed coding agent. Here are the mechanisms that make "every unit of work improves the system" literally true, with file pointers so you can check my work.
+AGRO gives a coding agent an isolated Docker sandbox, and an orchestrator manages that sandbox. The mechanisms below make "each unit of work improves the harness" literally true. Each mechanism has a file pointer, so you can check my work.
 
-**Append-only memory.** Every skill or agent run ends with the [Memory Improvement Protocol](https://github.com/mifunedev/openharness/blob/main/context/rules/memory.md): log the outcome, run a *qualify* pass ("did this reveal a constraint not captured in any rule?"), then promote the durable lessons to [`memory/MEMORY.md`](https://github.com/mifunedev/openharness/blob/main/memory/MEMORY.md). That's Klaassen's "teach the system rather than doing the work yourself," made into a checklist the agent can't skip. The session that produced *this* post left a lesson in memory about it — the loop closing on itself.
+**Dated memory.** A session that finishes work worth remembering writes a dated entry to [`.agro/memories/MEMORY.md`](https://github.com/mifunedev/agro/blob/v0.18.1/.agro/memories/MEMORY.md). Each entry states an action and the evidence that proves the action. A lesson graduates through the `## Lessons` section of the task plan at `.agro/tasks/<slug>/prd.md`. The lesson gets exactly one outcome: a fix in the PR, an issue, or a drop with a reason. A lesson that a command can prove becomes a test. The [memory contract](https://github.com/mifunedev/agro/blob/v0.18.1/.agro/memories/AGENTS.md) states these rules. These rules turn Klaassen's advice into a checklist for the agent: teach the harness instead of doing the work yourself. The session that produced *this* post left a lesson in memory about this post. The loop closed on itself.
 
-**Safety nets, not review processes.** The harness has a hard rule in [`context/IDENTITY.md`](https://github.com/mifunedev/openharness/blob/main/context/IDENTITY.md): anything destructive — file deletion, branch deletion, PR closure — routes through a critic sub-agent *first*, and the risk assessment lands in the commit body. It's not a manual review you might forget; it's a gate the pipeline runs into.
+**Safety nets, not review processes.** The [`/delegate`](https://github.com/mifunedev/agro/blob/v0.18.1/.agro/skills/delegate/SKILL.md) skill splits a task between one advisor and bounded workers. A worker never accepts its own result. The advisor runs each acceptance check before the advisor accepts the work. The lifecycle has the same shape. `agro destroy` asks before the command deletes the home volume. The root [`AGENTS.md`](https://github.com/mifunedev/agro/blob/v0.18.1/AGENTS.md) permits `agro destroy` only for teardown that the operator authorizes. You cannot forget these gates, because the workflow runs into each gate.
 
-**Every regression becomes a permanent guardrail.** IDENTITY.md states the maintenance principle plainly: "Every regression caught becomes a permanent test." For this orchestrator that test takes the form of an accreting file, [`.claude/protected-paths.txt`](https://github.com/mifunedev/openharness/blob/main/.claude/protected-paths.txt). Here's the concrete story behind it: a "cleanup" pass once reasoned six skills were undefensible and deleted them — `ralph`, `prd`, `harness-audit`, `skill-lint`, `delegate`, `strategic-proposal` — all of which the orchestrator actively used. The fix wasn't "be more careful." It was a list of load-bearing paths that critics may not propose deleting without an explicit override. That list only grows. The harness gets *more* stable over time, not less.
+**Each regression becomes a permanent guardrail.** One story shows the rule. A cleanup pass once judged six skills to be indefensible and deleted the six skills: `ralph`, `prd`, `harness-audit`, `skill-lint`, `delegate`, and `strategic-proposal`. The orchestrator used each of those skills. The fix was not "be more careful." The fix was a tracked list of load-bearing paths. A critic may not propose the deletion of a listed path without an explicit override. The list grows over time. The harness gets *more* stable over time, not less.
 
-**Parallel and long-running orchestration.** The guide's "use long-running orchestration" maps onto the [`/delegate`](https://github.com/mifunedev/openharness/blob/main/.claude/skills/delegate) skill and [`context/rules/recursive-delegation.md`](https://github.com/mifunedev/openharness/blob/main/context/rules/recursive-delegation.md), which decompose a plan into waves of specialized sub-agents — with explicit depth and step budgets, because unbounded recursion burns money silently.
+**Parallel and long-running orchestration.** The guide says "use long-running orchestration." In AGRO, that advice maps to the `/delegate` skill. The skill runs the stories of a plan as bounded workers in dependency waves, with at most 5 workers per wave. Each worker gets an isolated worktree, so two workers never share one checkout.
 
-Four mechanisms, one shape: each one makes the system better at its next task. None of them are features for the end user. They're the other half of the fifty-fifty.
+Four mechanisms have one shape: each mechanism makes the harness better at its next task. None of the four is a feature for the end user. The four mechanisms are the other half of the fifty-fifty split.
 
 ## The part the hype skips
 
-Compound engineering has failure modes, and they're well documented enough that pretending otherwise would be dishonest.
+Compound engineering has failure modes. The failure modes have good documentation, and a denial would be dishonest.
 
-The first is **codifying the wrong lesson**. A self-improving system that learns the wrong thing improves in the wrong direction, fast. A bad rule promoted to memory doesn't just sit there — every future run inherits it. The harness's defense is that the qualify pass and the critic gate sit *between* observation and codification. A lesson has to survive review before it becomes a default, and destructive moves have to survive a critic before they ship.
+The first failure mode is **a codified wrong lesson**. A self-improving harness that learns the wrong lesson improves in the wrong direction, fast. A bad rule in memory does not stay idle. Each future run inherits the bad rule. The harness puts two gates *between* observation and codification. A lesson must survive the graduation step before the lesson becomes a default. A worker result must survive the advisor's verification before the result ships.
 
-The second is **context bloat** — instruction sets that grow until they're noise, every run dragging more unpruned guidance. The lean-context principle from the origin essay is exactly the worry. The harness's answer is its stated core principle, from IDENTITY.md: **"Simplicity is beauty, complexity is pain. Every folder, every skill, every abstraction earns its place by having a distinct lifecycle and a real failure mode it prevents."**
+The second failure mode is **context bloat**. Instruction sets grow until the instructions become noise. Each run drags more unpruned guidance. The lean-context principle from the original essay addresses exactly this worry. The harness answers with its stated principle in the root `AGENTS.md`: **"Prefer ambitious outcomes and simple systems. Do not preserve complexity because it already exists."**
 
-The honest test came up while writing this. The natural move was to add a new `compound-engineering` rule file to the harness — codify the philosophy, make it a default. I didn't. The concept only *names* mechanisms the harness already enforces; a rule would duplicate them and add load-bearing text that earns nothing. So it lives as an in-repo wiki note and this post, not as another always-loaded instruction. Choosing *not* to add the file is itself the principle working. A system that compounds has to be able to say no to its own growth.
+The honest test came while I wrote this post. The natural move was a new `compound-engineering` rule file in the harness. That file would codify the philosophy as a default. I did not add the file. The concept only *names* mechanisms that the harness already enforces. A rule file would duplicate those mechanisms and add load-bearing text that earns nothing. So the concept lives in an in-repo wiki note and in this post, not in another always-loaded instruction. My choice *not* to add the file is the principle at work. A harness that compounds must be able to refuse its own growth.
 
 ## Try it
 
-If you want to see compound engineering as running code instead of a manifesto, the harness is open. Start at the [installation guide](/docs/agro/installation) or jump straight to the [quickstart](/docs/agro/quickstart). Clone it, read `context/IDENTITY.md` and `context/rules/memory.md`, and watch what the agent leaves behind after a session — that residue is the whole idea.
+Do you want to see compound engineering as running code instead of a manifesto? The harness is open source. Start at the [installation guide](/docs/agro/installation), or go straight to the [quickstart](/docs/agro/quickstart). Read the root `AGENTS.md` and the files in `.agro/memories/`. After a session, look at what the agent leaves behind. That residue is the whole idea.
 
-The code was never really the point. The system that writes the next code is.
+The code was never the point. The point is the harness that writes the next code.

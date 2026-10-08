@@ -1,33 +1,29 @@
 ---
 title: "Containers, microVMs, and VMs: where should an AI agent actually run?"
-description: "I spent last week researching whether a Firecracker microVM should replace the container Open Harness runs agents in. It shouldn't — but the question turns into a clean way to reason about isolation for any agent platform."
+description: "I spent last week on one question: should a Firecracker microVM replace the container that runs AGRO agents? The answer is no, and the question gives a clean way to reason about isolation for each agent platform."
 date: 2026-06-07
 authors: [ryan]
 tags: [agents, docker, firecracker, security]
 slug: containers-microvms-vms
 ---
 
-:::note[Written before the one-door migration]
+:::note
 
-This post dates from 2026-06-07 and is kept as a record of how Open Harness worked then. It
-predates the v0.5.x migration that removed the `Makefile` and made the `oh` CLI the only
-lifecycle door, so the `make ...` commands below no longer exist. The steps still
-describe the right *shape* of the workflow; for commands that run today, see the
-[Quickstart](/docs/agro/quickstart) and the [lifecycle command reference](/docs/agro/lifecycle-commands).
+Updated on 2026-10-08. Open Harness is now AGRO. This post uses the current names and commands.
 
 :::
 
-Open Harness runs every coding agent inside a Docker container — one sandbox per repo, your workspace bind-mounted in, the agent free to thrash around without ever touching your laptop. That a container beats a full VM for this was already settled. What I spent last week researching was the next contender: whether a Firecracker **microVM** should *replace* the container underneath it.
+AGRO runs each coding agent inside a Docker container. The agent can thrash around in the sandbox and never touch your laptop. The question "container or full VM?" had a settled answer: the container wins. Last week, I researched the next contender. Should a Firecracker **microVM** *replace* the container under the agent?
 
-The honest answer was no — not because the microVM is weak, but because it's built for a job Open Harness doesn't do yet (running untrusted agents for many tenants on shared hardware) and is a worse fit for the one it does. Chasing that down only reinforced the container as the right default: the instant, live-editable sandbox you get the moment you point the harness at a repo is exactly what a microVM would take away. Getting there forced me to lay out the three ways you can put a box around an AI agent — a full VM, a container, and the microVM in between — so here's the whole mental model.
+The honest answer was no. The microVM is not weak. Firecracker exists for a job that AGRO does not do yet: untrusted agents for many tenants on shared hardware. For the job that AGRO does, the microVM fits worse. The research made the case for the container as the default even stronger. A microVM takes away the instant, live-editable sandbox that you get when you point the harness at a repo. The research also made me lay out three ways to box in an AI agent. The three boxes are a full VM, a container, and the microVM between the two. Here is the whole mental model.
 
 <!-- truncate -->
 
 ## Two axes, three boxes
 
-Every isolation technology is a trade between two things: **how strong the wall is** between the workload and everything else, and **how cheap it is** to stand that wall up — boot time, memory, density, and the developer experience of living inside it.
+Each isolation technology trades between two qualities. The first quality is **the strength of the wall** between the workload and the rest of the host. The second quality is **the cost** to put that wall up: boot time, memory, density, and the developer experience inside the wall.
 
-Containers max out the second axis. Full VMs max out the first. The microVM is the interesting one because it refuses to fully concede either. What actually moves along that first axis is one thing: the **kernel boundary** — does the workload get its own kernel, or does it share the host's?
+Containers max out the second axis. Full VMs max out the first axis. The microVM is the interesting box, because the microVM does not fully give up either axis. One feature moves along the first axis: the **kernel boundary**. Does the workload get its own kernel, or does the workload share the host kernel?
 
 ```mermaid
 flowchart TB
@@ -47,44 +43,48 @@ flowchart TB
     ctF ==>|syscalls| HK ==> HW
 ```
 
-*One difference drives the rest: the container (what Open Harness runs today) shares the **host kernel**, while the full VM and the Firecracker microVM each get their own. The microVM keeps a kernel but sheds the heavy device model — and, as the price, trades the live bind-mount for a virtio-fs/vsock sync.*
+*One difference drives the rest. The container, which AGRO runs today, shares the **host kernel**. The full VM and the Firecracker microVM each get their own kernel. The microVM keeps a kernel but drops the heavy device model. As the price, the microVM trades the live bind-mount for a virtio-fs or vsock sync.*
 
 ## The full VM: the wall that costs the most
 
-A virtual machine asks the hardware to pretend to be a whole second computer. A hypervisor (KVM, VMware, Hyper-V) gives each guest its own kernel, its own emulated BIOS, a virtual PCI bus, virtual disks and NICs — the full pantomime of physical hardware. Nothing the guest does reaches the host kernel, because the guest *has its own kernel*. That's the strongest isolation in common use.
+A virtual machine asks the hardware to act as a whole second computer. A hypervisor (KVM, VMware, Hyper-V) gives each guest its own kernel, an emulated BIOS, a virtual PCI bus, virtual disks, and virtual NICs. The guest gets the full pantomime of physical hardware. No action of the guest reaches the host kernel, because the guest *has its own kernel*. The full VM gives the strongest isolation in common use.
 
-You pay for it. A full guest boots a full operating system — seconds, sometimes minutes. It carries hundreds of megabytes to gigabytes of memory overhead before your workload does anything. You fit tens of them on a host, not thousands. And the sprawling device emulation that makes the boundary real is itself a large, decades-old attack surface.
+You pay for that isolation. A full guest boots a full operating system, in seconds or minutes. A guest carries hundreds of megabytes to gigabytes of memory overhead before your workload starts. You fit tens of guests on a host, not thousands. The large device emulation that makes the boundary real is also a large, decades-old attack surface.
 
-For an AI agent you spin up and tear down constantly — or one you want to launch on demand, per request, by the thousand — that cost is disqualifying. Which is exactly the problem AWS had with Lambda.
+Some AI agents start and stop constantly. Other agents launch on demand, per request, by the thousand. For both kinds of agent, that cost disqualifies the full VM. AWS had exactly this problem with Lambda.
 
-## The container: what Open Harness runs today
+## The container: what AGRO runs today
 
-A container is the opposite bet. No second kernel, no emulated hardware. Your agent is just a process on the host, fenced off with three Linux primitives: **namespaces** (it sees its own PIDs, network, filesystem), **cgroups** (it gets bounded CPU and memory), and **seccomp/AppArmor** (dangerous syscalls are denied).
+A container is the opposite bet. A container has no second kernel and no emulated hardware. Your agent is a process on the host. Three Linux primitives fence the process off:
 
-Because there's no hardware to emulate and no OS to boot, a container starts in milliseconds and adds almost no memory overhead. You pack hundreds on a host. And — the part that matters most for a coding agent — you can **bind-mount your actual working directory straight in.** The agent edits files; you see the edits instantly in your editor, with no sync layer between. Open Harness leans on this hard: one Docker Compose sandbox per branch, your repo mounted live, even the Docker socket passed through so the agent can run its own containers ([`.devcontainer/docker-compose.yml`](https://github.com/mifunedev/openharness/blob/main/.devcontainer/docker-compose.yml)).
+- **namespaces**: the process sees its own PIDs, network, and filesystem.
+- **cgroups**: the process gets bounded CPU and memory.
+- **seccomp and AppArmor**: the kernel denies dangerous syscalls.
 
-The catch is the shared kernel. A container is a fence, not a wall, and two specific cracks matter:
+A container has no hardware to emulate and no OS to boot. So a container starts in milliseconds and adds almost no memory overhead. You pack hundreds of containers on a host. For a coding agent, one feature matters most: you can **bind-mount your working directory straight in**. The agent edits files, and you see each edit instantly in your editor. No sync layer sits between the agent and you. AGRO uses this feature. On the host, `agro sandbox install docker --checkout <dir>` bind-mounts your checkout at `/home/sandbox/harness` ([`.devcontainer/docker-compose.yml`](https://github.com/mifunedev/agro/blob/v0.18.1/.devcontainer/docker-compose.yml)). An opt-in setting also passes the host Docker socket through, so the agent can run its own containers.
 
-- **The socket is root.** Open Harness bind-mounts `/var/run/docker.sock` so the agent can build and run containers. Anything holding that socket can `docker run` a privileged container that mounts the host's `/` — a one-line escape to root on your machine.
-- **A kernel bug is a host bug.** Every container shares the host kernel, so a single kernel CVE or seccomp bypass is a direct hit. There's no second boundary behind the first.
+The weak point is the shared kernel. A container is a fence, not a wall. Two specific cracks matter:
 
-Here's what people miss when they recoil at that: **for Open Harness's actual job, none of it is a problem.** You're running *your own* agent, on *your own* machine, against *your own* code. The threat isn't a malicious attacker — it's a confused agent `rm`-ing the wrong directory, and the container contains that perfectly. Paying for kernel-grade isolation here buys nothing and costs you the live bind-mount, the instant boot, and the Docker passthrough that make the thing pleasant to use. The container isn't a compromise for this use case. It's the right answer.
+- **The socket is root**. The `access.dockerSocket` setting in `agro.json` mounts `/var/run/docker.sock`, so the agent can build and run containers. The setting is off by default. A process with that socket can `docker run` a privileged container that mounts the host's `/`. That one command gives root on your machine.
+- **A kernel bug is a host bug.** Each container shares the host kernel. So one kernel CVE or one seccomp bypass hits the host directly. No second boundary stands behind the first boundary.
 
-The trust assumptions only break when one of them flips: the code isn't yours, or the machine isn't only yours.
+People recoil at those cracks and miss one point. **For the real job of AGRO, neither crack is a problem**. You run *your own* agent, on *your own* machine, against *your own* code. The threat is not a malicious attacker. The threat is a confused agent that runs `rm` on the wrong directory, and the container contains that mistake completely. Kernel-grade isolation buys nothing here. The isolation costs you the live bind-mount, the instant boot, and the Docker passthrough. Those three features make the sandbox pleasant to use. For this use case, the container is not a compromise. The container is the right answer.
+
+The trust assumptions break only when one assumption flips: the code is not yours, or the machine is not only yours.
 
 ## The microVM: a real kernel boundary at container speed
 
-That flip is what [Firecracker](https://firecracker-microvm.github.io/) was built for. It's the VMM behind AWS Lambda and Fargate, where Amazon runs millions of strangers' functions on shared hardware and absolutely cannot let one reach another.
+AWS built [Firecracker](https://firecracker-microvm.github.io/) for that flip. Firecracker is the VMM behind AWS Lambda and Fargate. On that platform, Amazon runs millions of functions from strangers on shared hardware. One function must never reach another function.
 
-A Firecracker **microVM** is a real virtual machine — own kernel, KVM-enforced hardware boundary, the strong wall from the VM section. But it throws away everything that made the VM slow. No BIOS, no PCI, no legacy device emulation. The guest gets a minimal set of `virtio` devices (a network interface, a block device, a vsock pipe) and little else. The result is a VM that **boots in about 125 milliseconds and adds under 5 MB of memory overhead** — container-class numbers behind a VM-class boundary. The host-facing VMM process is itself wrapped by a `jailer` that drops it into its own cgroups, namespaces, chroot, and seccomp filter, so even a compromised hypervisor has another fence around it.
+A Firecracker **microVM** is a real virtual machine. The microVM has its own kernel and a hardware boundary that KVM enforces. The microVM has the strong wall from the VM section. But the microVM drops each feature that made the VM slow. The microVM has no BIOS, no PCI, and no legacy device emulation. The guest gets a minimal set of `virtio` devices (a network interface, a block device, and a vsock pipe) and little else. The result is a VM that **boots in about 125 milliseconds and adds under 5 MB of memory overhead**. These numbers are container-class numbers behind a VM-class boundary. A `jailer` wraps the host-facing VMM process in its own cgroups, namespaces, chroot, and seccomp filter. So even a compromised hypervisor has another fence around it.
 
-That boundary closes exactly the cracks the container left open. A separate kernel means a guest kernel exploit stops at the KVM wall instead of reaching the host. Dropping the Docker socket — the microVM tier wouldn't mount it — removes the root-escape entirely. And one VM per tenant means one tenant's runaway agent can't read another's memory or files.
+The microVM boundary closes exactly the cracks that the container left open. A separate kernel stops a guest kernel exploit at the KVM wall, before the exploit reaches the host. The microVM tier would not mount the Docker socket, so the root escape disappears. One VM per tenant means that a runaway agent of one tenant cannot read the memory or files of another tenant.
 
-It is not free, and the research was mostly about cataloguing the bill:
+The microVM is not free. Most of my research went into a list of the costs:
 
-- **Live editing gets harder.** A microVM can't bind-mount your host directory the way a container does. You expose the workspace through `virtio-fs` or a `vsock` file-sync instead — a layer between the agent and your files that doesn't exist today. This is the single biggest hit to the developer experience.
-- **You need bare metal.** Firecracker requires `/dev/kvm`. Most standard cloud VMs don't expose nested virtualization, so the microVM tier wants a bare-metal host (Equinix, Hetzner dedicated, an AWS `*.metal` box) — not the cheap VPS a hobbyist already has.
-- **It doesn't fix everything.** A microVM walls off the kernel; it does nothing about a poisoned base image. Supply-chain trust is a separate problem on every row of the table below.
+- **Live editing gets harder.** A microVM cannot bind-mount your host directory the way a container does. Instead, you expose the workspace through `virtio-fs` or a `vsock` file sync. That sync adds a layer between the agent and your files, and the container has no such layer. This cost is the single biggest hit to the developer experience.
+- **You need bare metal.** Firecracker requires `/dev/kvm`. Most standard cloud VMs do not expose nested virtualization. So the microVM tier needs a bare-metal host (Equinix, Hetzner dedicated, or an AWS `*.metal` machine). The cheap VPS that a hobbyist already has does not qualify.
+- **The microVM does not fix every risk.** A microVM walls off the kernel. A microVM does nothing about a poisoned base image. Supply-chain trust is a separate problem on each row of the table below.
 
 ## So which box?
 
@@ -95,10 +95,10 @@ It is not free, and the research was mostly about cataloguing the bill:
 | Memory overhead | Hundreds of MB–GB | ~Zero | < 5 MB |
 | Density per host | Tens | Hundreds–thousands | Thousands |
 | Live file editing | Shared-folder, clunky | Native bind-mount | virtio-fs / vsock sync |
-| Host requirement | A hypervisor | Just a kernel | `/dev/kvm` (bare metal) |
-| Right when… | You need a full second OS | You trust the code, want speed | You're running code you don't trust |
+| Host requirement | A hypervisor | A Linux kernel | `/dev/kvm` (bare metal) |
+| Right when… | You need a full second OS | You trust the code and want speed | You run code that you do not trust |
 
-The decision collapses to one question: **do you trust the code, and is the machine only yours?**
+The decision comes down to one question: **do you trust the code, and is the machine only yours?**
 
 ```mermaid
 flowchart TB
@@ -117,22 +117,22 @@ flowchart TB
     Q3 -->|no| Gap
 ```
 
-*Supply-chain trust of the base image is a separate problem on every path.*
+*Supply-chain trust of the base image is a separate problem on each path.*
 
-- **Yes to both** — a developer running their own agent on their own box. Container, every time. The microVM's wall guards against a threat that isn't present; the VM's cost buys nothing. This is most agent work happening today, and the container isn't the budget option for it — it's optimal.
-- **No** — untrusted, model-generated, or third-party agents, especially many tenants on shared hardware. That's the microVM's entire reason to exist: VM-grade isolation cheap enough to run per-request at fleet scale.
-- **Full VM** stays the answer only when you genuinely need a whole second operating system (a different OS, a full device stack) and churn is low. For on-demand agents it's the wrong shape — the gap Firecracker was invented to fill.
+- **Yes to both**: a developer runs their own agent on their own machine. Pick the container each time. The microVM wall guards against an absent threat. The VM cost buys nothing. Most agent work today fits this case. For this case, the container is not the budget option. The container is optimal.
+- **No**: untrusted, model-generated, or third-party agents, especially many tenants on shared hardware. This case is the reason the microVM exists: VM-grade isolation, cheap enough to run per request at fleet scale.
+- **Full VM** stays the answer only for low churn and a real need for a whole second operating system (a different OS or a full device stack). For on-demand agents, the full VM is the wrong shape. Firecracker exists to fill that gap.
 
-## Where this leaves Open Harness
+## Where this leaves AGRO
 
-Open Harness stays a container, and that's a deliberate call, not a default I never questioned. Its center of gravity is one developer, in a terminal, running an agent they trust against code they own. For that — most cases — the container is the best box on the board: instant, live-editable, full-powered, and contained against the only failure mode that actually shows up.
+AGRO stays on a container. That choice is deliberate, not a default that I never questioned. AGRO centers on one developer, in a terminal, who runs a trusted agent against their own code. For that case, the container is the best box on the board. The container is instant, live-editable, and full-powered. The container also contains the only failure mode that shows up in practice.
 
-The microVM doesn't replace that; it's an **added isolation tier** for when the trust assumption flips — running untrusted agents, or eventually a multi-tenant hosted sandbox on mifune.dev. The shape is a config switch, `isolation: docker` (default) or `microvm`, reusing the same image pipeline, with the Docker socket dropped on the harder tier. It's still desk research — a go/no-go, not shipped code — and a microVM that breaks live editing has to earn its place against everything the container already does for free. But the principle is clear: pick the box that matches the threat, and for the threat most people actually have, the container wins.
+The microVM does not replace the container. The microVM is an **added isolation tier** for the case where the trust assumption flips, for example untrusted agents. Since this post, AGRO lists MicroSandbox in its runtime catalog as a planned microVM runtime. `agro sandbox install microsandbox` still exits with an error, and no configuration field selects a runtime other than Docker. See [Runtimes Overview](/docs/agro/runtimes/overview). A microVM that breaks live editing must earn its place against each feature that the container already gives for free. The principle stays clear: pick the box that matches the threat. For the threat that most people have, the container wins.
 
 ## Where to run it
 
-There's a second axis this piece sets aside on purpose: *where the container runs*. Isolation is the box around the agent; the host is the machine that box sits on — independent choices. Your laptop is the fastest way to start, and the best first move: clone, `make sandbox`, and an agent is working in seconds. But the better long-term home is a small always-on VM with Docker as its only dependency. Move the same container there and the agent keeps grinding through a long task with your laptop lid shut, survives a reboot, and is reachable from wherever you SSH in. Notice the role the VM plays here — it's the *host running Docker*, not a per-agent isolation wall. Same word as the heavyweight box up top, opposite job: the container is still the box; the VM is just what keeps it powered on.
+This post sets one more axis aside on purpose: *where the container runs*. Isolation is the box around the agent. The host is the machine under that box. The two choices are independent. Your laptop is the fastest way to start, and the best first move. On the laptop, run `agro sandbox install docker`. Then install a coding harness in the sandbox. The better long-term home is a small always-on VM with Docker as its only dependency. Move the same sandbox to that VM. The agent then keeps working on a long task with your laptop lid shut. The agent survives a reboot, and you can reach the agent from each machine that you SSH in from. Note the role of the VM here. The VM is the *host that runs Docker*, not a per-agent isolation wall. The word is the same as for the heavy box above, but the job is the opposite. The container is still the box. The VM only keeps the box powered on.
 
 ## Try it
 
-The container harness is open today. Start at the [installation guide](/docs/agro/installation) or the [quickstart](/docs/agro/quickstart) — clone it, point it at a repo, and watch an agent work in a box that boots before you've let go of the Enter key. The microVM tier is being researched in the open; the trade-offs above are the whole reason it's a tier and not a replacement.
+The container sandbox is open source today. Start at the [installation guide](/docs/agro/installation) or the [quickstart](/docs/agro/quickstart). Create a sandbox, install a coding harness, and watch an agent work in a box that starts in seconds. Research on the microVM tier continues in the open. The trade-offs above are the reason that the microVM is a tier and not a replacement.
