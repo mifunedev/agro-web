@@ -1,93 +1,79 @@
 ---
-title: "Deploy Open Harness with Docker"
-description: "Start two isolated Open Harness workspaces from the public image while sharing agent authentication."
+title: "Deploy AGRO with Docker"
+description: "Start two isolated AGRO sandboxes from the public image with plain Docker, each with its own home volume."
 date: 2026-07-11
 authors: [ryan]
 tags: [open-harness, docker, deployment, self-hosted]
 slug: deploy-open-harness-with-docker
 ---
 
-:::note[Commands updated on 2026-09-04 — the sandbox now boots systemd as PID 1]
+:::note
 
-This post dates from 2026-07-11. Since it was written, mifunedev/openharness#948 and #950
-changed the operator flow. Nothing installs at boot: the first commands inside a fresh sandbox
-are `oh tool install herdr` and `oh harness install <id>`. `oh.json` has no `install.*` keys and
-the `--persist-only` / `--no-persist` flags are gone. `oh sandbox install docker` creates a
-sandbox from any directory; raw `docker run` — the subject of this post — remains the CLI-free
-path, and `OH_IMAGE_ONLY` is no longer needed (the entrypoint detects image-only mode). The
-command blocks below are rewritten to the current vocabulary; the narrative is kept as a record.
-
-Open Harness had already collapsed its many per-tool volumes into a **single mount at
-`/home/sandbox`**, and the commands reflect that too. One claim changed with it: two sandboxes
-sharing auth volumes while keeping separate workspaces is no longer possible on this image-only
-path — the workspace now lives *inside* the home mount, so B either has its own home (its own
-logins) or shares A's entirely. The section on sandbox B says so.
-
-See [Installation](/docs/agro/installation) and the
-[Docker deployment guide](/docs/agro/deployment-prebuilt-image).
+Updated on 2026-10-08. Open Harness is now AGRO. This post uses the current names and commands.
 
 :::
 
-Open Harness publishes a ready-to-run sandbox image at `ghcr.io/mifunedev/openharness`. You can launch it directly with Docker—no checkout, local build, or CLI wrapper required—and keep each workspace isolated while sharing authentication. Compose is optional; a complete file is given below.
+AGRO publishes a ready-to-run sandbox image at `ghcr.io/mifunedev/agro`. You can start the image directly with Docker. This path needs no checkout, no local build, and no CLI. Each sandbox keeps its own workspace and its own logins in one home volume.
+
+The default path is the `agro` CLI. `agro sandbox install docker` runs the same image, writes a registry entry, and owns the lifecycle. Use the plain `docker run` path below when you want Docker and nothing else on the host. See [Creating a sandbox](/docs/agro/deployment-prebuilt-image).
 
 <!-- truncate -->
 
 ## Start sandbox A
 
-Create a private Docker network and pull the newest release image:
+Run these commands on the host. The commands create a private Docker network and pull the newest release image:
 
 ```bash
-docker network create openharness
-docker pull ghcr.io/mifunedev/openharness:latest
+docker network create agro
+docker pull ghcr.io/mifunedev/agro:latest
 ```
 
-Replace the Git identity placeholders and start A:
+Replace the Git identity placeholders, then start sandbox A:
 
 ```bash
 docker run -itd \
-  --name oh-a \
-  --network openharness \
+  --name agro-a \
+  --network agro \
   --restart unless-stopped \
   --cgroupns private \
   --cap-add SYS_ADMIN \
   --security-opt apparmor=unconfined \
   --tmpfs /run --tmpfs /run/lock --tmpfs /sys/fs \
-  -e SANDBOX_NAME=oh-a \
   -e GIT_USER_NAME="<your-name>" \
   -e GIT_USER_EMAIL="<you@example.com>" \
-  -v oh-a-workspace:/home/sandbox \
-  ghcr.io/mifunedev/openharness:latest
+  -v agro-a_workspace:/home/sandbox \
+  ghcr.io/mifunedev/agro:latest
 ```
 
-There is no flag for the image-only mode: the entrypoint detects it. Finding no checkout bound at `/home/sandbox/harness`, it seeds the image's baked `/opt/oh-seed` into the home mount on first boot and writes `/home/sandbox/harness/.oh/.image-seeded`. The mount is authoritative after that and starts without Git history.
+The image-only mode has no flag, because the entrypoint detects the mode. On the first boot, the entrypoint finds no checkout at `/home/sandbox/harness`. The entrypoint then copies `/opt/agro-seed` into the home mount and writes the marker `/home/sandbox/harness/.agro/.image-seeded`. After the first boot, the mount holds the editable copy. The copy starts without Git history.
+
+Check the container and the seed, then open a shell:
 
 ```bash
-docker ps --filter 'name=^/oh-a$' --format 'table {{.Names}}\t{{.Status}}'
-docker exec oh-a test -f /home/sandbox/harness/.oh/.image-seeded \
+docker ps --filter 'name=^/agro-a$' --format 'table {{.Names}}\t{{.Status}}'
+docker exec agro-a test -f /home/sandbox/harness/.agro/.image-seeded \
   && echo "sandbox A seed ready"
-docker exec -it -u sandbox oh-a zsh
+docker exec -it -u sandbox agro-a zsh
 ```
 
-For an editor, choose VS Code **Dev Containers: Attach to Running Container...**, select `oh-a`, and open `/home/sandbox/harness`. Do not use **Reopen in Container** for this path.
+For an editor, run the VS Code command **Dev Containers: Attach to Running Container**. Select `agro-a`, and open `/home/sandbox/harness`. Do not use **Reopen in Container** for this path.
 
-## Install what you use — nothing installs at boot
+## Install the tools that you use
 
-The published image carries no agent CLI. A fresh sandbox has Node and `gh`; everything else
-enters through one door, from inside the container. Installs land in `~/.local` inside the home
-mount, so they survive a container recreate:
+The published image contains no agent CLI, and nothing installs at boot. A new sandbox has Node and `gh`. Each other tool enters through one command, from inside the container. Each install lands in `~/.local` inside the home mount, so the install survives a container recreate.
+
+Run these commands inside sandbox A:
 
 ```bash
-docker exec -it -u sandbox oh-a zsh
-
-oh tool install herdr && herdr   # persistent terminal workspace
-oh harness install claude-code
-oh harness install pi
-oh harness install hermes        # optional
+agro tool install herdr && herdr   # persistent terminal workspace
+agro harness install claude-code
+agro harness install pi
+agro harness install hermes        # optional
 ```
 
-## Authenticate once
+## Sign in once per sandbox
 
-Inside A, run `gh auth login` and choose **GitHub.com** → **SSH** → generate/upload an SSH key → **Paste an authentication token**. Then authenticate Claude and Pi:
+Run these commands inside sandbox A, in this order:
 
 ```bash
 gh auth login       # GitHub.com → SSH → generate/upload key → paste token
@@ -98,126 +84,99 @@ claude auth status
 pi
 ```
 
-Inside Pi, enter `/login`, choose a provider and device auth, open the displayed URL in a browser, and enter its code. Then enter `/model` and select the provider and model Pi should use. Exit with `Ctrl-D` when setup is complete. GitHub config, SSH keys, Claude auth, and Pi auth all live under `/home/sandbox`, so the single home volume carries them across a container recreate.
+For `gh auth login`, select **GitHub.com**, then **SSH**, then let `gh` generate and upload an SSH key. Then select **Paste an authentication token**.
+
+Inside Pi, do these steps:
+
+1. Enter `/login`.
+2. Select a provider and the device login.
+3. Open the URL that Pi shows in a browser.
+4. Enter the code in the browser.
+5. Enter `/model` in Pi.
+6. Select the provider and the model for Pi.
+7. Press `Ctrl-D` to exit Pi.
+
+The GitHub configuration, the SSH keys, the Claude login, and the Pi login all live under `/home/sandbox`. The single home volume keeps each login across a container recreate.
 
 ## Add sandbox B
 
-Run the same image with `SANDBOX_NAME=oh-b`, container name `oh-b`, and a distinct home volume. Keep the network unchanged:
+Run the same image with the container name `agro-b` and a separate home volume. Keep the same network:
 
 ```bash
 docker run -itd \
-  --name oh-b \
-  --network openharness \
+  --name agro-b \
+  --network agro \
   --restart unless-stopped \
   --cgroupns private \
   --cap-add SYS_ADMIN \
   --security-opt apparmor=unconfined \
   --tmpfs /run --tmpfs /run/lock --tmpfs /sys/fs \
-  -e SANDBOX_NAME=oh-b \
   -e GIT_USER_NAME="<your-name>" \
   -e GIT_USER_EMAIL="<you@example.com>" \
-  -v oh-b-workspace:/home/sandbox \
-  ghcr.io/mifunedev/openharness:latest
+  -v agro-b_workspace:/home/sandbox \
+  ghcr.io/mifunedev/agro:latest
 ```
 
-B gets its own home volume, so it does not see A's files — and, on this path, does not inherit A's logins either. Install and sign in again inside B. Pointing both containers at one home volume would share the credentials, but it would share the workspace with them.
+Sandbox B has its own home volume. B does not see the files of A, and B does not get the logins of A. Install the tools and sign in again inside B. One home volume for both containers shares the logins, but that volume also shares the workspace.
+
+Run these commands on the host to prove the isolation:
 
 ```bash
-docker exec oh-a touch /home/sandbox/harness/.sandbox-a-only
-docker exec oh-b test ! -e /home/sandbox/harness/.sandbox-a-only \
+docker exec agro-a touch /home/sandbox/harness/.sandbox-a-only
+docker exec agro-b test ! -e /home/sandbox/harness/.sandbox-a-only \
   && echo "workspaces are isolated"
-docker exec oh-a rm /home/sandbox/harness/.sandbox-a-only
+docker exec agro-a rm /home/sandbox/harness/.sandbox-a-only
 ```
 
-## Add anything else from the CLI
+## Add other tools from the CLI
 
-Both recipes above deliberately run the stock published image, and the image ships no agent CLI
-at all. Everything — another agent CLI, a headless browser, a tunnel client — goes in the same
-way, from inside the running container, with no rebuild and no recreate:
+Both recipes above run the stock published image, and the image contains no agent CLI. Each other tool enters the same way: another agent CLI, a headless browser, or a tunnel client. You install each tool from inside the running container, with no rebuild and no recreate.
+
+Run these commands inside the sandbox:
 
 ```bash
-docker exec -it -u sandbox oh-a zsh
-
-oh harness list                 # known agent CLIs, and their installed state
-oh harness install opencode     # into the running sandbox
-oh tool list                    # non-agent tooling
-oh tool install agent-browser   # ~1 GB — it confirms first
+agro harness list                 # known agent CLIs, and their install state
+agro harness install opencode     # into the running sandbox
+agro tool list                    # non-agent tools
+agro tool install agent-browser   # about 1 GB, so it asks first
 ```
 
-`oh harness install <id>` and `oh tool install <id>` are the only door, and they do one thing:
-install into the running sandbox, so the tool is usable now. There is no recorded choice — the
-sandbox's `oh.json` carries no install field, and there are no flags for splitting the work in
-half. What makes an install stick is the home mount: it lands in `~/.local`, so it survives a
-container recreate; after a recreate onto a fresh home volume, run the install again. The same
-command works from the host against a running sandbox.
+`agro harness install <id>` and `agro tool install <id>` are the only way into the sandbox. Each command installs into the running sandbox, and you can use the new tool immediately. `agro` records no choice, and no flag splits the work.
 
-This is why `SANDBOX_NAME` is set on every recipe on this page and not just for cosmetics:
-`oh` decides it is *inside* a sandbox from `/.dockerenv` plus a non-empty `SANDBOX_NAME`.
-Drop it and `oh` concludes it is on a host and goes looking for the container through Docker
-Compose instead of installing locally.
+The home mount keeps each install. The install lands in `~/.local`, so the install survives a container recreate. After a recreate onto a new home volume, run the install again. The same command also works on the host against a running sandbox.
 
-## Compose equivalent
+`agro` detects the sandbox from the image marker `/etc/agro/sandbox`. A raw `docker run` therefore needs no `SANDBOX_NAME`. `agro` uses `/.dockerenv` and `SANDBOX_NAME` only as a fallback for an older image. See [Lifecycle commands](/docs/agro/lifecycle-commands).
 
-Compose is not required, but it records the same run as a file you can commit. This file starts sandbox A on the `openharness` network with its single home volume.
+## Use Compose through `agro`
 
-Write `docker-compose.yml`:
+In July 2026, this post gave a hand-written Compose file. That file ran `sleep infinity` with `init: true`. The sandbox now boots systemd as PID 1, so that file does not start the sandbox. Do not use that file.
 
-```yaml
-services:
-  oh-a:
-    image: ghcr.io/mifunedev/openharness:latest
-    container_name: oh-a
-    hostname: oh-a
-    init: true
-    tty: true
-    stdin_open: true
-    restart: unless-stopped
-    networks:
-      - openharness
-    environment:
-      SANDBOX_NAME: oh-a
-      GIT_USER_NAME: ${GIT_USER_NAME:-<your-name>}
-      GIT_USER_EMAIL: ${GIT_USER_EMAIL:-<you@example.com>}
-      HERMES_HOME: /home/sandbox/.hermes
-    volumes:
-      - oh-a-workspace:/home/sandbox
-    command: ["sleep", "infinity"]
-
-networks:
-  openharness:
-    name: openharness
-
-volumes:
-  oh-a-workspace:
-    name: oh-a-workspace
-```
-
-Start the sandbox and open a shell:
+To manage the sandbox with Compose, use the `agro` CLI. `agro` bundles the Compose files and applies the overlays and the healthcheck. Use these host commands instead of the `docker run` recipe, not next to it:
 
 ```bash
-GIT_USER_NAME="<your-name>" GIT_USER_EMAIL="<you@example.com>" \
-  docker compose up -d
-docker compose exec -u sandbox oh-a zsh
+agro sandbox install docker --name agro-a
+agro compose config   # print the resolved Compose file
 ```
 
-Compose creates the network and the named volume on the first `up`, so the `docker network create` step is not needed. Add sandbox B as a second service: copy the `oh-a` block, set the service name, `container_name`, `hostname`, and `SANDBOX_NAME` to `oh-b`, and mount `oh-b-workspace` instead of `oh-a-workspace`. B gets its own home, which means its own logins — sign in again there. Pointing both services at one home volume would share the credentials, but it would share the workspace with them.
+The sandbox stores its home in the volume `agro-a_workspace`. The `docker run` recipe above uses the same `<name>_workspace` volume name. See [Lifecycle commands](/docs/agro/lifecycle-commands).
 
-`HERMES_HOME` points at `/home/sandbox/.hermes`. As originally written this needed its own volume: Hermes replaces `auth.json` atomically, and an atomic replace across two filesystems fails with `EXDEV`, so `auth.json` and its temporary file had to share a mount. With one mount at `/home/sandbox` that is true by construction, and the extra volume is gone.
+Hermes keeps its home in `HERMES_HOME`. AGRO selects `/home/sandbox/harness/.hermes` as `HERMES_HOME`. In July 2026, Hermes needed its own volume. Hermes replaces `auth.json` atomically. An atomic replace across two filesystems fails with `EXDEV`, so `auth.json` and its temporary file must share one mount. The single mount at `/home/sandbox` holds both files, so Hermes needs no extra volume. See [Hermes](/docs/agro/harnesses/hermes).
 
-The `INSTALL_HERMES: "true"` line that used to sit beside it is gone too, and this is worth
-being precise about: on the published image that variable never installed Hermes. It was a build
-argument — it selected whether the binary was baked in — and setting it at runtime added
-nothing. Today no harness is baked in at all. Install Hermes the way you install any harness in
-the catalog — `claude-code`, `codex`, `pi`, `opencode`, `hermes`, `grok-build` — with
-`oh harness install <id>` from inside the running sandbox, as the install section above does.
+The `INSTALL_HERMES: "true"` setting is also gone. On the published image, that variable never installed Hermes. The variable was a build argument. The variable selected a Hermes binary in the image at build time, and a runtime value added nothing. Today, the image contains no harness.
 
-To make another container reachable from both sandboxes, attach it to their network with an optional DNS alias:
+Install each harness with `agro harness install <id>` from inside the running sandbox, as the install section above does. Run `agro harness list` for each harness id in the catalog.
+
+## Connect another container
+
+To let both sandboxes reach another container, attach that container to their network with an optional DNS alias. Run `docker network connect` on the host:
 
 ```bash
-docker network connect --alias app openharness my-app
-# A and B can now reach http://app:<container-port>
+docker network connect --alias app agro my-app
+# A and B now reach http://app:<container-port>
 ```
 
-The alias is private to that Docker network; it does not publish a host port. These containers publish no ports and do not mount the host Docker socket. See the [Docker deployment guide](/docs/agro/deployment-prebuilt-image) for verification, lifecycle, destructive volume cleanup, the Linux/AMD64 caveat, and advanced source references.
+The alias is private to that Docker network, and the alias publishes no host port. These containers publish no ports and do not mount the host Docker socket. See [Creating a sandbox](/docs/agro/deployment-prebuilt-image) for the image, the pin options, and the boot model.
 
-Self-hosted Docker is available today. Open Harness Cloud is a future possibility, not a shipped service.
+## Self-hosted or managed
+
+Self-hosted Docker, as this post shows, gives you full control of the host. For a managed option, use the [Mifune Console](/docs). The Console gives you managed AGRO nodes at [console.mifune.dev](https://console.mifune.dev).

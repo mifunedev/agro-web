@@ -1,6 +1,6 @@
 ---
-title: "From Fresh Sandbox to First PR: An Open Harness Demo Guide"
-description: "Install Open Harness, attach with VS Code, keep safe defaults, connect GitHub, isolate work in .worktrees, and let an agent open its first PR."
+title: "From Fresh Sandbox to First PR: An AGRO Demo Guide"
+description: "Install AGRO, attach with VS Code, keep safe defaults, connect GitHub, isolate work in .worktrees, and let an agent open its first PR."
 date: 2026-07-07
 authors: [ryan]
 tags: [open-harness, docker, sandbox, github, worktrees]
@@ -8,32 +8,20 @@ slug: open-harness-demo-guide
 image: /img/blog/2026-07-07-open-harness-demo-guide/social-promo-card.jpg
 ---
 
-:::note[Commands updated on 2026-09-02 for the one-door and sandbox-registry changes]
+:::note
 
-This post dates from 2026-07-07. Since it was written, mifunedev/openharness#948 and #950
-changed the operator flow. Nothing installs at boot: the first commands inside a fresh sandbox
-are `oh tool install herdr` and `oh harness install <id>`. `oh.json` has no `install.*` keys and
-the `--persist-only` / `--no-persist` flags are gone. `oh sandbox install docker` creates a
-sandbox from any directory; raw `docker run` remains the CLI-free path, and `OH_IMAGE_ONLY` is no
-longer needed (the entrypoint detects image-only mode). The command blocks below are rewritten to
-the current vocabulary; the narrative and the screenshots are kept as a record of the demo, and
-the installer and wizard screens they show have since changed.
-
-Two spellings in particular: `oh-sbx-1` is now the **default** sandbox name rather than one typed
-during setup, and the `make ...` lifecycle commands are long gone — `oh` is the only door. For
-commands that run today, see the [Quickstart](/docs/agro/quickstart) and the
-[lifecycle command reference](/docs/agro/lifecycle-commands).
+Updated on 2026-10-08. Open Harness is now AGRO. This post uses the current names and commands.
 
 :::
 
-The fastest way to understand Open Harness is to watch a clean machine become an agent-ready development environment: install the sandbox, attach an editor, verify the agents, connect GitHub, then let an agent create its first issue and pull request.
+To learn AGRO, watch a clean machine become an agent-ready development environment. The demo installs the sandbox, attaches an editor, and checks the agents. Then the demo connects GitHub, and an agent creates its first issue and pull request.
 
-That is what the [full Loom walkthrough](https://www.loom.com/share/875737ef981f4b378a005be62d1e435b) shows. This post turns the demo into a written runbook, with the important corrections called out: safe defaults, when *not* to mount Docker, what lives in `.oh/`, and how worktrees keep agent work isolated.
+The [full Loom walkthrough](https://www.loom.com/share/875737ef981f4b378a005be62d1e435b) shows the full demo. This post turns the demo into a written runbook. The runbook also states the corrections: safe defaults, when *not* to mount Docker, the contents of `.agro/`, and how worktrees isolate agent work. The video and the screenshots record the July 2026 demo. The installer and the wizard screens changed after the demo.
 
 <div style={{ position: "relative", paddingBottom: "56.25%", height: 0, margin: "2rem 0", overflow: "hidden", borderRadius: "12px" }}>
   <iframe
     src="https://www.loom.com/embed/875737ef981f4b378a005be62d1e435b"
-    title="From Fresh Sandbox to First PR: An Open Harness Demo Guide"
+    title="From Fresh Sandbox to First PR: An AGRO Demo Guide"
     frameBorder="0"
     webkitallowfullscreen="true"
     mozallowfullscreen="true"
@@ -46,196 +34,210 @@ That is what the [full Loom walkthrough](https://www.loom.com/share/875737ef981f
 
 ## What the demo proves
 
-Open Harness is a portable agent harness: one repo, one Docker sandbox, and one shared control plane for the coding agents you want to run. The host stays boring — Docker, Git, and Node.js ≥ 20 are all it needs. Node, pnpm, and `gh` live inside the container, and the agent CLIs you use are installed into it with `oh harness install <id>`.
+AGRO is a portable home for coding agents: one repository, one Docker sandbox, and one shared control plane for each agent you run. The host stays simple. The host needs only Docker, Git, and Node.js ≥ 20. Node, pnpm, and `gh` live inside the container. `agro harness install <id>` installs each agent CLI that you use into the container.
 
-The end state is practical:
+The demo ends in this state:
 
-1. The sandbox is running.
-2. VS Code can attach to it as a normal dev environment.
-3. Agent CLIs can see the same repo context and `.oh/` primitives.
-4. GitHub CLI is authenticated from inside the sandbox.
-5. Agent work lands in isolated worktrees and can become a normal issue/PR workflow.
+1. The sandbox runs.
+2. VS Code attaches to the sandbox as a normal development environment.
+3. Each agent CLI sees the same repository and the same `.agro/` primitives.
+4. The GitHub CLI has a login inside the sandbox.
+5. Agent work lands in isolated worktrees and becomes a normal issue and pull request.
 
-If you want the raw video alongside this guide, open the Loom: [Open Harness demo](https://www.loom.com/share/875737ef981f4b378a005be62d1e435b).
+To watch the video next to this guide, open the Loom: [AGRO demo](https://www.loom.com/share/875737ef981f4b378a005be62d1e435b).
 
 ## 1. Install the sandbox
 
-The demo starts from the one-line installer. Today it gets the `oh` CLI, and the sandbox is one
-command after it:
+The demo starts from the installer. Today, you install the `agro` CLI first. Then one command creates the sandbox.
+
+Run these commands on the host:
 
 ```bash
-curl -fsSL https://oh.mifune.dev/get-oh.sh | bash
-oh sandbox install docker
+npm install -g @mifune/agro
+agro sandbox install docker
 ```
 
-The host needs only three things: Docker with the Compose plugin, Git, and Node.js ≥ 20 —
-`get-oh.sh` offers to install Node for you when it is missing. `oh sandbox install docker` then
-runs from **any** directory, with no checkout: it asks for the sandbox name, the timezone, your
-git identity, whether to run sshd, and whether to mount the host Docker socket, writes the
-answers to a registry entry at `~/.oh/sandboxes/<name>/oh.json`, and starts the container from
-the published image. `--yes` takes every default.
-
-![Open Harness installer checking Docker, Docker Compose, and Git before cloning the repo.](/img/blog/2026-07-07-open-harness-demo-guide/install-prereqs.jpg)
-
-Prefer to review first? Download the script before running it:
+The host needs three dependencies: Docker with the Compose plugin, Git, and Node.js ≥ 20. Without Node, use the bootstrap script instead of npm. The script installs `agro` to `~/.local/bin/agro` and offers to install Node:
 
 ```bash
-curl -fsSL -o get-oh.sh https://oh.mifune.dev/get-oh.sh
-# inspect get-oh.sh, then:
-bash get-oh.sh
+curl -fsSL https://github.com/mifunedev/agro/releases/latest/download/install.sh | bash
 ```
 
-For a long-lived setup, the docs recommend the clone-and-own path: clone
-`mifunedev/openharness`, then point a sandbox at that checkout from inside it —
+`agro sandbox install docker` runs from **any** directory and needs no checkout. The wizard asks for these values:
+
+- the sandbox name
+- the timezone
+- your git identity
+- SSH
+- the host Docker socket
+- the host path for `/home/sandbox`
+
+The wizard writes the answers to a registry entry at `~/.agro/sandboxes/<name>/agro.json`. Then the command starts the container from the published image. `--yes` keeps every default.
+
+![The July 2026 installer checks Docker, Docker Compose, and Git before it clones the repository.](/img/blog/2026-07-07-open-harness-demo-guide/install-prereqs.jpg)
+
+To read the script before it runs, download the script first:
 
 ```bash
-oh sandbox install docker --repo "$PWD" --name openharness
+curl -fsSL -o install.sh https://github.com/mifunedev/agro/releases/latest/download/install.sh
+# Read install.sh, then:
+bash install.sh
 ```
 
-— which bind-mounts the clone at `/home/sandbox/harness`. Then make your own repo the private
-`origin` and keep `mifunedev/openharness` as `upstream`. See [Installation](/docs/agro/installation)
-and the [Quickstart](/docs/agro/quickstart) for the full matrix.
+To keep your own project in the sandbox, use the checkout path. Run these commands on the host, in your project directory:
+
+```bash
+cd <your-project>
+agro vendor
+agro sandbox install docker --checkout "$PWD" --name <your-project>
+```
+
+`agro vendor` writes the `.agro/` control plane into the checkout. The CLI then binds the checkout at `/home/sandbox/harness`. See [Installation](/docs/agro/installation) and the [Quickstart](/docs/agro/quickstart) for each option.
 
 ## 2. Choose safe defaults
 
-During setup, name the sandbox and answer the access prompts. In the demo the sandbox is named `oh-sbx-1`, which is now simply the default.
+During setup, name the sandbox and answer the access prompts. The demo typed a sandbox name. Today, the default name is `agro-sbx-<n>`, for example `agro-sbx-1`. This post uses `agro-sbx-1`.
 
-The wizard no longer asks which agent CLIs to include, because none of them are in the image. Nothing installs at boot: inside the sandbox you run `oh tool install herdr` for the terminal workspace and `oh harness install <id>` for each agent you want — `claude-code`, `codex`, `pi`, `opencode`, `hermes`, or `grok-build`. Install only what you need; `oh tool install agent-browser`, for example, adds a headless Chromium footprint for screenshot and preview checks.
+The wizard does not ask for agent CLIs, because the image contains none. Nothing installs at boot. Inside the sandbox, run `agro tool install herdr` for the terminal workspace. Then run `agro harness install <id>` for each agent that you use. Run `agro harness list` for each harness id. Install only what you need. For example, `agro tool install agent-browser` adds a headless Chromium for screenshots and previews.
 
-![Installer prompts for the sandbox name, optional components, and Docker socket access.](/img/blog/2026-07-07-open-harness-demo-guide/sandbox-options.jpg)
+![The July 2026 installer prompts for the sandbox name, the optional components, and Docker socket access.](/img/blog/2026-07-07-open-harness-demo-guide/sandbox-options.jpg)
 
-The most important prompt in this section is the host Docker socket. Mounting `/var/run/docker.sock` lets the sandbox manage host and sibling containers. That is powerful, but it is effectively host-level control. The safe default is **No**. Enable it only on a machine you trust and only when the agent really needs Docker control.
+The most important prompt is the host Docker socket. A mount of `/var/run/docker.sock` lets the sandbox manage the host containers and the sibling containers. That access equals control of the host. The safe default is **No**. Enable the socket only on a host that you trust, and only when the agent needs Docker control. The setting is `access.dockerSocket` in `agro.json`.
 
-## 3. Let the build finish, then read the next-step commands
+## 3. Let the start finish, then enter the sandbox
 
-A cached build can finish quickly; a cold build can take several minutes. When it completes, the installer prints the files and commands that matter next:
+An image-mode sandbox pulls the published image. A checkout with a `.devcontainer/Dockerfile` builds locally, and a cold build takes about ten minutes. When the start completes, the command prints the next step:
 
-- `~/.oh/sandboxes/oh-sbx-1/oh.json` — the sandbox's own settings, and the one file there you edit.
-- `oh secret set --sandbox oh-sbx-1 KEY value` — secrets, written to the sibling `.env` beside it at mode `0600`.
-- `oh shell oh-sbx-1` — enter the sandbox from the host.
-- `oh destroy oh-sbx-1` — tear it down later.
-
-![Post-install instructions show how to enter the sandbox and configure GitHub.](/img/blog/2026-07-07-open-harness-demo-guide/post-install-lifecycle.jpg)
-
-From anywhere on the host, entering the sandbox is intentionally boring:
-
-```bash
-oh shell oh-sbx-1   # the name is optional when it is your only sandbox
+```text
+next: agro shell agro-sbx-1
 ```
 
-You land as the `sandbox` user inside `/home/sandbox/harness`.
+These host commands manage the sandbox next:
 
-## 4. Attach with VS Code when you want the full workstation
+- `agro config set --sandbox agro-sbx-1 <field> <value>` changes a setting in `~/.agro/sandboxes/agro-sbx-1/agro.json`.
+- `agro secret set --sandbox agro-sbx-1 <KEY>` writes a secret to the sibling `.env`, at mode `0600`.
+- `agro shell agro-sbx-1` enters the sandbox.
+- `agro destroy agro-sbx-1` removes the sandbox, its volumes, and its registry entry.
 
-A terminal shell is enough for CLI agents. For day-to-day work, VS Code Dev Containers is the nicer interface: attach to the running container, open `/home/sandbox/harness`, and keep the editor, terminal, file tree, and forwarded ports in one window.
+![The July 2026 installer shows how to enter the sandbox and configure GitHub.](/img/blog/2026-07-07-open-harness-demo-guide/post-install-lifecycle.jpg)
 
-![VS Code attaches directly to the running Open Harness container.](/img/blog/2026-07-07-open-harness-demo-guide/vscode-attach.jpg)
+To enter the sandbox, run `agro shell` from any directory on the host:
 
-The key detail is port forwarding. `oh shell oh-sbx-1` gives you a terminal, but it does not forward container ports to your laptop. VS Code Attach does. That matters for browser-based auth flows, Docusaurus previews, T3 Code, and any app UI running inside the sandbox.
+```bash
+agro shell agro-sbx-1   # omit the name when the registry holds one sandbox
+```
+
+The shell opens as the `sandbox` user in `/home/sandbox/harness`.
+
+## 4. Attach with VS Code for the full workstation
+
+A terminal shell is enough for CLI agents. For daily work, VS Code Dev Containers gives a better interface. Attach to the running container and open `/home/sandbox/harness`. One window then holds the editor, the terminal, the file tree, and the forwarded ports.
+
+![VS Code attaches to the running sandbox container.](/img/blog/2026-07-07-open-harness-demo-guide/vscode-attach.jpg)
+
+Port forwarding is the key difference. `agro shell agro-sbx-1` gives you a terminal, but `agro shell` forwards no container port to your laptop. VS Code Attach forwards the ports. A browser login flow, a Docusaurus preview, T3 Code, and each app UI in the sandbox need that forward.
 
 The connection options are:
 
-| Path | Best for | Port forwarding |
+| Path | Use | Port forwarding |
 |---|---|---|
-| `oh shell oh-sbx-1` | quick terminal access | no |
-| VS Code Dev Containers attach | local workstation flow | yes |
-| VS Code Remote-SSH, then attach | remote VM/server flow | yes |
+| `agro shell agro-sbx-1` | quick terminal access | no |
+| VS Code Dev Containers attach | local workstation | yes |
+| VS Code Remote-SSH, then attach | remote VM or server | yes |
 
-Full details are in [Connecting to the Sandbox](/docs/agro/connecting).
+See [Connecting to the Sandbox](/docs/agro/connecting) for each option.
 
-## 5. Verify the harnesses share the same environment
+## 5. Check that the harnesses share one environment
 
-The video checks Claude Code and Pi from the same sandbox. The point is not that every harness has identical UX. The point is that they are looking at the same repo, the same mounted workspace, and the same Open Harness control plane.
+The video checks Claude Code and Pi in the same sandbox. Each harness has its own interface. Each harness sees the same repository, the same mounted workspace, and the same AGRO control plane.
 
-That control plane is `.oh/`:
+The control plane is `.agro/`:
 
-- `.oh/README.md` — the namespace anchor and the governing-principle doc for the control plane.
-- `.oh/manifest.json` — the `oh update` payload allowlist.
-- `.oh/skills.lock` — the pinned lockfile for the vendored skill pack.
-- `.oh/cli/` — the in-tree `oh` CLI, built into the image.
-- `.oh/evals/` — the fitness-function suite: regression probes, the capability benchmark, and its scoreboard.
-- `.oh/hooks/` — provider-portable secret-exposure hook scripts.
-- `.oh/install/` — container-install inputs consumed while building and booting the sandbox.
-- `.oh/knowledge/` — durable repository knowledge: source and pattern pages, and raw snapshots.
-- `.oh/scripts/` — installer, lifecycle, cron-runtime, and eval-support scripts.
-- `.oh/skills/` — the vendored provider-portable skill pack, exposed through provider symlinks.
-- `.oh/tasks/` — spec task workdirs.
+- `.agro/cli/`: the `agro` CLI package.
+- `.agro/scripts/` and `.agro/install/`: lifecycle scripts, runtime helpers, and image installation inputs.
+- `.agro/skills/`, `.agro/hooks/`, and `.agro/skills.lock`: shared procedures, hooks, and pack metadata.
+- `.agro/tasks/`: task plans (`prd.md`) and story state (`prd.json`).
+- `.agro/logs/` and `.agro/memories/`: local logs and operator context.
+- `.agro/manifest.json`: the declared control-plane payload.
 
-Use lowercase `.oh/`. The raw demo notes called it `.OH`; the repo path is `.oh/`. Isolated
-worktrees are *not* under `.oh/` — they live at `.worktrees/` at the repo root, as the next
-section shows.
+Provider directories reach the shared skills through links. For example, `.claude/skills` links to `../.agro/skills`. Use lowercase `.agro/`. Isolated worktrees are *not* under `.agro/`. Worktrees live at `.worktrees/` at the repository root, as the next section shows. See [`.agro/` directory layout](/docs/agro/agro-directory-layout).
 
-A useful smoke test is to ask each harness to run a small health check or inspect the repo. If Claude Code and Pi can both see the same `.oh/` tree and repo files, the portability story is working.
+For a smoke test, ask each harness to run a small health check or to read the repository. When Claude Code and Pi both see the same `.agro/` tree and the same files, the shared environment works.
 
 ## 6. Connect GitHub inside the sandbox
 
-GitHub auth belongs inside the sandbox because that is where the agents run `git`, `gh`, and PR commands.
+GitHub login belongs inside the sandbox, because the agents run `git`, `gh`, and the pull-request commands there.
+
+Run these commands in a Herdr pane inside the sandbox:
 
 ```bash
 gh auth login
 gh auth setup-git
+gh auth status
 ```
 
-For the clone-and-own flow, choose **SSH** during `gh auth login`, let `gh` generate/upload a key, then paste a GitHub token if prompted. The usual scopes are `repo`, `read:org`, and `admin:public_key`; include `workflow` if the agent will create repos or touch workflow-related operations.
+For SSH, choose **SSH** during `gh auth login`, and let `gh` generate and upload a key. Then paste a GitHub token when `gh` prompts for one. The usual scopes are `repo`, `read:org`, and `admin:public_key`. Add `workflow` when the agent creates repositories or changes workflow files.
 
-Two guardrails:
+Two guardrails apply:
 
-- Open Harness does not create a token for you. You create or supply the token, then `gh` stores it in the sandbox config volume.
-- Do not paste tokens into prompts, screenshots, blog posts, or memory files. Use `gh auth login`, environment variables, or the documented secret paths.
+- AGRO creates no token for you. You create or supply the token. `gh` stores the token in `~/.config/gh` in the home mount.
+- Do not paste a token into a prompt, a screenshot, a blog post, or a memory file. Use `gh auth login`, an environment variable, or `agro secret set`.
 
-The full flow is in [GitHub integration](/docs/agro/integrations/github). For a deeper auth-focused walkthrough, see [Your first sandbox: signing in gh, Claude, Pi, and Hermes](/blog/first-sandbox-agent-auth).
+See [GitHub](/docs/agro/integrations/github) for the full flow. For a walkthrough of each login, see [Your first sandbox: signing in gh, Claude, Pi, and Hermes](/blog/first-sandbox-agent-auth).
 
 ## 7. Use worktrees for isolated agent work
 
-Once the sandbox is authenticated, the next habit is isolation. Agent tasks should not all mutate the same checkout.
+After the GitHub login, isolate each task. Agent tasks must not all change the same checkout.
 
-Open Harness uses `.worktrees/` at the repo root for isolated work, with independent project
-clones alongside it under `projects/`:
+AGRO uses `.worktrees/` at the repository root for isolated branch work. Independent project clones live next to it under `projects/`:
 
 ```text
 .worktrees/
-  feat/my-task/                  # harness repo branch worktree
+  feat/my-task/                  # branch worktree of this repository
 projects/
   <owner>/<repo>/                # independent project clones
 ```
 
-That gives you two useful modes:
+This layout gives you two modes:
 
-- **Branch worktrees** for Open Harness changes, where each task gets its own branch checkout.
-- **Project clones** for separate repositories an agent creates or works on from inside the harness.
+- **Branch worktrees** for changes to this repository. Each task gets its own branch checkout.
+- **Project clones** for separate repositories that an agent creates or changes from inside the sandbox.
 
-In the demo, the agent is asked to create a new public repo and scaffold initial work from inside the sandbox. That proves the chain: Open Harness can go from install → editor attach → GitHub auth → agent-owned project setup without leaving the isolated environment.
+In the demo, an agent creates a new public repository and adds the first files from inside the sandbox. That run proves the chain: install, editor attach, GitHub login, and an agent-owned project. Each step stays inside the isolated environment.
 
-![The agent opens an issue and begins the branch and pull-request workflow for a demo repository.](/img/blog/2026-07-07-open-harness-demo-guide/first-agent-issue.jpg)
+![The agent opens an issue and starts the branch and pull-request workflow for a demo repository.](/img/blog/2026-07-07-open-harness-demo-guide/first-agent-issue.jpg)
 
-The raw Loom screenshots show a public demo repo named `test-demo-openharness`. Treat that as a throwaway example, not a naming rule.
+The Loom screenshots show a throwaway public demo repository. Its name is an example, not a naming rule.
 
-## 8. What to verify before you call it done
+## 8. Checks before you finish
 
-A good setup run has observable checkpoints:
+A good setup run passes these checks:
 
-- `docker ps` shows the sandbox container running.
-- `oh shell oh-sbx-1` lands inside `/home/sandbox/harness` as `sandbox`.
+- `agro ps agro-sbx-1` on the host shows the sandbox container.
+- `agro shell agro-sbx-1` opens `/home/sandbox/harness` as the `sandbox` user.
 - VS Code attaches to the container and opens the same workspace.
 - `claude`, `codex`, or `pi` starts inside the sandbox.
 - `gh auth status` succeeds inside the sandbox.
-- A test branch/worktree appears under `.worktrees/`, or a project clone under `projects/`.
-- A demo issue/PR appears in GitHub when the agent is asked to scaffold work.
+- A test branch worktree appears under `.worktrees/`, or a project clone appears under `projects/`.
+- A demo issue or pull request appears on GitHub after the agent adds work.
 
-If Docker-specific checks fail from inside the sandbox, check whether you intentionally left the host Docker socket unmounted. That is not automatically a bad setup; it is the safer default.
+A Docker check can fail from inside the sandbox. In that case, check whether you left the host Docker socket unmounted. An unmounted socket is not a fault. The unmounted socket is the safe default.
 
 ## Main takeaway
 
-Open Harness is meant to make agent setup repeatable. You boot a sandbox once, attach the interface you prefer, authenticate the tools inside the container, and let agents work in isolated repo state instead of directly on your laptop.
+AGRO makes agent setup repeatable. You start a sandbox once and attach the interface that you prefer. You sign in the tools inside the container. Then the agents work in isolated repository state instead of on your laptop.
 
-If the sandbox runs on an always-on remote host, the agent can keep working after your local laptop closes. If it runs on your laptop, it stops when that machine sleeps. The durability comes from the host you choose plus the sandboxed workspace, not from magic.
+If the sandbox runs on an always-on remote host, the agent continues after you close your laptop. If the sandbox runs on your laptop, the agent stops when the laptop sleeps. The host that you choose and the sandbox workspace give the durability.
+
+To get an always-on host that you do not operate yourself, use the [Mifune Console](/docs). The Console runs AGRO sandboxes on managed nodes.
 
 Start here:
 
 - [Installation](/docs/agro/installation)
 - [Quickstart](/docs/agro/quickstart)
 - [Connecting to the Sandbox](/docs/agro/connecting)
-- [GitHub integration](/docs/agro/integrations/github)
+- [GitHub](/docs/agro/integrations/github)
 - [Harnesses overview](/docs/agro/harnesses/overview)
+- [Mifune Console](/docs)
 
-Then run the loop yourself: install, attach, authenticate, isolate, and open the first PR from inside the sandbox.
+Then run the full sequence yourself. Install, attach, sign in, and isolate. Then open the first pull request from inside the sandbox.
