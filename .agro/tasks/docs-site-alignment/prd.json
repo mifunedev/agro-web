@@ -110,15 +110,17 @@
         "Typecheck passes"
       ],
       "priority": 4,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Executed: (1) grep -nE for oh , oh-sbx, open-harness, get-agro.sh in src/pages/index.tsx exits 1. (2) hero buttons: Read the Console guide (/docs), Open the Console, Self-host AGRO (/docs/agro/intro); screenshot evidence/us-004/home-1280x720.png. (3) self-host block uses npm install -g @mifune/agro and the releases/latest/download/install.sh command, as the synced quickstart does. (4) grid lists the 10 harnesses of the v0.18.1 catalog incl. fx and antigravity-cli; OpenClaw removed. (5) STE exit 0 on evidence/us-004/strings.md. (6) agent-browser at 1280x720 and 414x896. On integrated task branch at 932ed89: pnpm test exit 0, pnpm typecheck exit 0 (Typecheck passes), pnpm build exit 0.",
       "dependsOn": [
         "US-003"
       ],
       "files": [
         "src/pages/index.tsx",
-        "src/pages/index.module.css"
-      ]
+        "src/pages/index.module.css",
+        ".agro/tasks/docs-site-alignment/evidence/us-004/"
+      ],
+      "commit": "932ed89"
     },
     {
       "id": "US-005",
@@ -132,15 +134,16 @@
         "Typecheck passes"
       ],
       "priority": 5,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Executed: (1) intro.md states the product, that Mifune operates each node, and an AI-usage-not-included section. (2) getting-started.md covers Continue with GitHub, the Personal and Organizations contexts, and Create free node (n4) with labels from Console v1.8.1. (3) After you connect: gh auth login && gh auth setup-git, agro harness install <id> --host, /home/sandbox/.agro/workspaces/harness. (4) STE exit 0 on both pages. On integrated task branch at 932ed89: pnpm test exit 0, pnpm typecheck exit 0 (Typecheck passes), pnpm build exit 0.",
       "dependsOn": [
         "US-003"
       ],
       "files": [
         "docs/console/intro.md",
         "docs/console/getting-started.md"
-      ]
+      ],
+      "commit": "9d77180"
     },
     {
       "id": "US-006",
@@ -155,14 +158,15 @@
         "Typecheck passes"
       ],
       "priority": 6,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Executed: (1) Create, Rename, Restart, Pause, Resume, Rebuild, Destroy with roles from v1.8.1 permission checks (Destroy needs admin). (2) Pause and Destroy stop billing; Rebuild and Resume change the IPv4 address. Divergence: on a paid node Destroy keeps the latest snapshot. (3) n4..n64 with vCPU/RAM/disk, pricing link, no prices. (4) table of 16 user-visible statuses. (5) STE exit 0. On integrated task branch at 932ed89: pnpm test exit 0, pnpm typecheck exit 0 (Typecheck passes), pnpm build exit 0.",
       "dependsOn": [
         "US-003"
       ],
       "files": [
         "docs/console/nodes.md"
-      ]
+      ],
+      "commit": "8179fa3"
     },
     {
       "id": "US-007",
@@ -177,14 +181,15 @@
         "Typecheck passes"
       ],
       "priority": 7,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Executed: (1) browser editor, browser terminal, remote desktop, SSH with v1.8.1 menu labels. (2) remote desktop marked experimental, over Tailscale. (3) SSH key optional; no key means no SSH (password login off). (4) ssh-keygen, paste, Generate one for me, and SSH command with placeholders. (5) STE exit 0. On integrated task branch at 932ed89: pnpm test exit 0, pnpm typecheck exit 0 (Typecheck passes), pnpm build exit 0.",
       "dependsOn": [
         "US-003"
       ],
       "files": [
         "docs/console/connect.md"
-      ]
+      ],
+      "commit": "285a495"
     },
     {
       "id": "US-008",
@@ -198,14 +203,15 @@
         "Typecheck passes"
       ],
       "priority": 8,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Executed: (1) Create, Replace, Restore, Delete, and create node from snapshot, with warnings before Restore, Replace, Delete. (2) archive snapshots restore only to a new node, explained by kind. (3) grep -ci 'recovery point' returns 0. (4) STE exit 0. On integrated task branch at 932ed89: pnpm test exit 0, pnpm typecheck exit 0 (Typecheck passes), pnpm build exit 0.",
       "dependsOn": [
         "US-003"
       ],
       "files": [
         "docs/console/snapshots.md"
-      ]
+      ],
+      "commit": "cae055a"
     },
     {
       "id": "US-009",
