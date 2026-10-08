@@ -19,13 +19,13 @@ The node price covers the machine and the workspace. The price does not cover AI
 Each page of this guide covers one task:
 
 - [Getting started](getting-started.md): sign in, select a context, and create your first free node.
-- Nodes: create, pause, resume, and destroy a node.
-- Connect: open a node in the browser editor, the browser terminal, the remote desktop, or SSH.
-- Snapshots: save a workspace and restore it.
-- Free tier: use the free node and its monthly hours.
-- Billing: add a payment method and read your usage.
-- Organizations: share nodes with members and give each member a role.
-- API tokens: call the Console API from a script.
+- [Nodes](nodes.md): create, rename, restart, pause, resume, rebuild, and destroy a node.
+- [Connect](connect.md): open a node in the browser editor, the browser terminal, the remote desktop, or SSH.
+- [Snapshots](snapshots.md): save the workspace of a node, restore it, or create a new node from it.
+- [Free tier](free-tier.md): use the free node and its 24 running hours each UTC month.
+- [Billing](billing.md): add a card with **Add card** and read your usage in **Usage & spend**.
+- [Organizations](organizations.md): share nodes with members and give each member a role.
+- [API tokens](api-tokens.md): call the Console API from a script.
 
 ## Self-host AGRO
 

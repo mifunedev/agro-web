@@ -44,7 +44,7 @@ The free node is available only in your personal space. A free node always uses 
 6. Select **Create free node**. The Console opens the page of the new node.
 7. Wait until the node status is **Running**. The status first shows the setup steps, for example **Creating VM** and **Bootstrapping**.
 
-A free node pauses when the free hours of the month run out. For the free-tier limits, read the Free tier page.
+A free node pauses when the free hours of the month run out. For the free-tier limits, read [Free tier](free-tier.md).
 
 ## After you connect
 
