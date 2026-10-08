@@ -65,12 +65,13 @@ jobs:
       - name: Test the mirror failure classification
         run: pnpm test
 
-      # Drift is caught before it lands, not after. This deliberately does NOT gate
-      # the deploy: a stale doc line is worth less than a stale oh.js, and blocking
-      # the scheduled rebuild would leave the mirror behind to punish a prose typo.
-      - name: Check docs and promos for retired references
-        if: github.event_name == 'pull_request'
+      - name: Check pages, posts, and promos for retired references
         run: pnpm run check:docs-drift
+
+      - name: Check pages and posts against the STE checker of the synced release
+        run: pnpm run check:ste
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build site
         run: pnpm run build

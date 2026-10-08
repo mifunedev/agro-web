@@ -18,33 +18,20 @@ pnpm build
 
 The Open Harness core repo now keeps concise GitHub-readable markdown and points readers here/DeepWiki for the rendered site experience.
 
-## Docs drift detection
+## Drift and prose checks
 
-`docs/` is a hand-copied duplicate of the harness repo's `docs/`, and nothing syncs
-prose. That gap once let the site keep recommending `make` for weeks after the
-harness deleted its Makefile, so `scripts/check-docs-drift.mjs` fails when a file
-under `docs/` or `promos/` names something the harness has retired:
+Each build runs two checks before `pnpm run build`, and a failure stops the deploy.
+`pnpm run check:docs-drift` fails when `docs/`, `blog/`, `promos/`, or `src/pages/`
+names a command, file, or setting that AGRO retired. It skips `docs/agro/`, which
+the build syncs from the AGRO release. `pnpm run check:ste` runs the STE checker
+from the synced AGRO release on `docs/*.md`, `docs/console/`, `blog/`, and the
+visible text of `src/pages/*.tsx`. When AGRO retires a command, add the command
+to `RETIRED` in `scripts/check-docs-drift.mjs` in the same change.
 
 ```bash
 pnpm run check:docs-drift
+pnpm run check:ste
 ```
-
-`RETIRED` in that file is the token list. **Adding to it is how the next migration
-protects itself** — when you remove a command, file, or knob from the harness, add
-its name there in the same change. A page that names a retired thing *in order to
-say it is retired* gets a per-file, per-token entry in `ALLOW` with its reason.
-
-`promos/` is scanned because it was missed the first time. Its banner recipes are
-the source the social cards are rendered from, so a retired command left there
-reappears the next time a card is generated — the published image looks fine until
-someone regenerates it.
-
-`blog/` is deliberately not scanned. Those posts are dated records; they carry an
-admonition rather than an edit.
-
-The check runs on pull requests only. It does **not** gate the deploy: a stale doc
-line is worth less than a stale `oh.js`, and blocking the scheduled rebuild would
-hold the mirror back to punish a prose typo.
 
 ## The script mirror
 
