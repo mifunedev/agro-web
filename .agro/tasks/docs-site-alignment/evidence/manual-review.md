@@ -14,7 +14,7 @@ The run used agent-browser 0.38.1 with the session `us-015`. The run took each s
    pnpm build
    ```
 
-   Expected: the build log shows "wrote static/install.sh <- https://github.com/mifunedev/agro/releases/download/v0.18.1/install.sh" and "[SUCCESS] Generated static files in "build"." The exit status is 0.
+   Expected: the build log shows "wrote static/install.sh <- https://github.com/mifunedev/agro/releases/download/v0.18.1/install.sh (mifunedev/agro@v0.18.1, 8705 bytes)" and "[SUCCESS] Generated static files in "build"." The exit status is 0.
 
 2. Start the server in a detached process. The second command writes the PID to `serve.pid`.
 
@@ -248,5 +248,7 @@ Prerequisites: network access. Runs on the host, remote.
 
 ## Observed defects
 
-1. The self-host sidebar shows raw backticks in two labels: "Creating a sandbox: \`agro sandbox install docker\`" and "\`.agro/\` directory layout". The synced pages `docs/agro/deployment-prebuilt-image.md` and `docs/agro/agro-directory-layout.md` put backticks in the `title` front matter. The live site shows these labels without backticks.
-2. The build log reports "8263 bytes" for `install.sh`. The file has 8705 bytes. `scripts/sync-external-scripts.mjs` logs `body.length` of a string, which counts characters, not bytes. The served file is correct.
+Commit `da3cfca` fixed both defects that the first run found. The second run confirmed each fix.
+
+1. The first run showed raw backticks in two self-host sidebar labels. The synced pages `docs/agro/deployment-prebuilt-image.md` and `docs/agro/agro-directory-layout.md` put backticks in the `title` front matter. After the fix, the sidebar shows "Creating a sandbox: agro sandbox install docker" and ".agro/ directory layout". The screenshot `after-agro-quickstart-1280.png` shows the fixed labels.
+2. The first run logged "8263 bytes" for `install.sh`, because the script logged a character count. After the fix, the build log reports "8705 bytes". The release asset has 8705 bytes.
