@@ -31,7 +31,7 @@ export async function syncInstaller({
     const out = join(destRoot, dest);
     await mkdir(dirname(out), { recursive: true });
     await writeFile(out, body, { mode: 0o644 });
-    console.log(`[${TAG}] wrote ${dest} <- ${url} (${REPO}@${tag}, ${body.length} bytes)`);
+    console.log(`[${TAG}] wrote ${dest} <- ${url} (${REPO}@${tag}, ${Buffer.byteLength(body)} bytes)`);
   }
   return { tag, url };
 }

@@ -115,3 +115,12 @@ test("transformPage adds title and position together", () => {
     '---\ntitle: "Codex"\nsidebar_position: 12\n---\n\n# Codex\n',
   );
 });
+
+test("a generated title drops inline Markdown and keeps the text", () => {
+  const title = (heading) => addTitleFrontmatter(`# ${heading}\n`).match(/^title: (.*)$/m)[1];
+  assert.equal(title("Creating a sandbox: `agro sandbox install docker`"), '"Creating a sandbox: agro sandbox install docker"');
+  assert.equal(title("`.agro/` directory layout"), '".agro/ directory layout"');
+  assert.equal(title("**Bold** and __strong__ and *em* and _under_ text"), '"Bold and strong and em and under text"');
+  assert.equal(title("See [the guide](./guide.md) now"), '"See the guide now"');
+  assert.equal(title("Keep snake_case_name"), '"Keep snake_case_name"');
+});

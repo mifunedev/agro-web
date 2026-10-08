@@ -29,7 +29,7 @@ export async function mirrorBundle({
   for (const dest of dests) {
     await mkdir(dirname(dest), { recursive: true });
     await writeFile(dest, body, { mode: 0o644 });
-    console.log(`[${TAG}] wrote ${basename(dest)} <- ${url} (${REPO}@${tag}, ${body.length} bytes)`);
+    console.log(`[${TAG}] wrote ${basename(dest)} <- ${url} (${REPO}@${tag}, ${Buffer.byteLength(body)} bytes)`);
   }
   return { tag, url };
 }

@@ -31,13 +31,21 @@ function mapOutsideFences(text, fn) {
     .join("\n");
 }
 
+function plainText(markdown) {
+  return markdown
+    .replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/`([^`]*)`/g, "$1")
+    .replace(/(\*\*|__)(.+?)\1/g, "$2")
+    .replace(/(^|\W)[*_](\S(?:.*?\S)?)[*_](?=\W|$)/g, "$1$2");
+}
+
 function firstHeading(text) {
   let inFence = false;
   for (const line of text.split("\n")) {
     if (FENCE.test(line)) inFence = !inFence;
     else if (!inFence) {
       const match = line.match(/^#\s+(.+?)\s*#*\s*$/);
-      if (match) return match[1];
+      if (match) return plainText(match[1]);
     }
   }
   return null;
