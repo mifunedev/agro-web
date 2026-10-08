@@ -48,8 +48,8 @@
         "Typecheck passes"
       ],
       "priority": 2,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Executed on 0b01030: (1) prebuild runs scripts/sync-agro-docs.mjs; build log shows mifunedev/agro@v0.18.1, 32 pages; git check-ignore docs/agro/intro.md exit 0; file list of docs/agro equals the v0.18.1 tarball docs/ (diff exit 0). (2) configuration.md gains title frontmatter from its # heading; covered in sync-agro-docs.test.mjs. (3) slack.md ../../.pi links become github.com/mifunedev/agro/blob/v0.18.1 URLs; covered in tests. 16 of 32 files differ from upstream, each only by frontmatter, link rewrite, or _category_ link.id prefix. (4) git ls-files docs lists only the 8 site-only pages. (5) onBrokenLinks: \"throw\"; pnpm build exit 0; only warning is the untracked-file update date. (6) pnpm test exit 0, 60 pass. (7) pnpm typecheck exit 0. Link targets in site pages, blog, home page, navbar, footer, and redirects moved to /docs/agro/*.",
       "dependsOn": [
         "US-001"
       ],
@@ -59,8 +59,13 @@
         "package.json",
         ".gitignore",
         "docs/",
-        "docusaurus.config.ts"
-      ]
+        "docusaurus.config.ts",
+        "src/",
+        "blog/",
+        "README.md",
+        "scripts/oh-source.mjs"
+      ],
+      "commit": "0b01030"
     },
     {
       "id": "US-003",
