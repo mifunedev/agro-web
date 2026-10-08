@@ -225,15 +225,16 @@
         "Typecheck passes"
       ],
       "priority": 9,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Executed: (1) free-tier.md states one n4 node, 24 running hours per UTC month, no card, pause at the limit, 60-day retention, and Continue on paid usage (operator role, card, no unpaid invoice), from Console v1.8.1. (2) billing.md covers Add card, Open Billing Portal, Usage & spend, the unpaid-invoice block, and Billing Account Managers. (3) grep -ci 'monthly plan' returns 0 on both. (4) STE exit 0. On integrated task branch at 16211ca: pnpm test exit 0, pnpm typecheck exit 0 (Typecheck passes), pnpm build exit 0, check:docs-drift exit 0.",
       "dependsOn": [
         "US-003"
       ],
       "files": [
         "docs/console/free-tier.md",
         "docs/console/billing.md"
-      ]
+      ],
+      "commit": "76e6ab5"
     },
     {
       "id": "US-010",
@@ -247,15 +248,16 @@
         "Typecheck passes"
       ],
       "priority": 10,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Executed: (1) organizations.md covers create, invite by email or GitHub username, accept and decline, roles, change role, remove, leave, rename, and delete with a warning first. (2) role table consistent with nodes.md, snapshots.md, and the v1.8.1 role checks. (3) api-tokens.md covers creation (operator), shown once, context scope, no expiry, revoke, and curl -H 'Authorization: Bearer <token>' https://console.mifune.dev/api/nodes. (4) STE exit 0. On integrated task branch at 16211ca: pnpm test exit 0, pnpm typecheck exit 0 (Typecheck passes), pnpm build exit 0, check:docs-drift exit 0.",
       "dependsOn": [
         "US-003"
       ],
       "files": [
         "docs/console/organizations.md",
         "docs/console/api-tokens.md"
-      ]
+      ],
+      "commit": "e709083"
     },
     {
       "id": "US-011",
@@ -271,8 +273,8 @@
         "`/docs/agro` redirects to `/docs/agro/intro`."
       ],
       "priority": 11,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Executed: (1) property-testing.md and agro-compatibility.md removed; built redirects go to /docs/agro/contributing and /docs/agro/intro. (2) open-core.md names the Mifune Console, links /docs, and lists only released features (repair 9b17bdd removed enterprise policy). (3) check:docs-drift exit 0; no RETIRED pattern in glossary, model-selection, resources. (4) docker-deployment.md and runtimes/docker.md removed; redirects to /docs/agro/deployment-prebuilt-image and /docs/agro/runtimes/overview. (5) STE exit 0 on the four remaining site pages. (6) /docs/agro redirects to /docs/agro/intro. On integrated task branch at 16211ca: pnpm test exit 0, pnpm typecheck exit 0 (Typecheck passes), pnpm build exit 0, check:docs-drift exit 0.",
       "dependsOn": [
         "US-003"
       ],
@@ -285,8 +287,11 @@
         "docs/resources.md",
         "docs/docker-deployment.md",
         "docs/runtimes/",
-        "docusaurus.config.ts"
-      ]
+        "docusaurus.config.ts",
+        "sidebars.ts",
+        "blog/"
+      ],
+      "commit": "9b17bdd"
     },
     {
       "id": "US-012",
@@ -299,14 +304,15 @@
         "Typecheck passes"
       ],
       "priority": 12,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Executed: (1) name grep on the five posts finds only the dated note line and the slug tokenmaxxing-openharness. (2) file names, dates, slugs unchanged; every live-sitemap blog URL exists in the build (comm -23 empty). (3) STE exit 0 on each post. Corrected claims: Docker socket opt-in, MicroSandbox planned, make sandbox -> agro sandbox install docker, /ship-spec -> /prd. On integrated task branch at 16211ca: pnpm test exit 0, pnpm typecheck exit 0 (Typecheck passes), pnpm build exit 0, check:docs-drift exit 0.",
       "dependsOn": [
         "US-003"
       ],
       "files": [
         "blog/"
-      ]
+      ],
+      "commit": "b56c899"
     },
     {
       "id": "US-013",
@@ -320,14 +326,15 @@
         "Typecheck passes"
       ],
       "priority": 13,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Executed: (1) name grep on the three July posts and the archive finds only the dated note per post. (2) the Cloud-is-a-future-possibility line is gone; posts name the Mifune Console and link /docs. (3) file names, dates, slugs, images unchanged; every live-sitemap blog URL exists in the build. (4) STE exit 0 on each post. Cherry-pick conflict with US-011 link edits resolved to the US-013 text, which already uses /docs/agro/deployment-prebuilt-image. On integrated task branch at 16211ca: pnpm test exit 0, pnpm typecheck exit 0 (Typecheck passes), pnpm build exit 0, check:docs-drift exit 0.",
       "dependsOn": [
         "US-003"
       ],
       "files": [
         "blog/"
-      ]
+      ],
+      "commit": "16211ca"
     },
     {
       "id": "US-014",
