@@ -1,0 +1,381 @@
+{
+  "schemaVersion": 1,
+  "project": "agro-web",
+  "branchName": "feat/70-docs-site-alignment",
+  "description": "Align the docs site with the Console and AGRO: restore the build from the latest AGRO release, sync the AGRO pages from that release, add a Console-first guide, and rewrite the home page, site-only pages, and blog posts to current names and commands.",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Restore the build with the release installer",
+      "description": "As a site maintainer, I want the build to mirror the AGRO release installer so that the site deploys again.",
+      "acceptanceCriteria": [
+        "`scripts/oh-source.mjs` resolves the latest `mifunedev/agro` release tag by default, and `AGRO_SCRIPTS_REF` still overrides the tag.",
+        "`scripts/sync-external-scripts.mjs` copies the release asset `install.sh` to `static/install.sh` and to `static/get-agro.sh`, and no source names `.agro/scripts/get-agro.sh`.",
+        "`scripts/build-oh-cli.mjs` builds `static/agro.js` from the same release tag, and `static/agro.js` contains the version of that tag.",
+        "After a deploy, `curl -fsSI https://agro.mifune.dev/install.sh` returns HTTP 200. Today the path returns HTTP 404 from GitHub Pages.",
+        "`scripts/sync-external-scripts.mjs` contains no comment about a CDN redirect for `install.sh`.",
+        "`pnpm test` and `pnpm build` exit 0.",
+        "Typecheck passes"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "scripts/oh-source.mjs",
+        "scripts/sync-external-scripts.mjs",
+        "scripts/build-oh-cli.mjs",
+        "scripts/*.test.mjs",
+        "static/install.sh",
+        "static/get-agro.sh",
+        ".gitignore"
+      ]
+    },
+    {
+      "id": "US-002",
+      "title": "Sync the AGRO docs from the latest release",
+      "description": "As a self-hosting user, I want the AGRO pages to match the latest AGRO release so that each command works.",
+      "acceptanceCriteria": [
+        "A prebuild script copies `docs/` from the latest `mifunedev/agro` release tag to `docs/agro/`, and git ignores `docs/agro/`.",
+        "The script adds a `title` frontmatter field to each copied page that has none, from the first `#` heading.",
+        "The script rewrites each relative link that leaves `docs/` to a `https://github.com/mifunedev/agro/blob/<tag>/<path>` URL.",
+        "The repository holds no hand copy of a page that the sync script writes.",
+        "`docusaurus.config.ts` sets `onBrokenLinks: \"throw\"`, and `pnpm build` exits 0.",
+        "A test in `scripts/` covers the frontmatter step and the link rewrite.",
+        "Typecheck passes"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [
+        "US-001"
+      ],
+      "files": [
+        "scripts/sync-agro-docs.mjs",
+        "scripts/sync-agro-docs.test.mjs",
+        "package.json",
+        ".gitignore",
+        "docs/",
+        "docusaurus.config.ts"
+      ]
+    },
+    {
+      "id": "US-003",
+      "title": "Make the Console the first path in the site structure",
+      "description": "As a visitor, I want the Console guide first and the self-host guide second so that I find my product.",
+      "acceptanceCriteria": [
+        "The navbar shows \"Console\", \"Self-host AGRO\", \"Blog\", and \"GitHub\", in that order.",
+        "`sidebars.ts` defines one sidebar for `docs/console/` and one sidebar for `docs/agro/`.",
+        "`/docs` opens the Console introduction.",
+        "Each earlier `/docs/<page>` URL of an AGRO page redirects to `/docs/agro/<page>`.",
+        "Verify in browser using agent-browser skill.",
+        "`pnpm build` exits 0.",
+        "Typecheck passes"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [
+        "US-002"
+      ],
+      "files": [
+        "docusaurus.config.ts",
+        "sidebars.ts",
+        "docs/console/intro.md"
+      ]
+    },
+    {
+      "id": "US-004",
+      "title": "Rewrite the home page for both products",
+      "description": "As a first-time visitor, I want the home page to state both products and the current commands so that my first step works.",
+      "acceptanceCriteria": [
+        "`src/pages/index.tsx` contains no `oh ` command, no `oh-sbx`, no `open-harness`, and no `get-agro.sh`.",
+        "The hero links to the Console guide first and to the self-host guide second.",
+        "The self-host quickstart block uses `npm install -g @mifune/agro` and the release `install.sh` command.",
+        "The harness grid lists each harness in the AGRO catalog of the synced release.",
+        "Each visible sentence passes the STE checker.",
+        "Verify in browser using agent-browser skill.",
+        "Typecheck passes"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [
+        "US-003"
+      ],
+      "files": [
+        "src/pages/index.tsx",
+        "src/pages/index.module.css"
+      ]
+    },
+    {
+      "id": "US-005",
+      "title": "Write the Console getting-started guide",
+      "description": "As a new Console user, I want one guide from sign-in to a running free node so that I start without help.",
+      "acceptanceCriteria": [
+        "`docs/console/intro.md` states what the Console is, who operates it, and that AI usage is not included.",
+        "`docs/console/getting-started.md` covers GitHub sign-in, the personal and organization contexts, and the creation of a first free `n4` node.",
+        "The guide covers the \"After you connect\" steps: `gh auth login`, `agro harness install <id> --host`, and the editor folder `/home/sandbox/.agro/workspaces/harness`.",
+        "Each page passes the STE checker.",
+        "Typecheck passes"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [
+        "US-003"
+      ],
+      "files": [
+        "docs/console/intro.md",
+        "docs/console/getting-started.md"
+      ]
+    },
+    {
+      "id": "US-006",
+      "title": "Document nodes and their lifecycle",
+      "description": "As a Console user, I want each node action and its billing effect documented so that I control my cost.",
+      "acceptanceCriteria": [
+        "`docs/console/nodes.md` covers Create, Rename, Restart, Pause, Resume, Rebuild, and Destroy, with the role that each action needs.",
+        "The page states that Pause and Destroy stop billing, and that Rebuild changes the IPv4 address.",
+        "The page lists the node specs `n4`, `n8`, `n16`, `n32`, and `n64`, and links to `https://mifune.dev/pricing` for prices.",
+        "The page explains each node status that the Console shows to a user.",
+        "Each page passes the STE checker.",
+        "Typecheck passes"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [
+        "US-003"
+      ],
+      "files": [
+        "docs/console/nodes.md"
+      ]
+    },
+    {
+      "id": "US-007",
+      "title": "Document browser access and SSH",
+      "description": "As a Console user, I want to know each way to open a node so that I pick the right one.",
+      "acceptanceCriteria": [
+        "`docs/console/connect.md` covers the browser editor, the browser terminal, the remote desktop, and SSH.",
+        "The page marks the remote desktop as experimental and states that it runs over Tailscale.",
+        "The page states that the SSH key is optional, and that a node with no key accepts no SSH connection.",
+        "The page covers the key generation, the key paste, and the SSH command from the Connect menu.",
+        "Each page passes the STE checker.",
+        "Typecheck passes"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [
+        "US-003"
+      ],
+      "files": [
+        "docs/console/connect.md"
+      ]
+    },
+    {
+      "id": "US-008",
+      "title": "Document snapshots",
+      "description": "As a Console user, I want to save and restore my workspace so that I recover from a mistake.",
+      "acceptanceCriteria": [
+        "`docs/console/snapshots.md` covers Create, Replace, Restore, Delete, and the creation of a node from a snapshot.",
+        "The page states that an archive snapshot restores only to a new node.",
+        "The page uses the term \"snapshot\" and no \"recovery point\".",
+        "Each page passes the STE checker.",
+        "Typecheck passes"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [
+        "US-003"
+      ],
+      "files": [
+        "docs/console/snapshots.md"
+      ]
+    },
+    {
+      "id": "US-009",
+      "title": "Document the free tier and billing",
+      "description": "As a Console user, I want the free-tier limits and the billing steps documented so that no charge surprises me.",
+      "acceptanceCriteria": [
+        "`docs/console/free-tier.md` states one `n4` node, 24 running hours per UTC month, no card, the pause at the limit, the 60-day workspace retention, and \"Continue on paid usage\".",
+        "`docs/console/billing.md` covers the card, the billing portal, the spend view, the unpaid-invoice block, and billing managers.",
+        "Neither page states a monthly plan.",
+        "Each page passes the STE checker.",
+        "Typecheck passes"
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [
+        "US-003"
+      ],
+      "files": [
+        "docs/console/free-tier.md",
+        "docs/console/billing.md"
+      ]
+    },
+    {
+      "id": "US-010",
+      "title": "Document organizations and access",
+      "description": "As an organization admin, I want members, roles, and tokens documented so that I share access safely.",
+      "acceptanceCriteria": [
+        "`docs/console/organizations.md` covers the creation of an organization, invitations, the three roles `viewer`, `operator`, and `admin`, and leaving or deleting an organization.",
+        "The page has a table of the actions that each role can take.",
+        "`docs/console/api-tokens.md` covers token creation and the `Authorization: Bearer` header.",
+        "Each page passes the STE checker.",
+        "Typecheck passes"
+      ],
+      "priority": 10,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [
+        "US-003"
+      ],
+      "files": [
+        "docs/console/organizations.md",
+        "docs/console/api-tokens.md"
+      ]
+    },
+    {
+      "id": "US-011",
+      "title": "Resolve the site-only pages",
+      "description": "As a visitor, I want each remaining site page to be current so that no page contradicts another.",
+      "acceptanceCriteria": [
+        "`docs/property-testing.md` and `docs/agro-compatibility.md` are removed, with a redirect for each URL.",
+        "`docs/open-core.md` names the Console and links to the Console guide.",
+        "`docs/glossary.md`, `docs/model-selection.md`, and `docs/resources.md` contain no retired term that `scripts/check-docs-drift.mjs` lists.",
+        "`docs/docker-deployment.md` and `docs/runtimes/docker.md` are merged into a synced AGRO page or removed, with a redirect for each URL.",
+        "Each remaining site page passes the STE checker.",
+        "Typecheck passes"
+      ],
+      "priority": 11,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [
+        "US-003"
+      ],
+      "files": [
+        "docs/property-testing.md",
+        "docs/agro-compatibility.md",
+        "docs/open-core.md",
+        "docs/glossary.md",
+        "docs/model-selection.md",
+        "docs/resources.md",
+        "docs/docker-deployment.md",
+        "docs/runtimes/",
+        "docusaurus.config.ts"
+      ]
+    },
+    {
+      "id": "US-012",
+      "title": "Rewrite the 2026-05 and 2026-06 blog posts",
+      "description": "As a reader, I want each older post to use current names and commands so that I can follow it.",
+      "acceptanceCriteria": [
+        "The five posts dated 2026-05-19 to 2026-06-16 contain no `oh ` command, no `.oh/`, no `oh.json`, and no \"Open Harness\" except one dated note on the former name.",
+        "Each post keeps its URL.",
+        "Each post passes the STE checker.",
+        "Typecheck passes"
+      ],
+      "priority": 12,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [
+        "US-003"
+      ],
+      "files": [
+        "blog/"
+      ]
+    },
+    {
+      "id": "US-013",
+      "title": "Rewrite the 2026-07 blog posts and the archive",
+      "description": "As a reader, I want each recent post to state the current product so that no post makes a false claim.",
+      "acceptanceCriteria": [
+        "The posts dated 2026-07-06 to 2026-07-11 and the post in `blog/archive/` use `agro` commands and current names.",
+        "No post states that the Mifune Console is not a shipped service.",
+        "Each post keeps its URL.",
+        "Each post passes the STE checker.",
+        "Typecheck passes"
+      ],
+      "priority": 13,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [
+        "US-003"
+      ],
+      "files": [
+        "blog/"
+      ]
+    },
+    {
+      "id": "US-014",
+      "title": "Guard the site against drift",
+      "description": "As a site maintainer, I want CI to stop a stale or unclear page so that the site stays aligned.",
+      "acceptanceCriteria": [
+        "`scripts/check-docs-drift.mjs` lists `get-agro.sh` outside `static/`, `agro migrate`, `agro start`, `oh-sbx`, and the `oh <verb>` pattern in `src/pages/`.",
+        "`.github/workflows/pages.yml` runs the drift check and the STE checker on `docs/console/`, the site pages, `src/pages/`, and `blog/`, and a failure stops the deploy.",
+        "The workflow runs the STE checker from `mifunedev/agro` at the synced release tag.",
+        "`pnpm test` covers each new drift rule.",
+        "Typecheck passes"
+      ],
+      "priority": 14,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [
+        "US-004",
+        "US-005",
+        "US-006",
+        "US-007",
+        "US-008",
+        "US-009",
+        "US-010",
+        "US-011",
+        "US-012",
+        "US-013"
+      ],
+      "files": [
+        "scripts/check-docs-drift.mjs",
+        "scripts/check-docs-drift.test.mjs",
+        ".github/workflows/pages.yml"
+      ]
+    },
+    {
+      "id": "US-015",
+      "title": "Manual review evidence",
+      "description": "As the operator, I want a recorded browser review of the site so that I accept the change from evidence.",
+      "acceptanceCriteria": [
+        "Depends on US-001 through US-014.",
+        "`.agro/tasks/docs-site-alignment/evidence/manual-review.md` holds annotated screenshots of the home page, the Console introduction, one Console guide page, one synced AGRO page, and one blog post, at 1280x720 and 414x896.",
+        "Each screenshot of a changed page has a matching screenshot of the live site before the change.",
+        "The run uses a local `pnpm build` and `pnpm serve`, and stops each process that the run starts.",
+        "The run records that `/install.sh` and `/get-agro.sh` return the release installer.",
+        "Typecheck passes"
+      ],
+      "priority": 15,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [
+        "US-001",
+        "US-002",
+        "US-003",
+        "US-004",
+        "US-005",
+        "US-006",
+        "US-007",
+        "US-008",
+        "US-009",
+        "US-010",
+        "US-011",
+        "US-012",
+        "US-013",
+        "US-014"
+      ],
+      "files": [
+        ".agro/tasks/docs-site-alignment/evidence/"
+      ]
+    }
+  ]
+}
