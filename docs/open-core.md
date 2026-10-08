@@ -12,7 +12,7 @@ Mifune makes two products. AGRO is open source. Mifune Console is a managed serv
 | Product | Status | What you get |
 |---|---|---|
 | AGRO | Open source, [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0) | The `agro` CLI, the sandbox image, and the `.agro/` control plane. You run AGRO on your own laptop or VM. |
-| Mifune Console | Proprietary managed service | Managed AGRO nodes that Mifune operates for you. The Console also includes provisioning, billing, and enterprise policy. |
+| Mifune Console | Proprietary managed service | Managed AGRO nodes that Mifune operates for you. The Console also includes snapshots, organizations with roles, API tokens, and billing. |
 
 The source of AGRO is at [github.com/mifunedev/agro](https://github.com/mifunedev/agro). You can read, change, and run the AGRO source under the Apache-2.0 terms.
 
