@@ -65,6 +65,8 @@ release instead. `AGRO_GITHUB_REPO` sets the repo. The `OH_*` names still work;
 the `AGRO_*` names win when both are set. A ref that is not a release tag fails the
 build. The build log names the release asset URL of each file.
 
+`scripts/sync-agro-docs.mjs` copies `docs/` of the same release to the gitignored `docs/agro/`.
+
 All four artifacts are gitignored. They exist only as build output, so the deployed
 site is always as fresh as its last successful build.
 

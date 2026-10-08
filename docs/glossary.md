@@ -66,7 +66,7 @@ These names describe separate layers, not interchangeable jobs:
   skills, crons, and memory. "AGRO" names both this project and any
   single repo-per-sandbox instance of it. "AGRO" is the former name of
   this project and names nothing current.
-  Source: [`intro.md`](intro.md).
+  Source: [`intro.md`](agro/intro.md).
 
 - **knowledge** — Durable repository knowledge kept under `.agro/knowledge/`: a
   derived cache of understanding that the repository itself always outranks.
@@ -83,7 +83,7 @@ These names describe separate layers, not interchangeable jobs:
 - **model** — The LLM an agent or CLI uses to produce reasoning, text, and
   tool-call requests. The model is only one part of an agent session; the
   harness, tools, and policy decide where it runs and which actions are allowed.
-  Source: [`docs/harnesses/overview.md`](harnesses/overview.md).
+  Source: [`docs/harnesses/overview.md`](agro/harnesses/overview.md).
 
 - **orchestrator** — The root-level role that manages the sandbox lifecycle and
   git but does not write application code; its job is provisioning, scaffolding

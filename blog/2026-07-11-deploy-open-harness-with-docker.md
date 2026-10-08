@@ -23,7 +23,7 @@ sharing auth volumes while keeping separate workspaces is no longer possible on 
 path — the workspace now lives *inside* the home mount, so B either has its own home (its own
 logins) or shares A's entirely. The section on sandbox B says so.
 
-See [Installation](/docs/installation) and the
+See [Installation](/docs/agro/installation) and the
 [Docker deployment guide](/docs/docker-deployment).
 
 :::

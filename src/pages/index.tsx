@@ -37,49 +37,49 @@ const AGENTS: Array<{
   {
     name: "Claude Code",
     description: "Anthropic's terminal coding agent.",
-    href: "/docs/harnesses/claude-code",
+    href: "/docs/agro/harnesses/claude-code",
     icon: <img src="/img/agents/claude-code.png" alt="" width={28} height={28} />,
   },
   {
     name: "Codex",
     description: "OpenAI's CLI coding agent.",
-    href: "/docs/harnesses/codex",
+    href: "/docs/agro/harnesses/codex",
     icon: <img src="/img/agents/codex.png" alt="" width={28} height={28} />,
   },
   {
     name: "OpenCode",
     description: "Terminal agent with OpenAI OAuth support.",
-    href: "/docs/harnesses/opencode",
+    href: "/docs/agro/harnesses/opencode",
     icon: <OpenCodeIcon />,
   },
   {
     name: "Pi",
     description: "A lightweight, customizable agent.",
-    href: "/docs/harnesses/pi",
+    href: "/docs/agro/harnesses/pi",
     icon: <PiIcon />,
   },
   {
     name: "Hermes",
     description: "Nous Research's self-improving agent CLI.",
-    href: "/docs/harnesses/hermes",
+    href: "/docs/agro/harnesses/hermes",
     icon: <img src="https://hermes-agent.nousresearch.com/favicon.ico" alt="" width={28} height={28} />,
   },
   {
     name: "Grok Build",
     description: "xAI's terminal coding agent and CLI.",
-    href: "/docs/harnesses/grok-build",
+    href: "/docs/agro/harnesses/grok-build",
     icon: <img src="https://x.ai/favicon.ico" alt="" width={28} height={28} />,
   },
   {
     name: "Muse Code",
     description: "Meta's terminal coding agent.",
-    href: "/docs/harnesses/muse-code",
+    href: "/docs/agro/harnesses/muse-code",
     icon: <img src="/img/agents/muse-code.ico" alt="" width={28} height={28} />,
   },
   {
     name: "T3 Code",
     description: "Browser UI over Claude/Codex/OpenCode (port 3773).",
-    href: "/docs/harnesses/t3code",
+    href: "/docs/agro/harnesses/t3code",
     icon: (
       <img
         src="https://github.com/pingdotgg.png"
@@ -136,7 +136,7 @@ export default function Home(): React.ReactElement {
               <div className={styles.heroButtons}>
                 <Link
                   className="button button--primary button--lg"
-                  to="/docs/quickstart"
+                  to="/docs/agro/quickstart"
                 >
                   Get started
                 </Link>
@@ -280,7 +280,7 @@ export default function Home(): React.ReactElement {
               <p>
                 Multi-agent setups — like a Pi+Mom Slack bot — ship as separate harness packs you <code>git clone</code> into the workspace.
               </p>
-              <Link className={styles.archLink} to="/docs/quickstart">
+              <Link className={styles.archLink} to="/docs/agro/quickstart">
                 Read the quickstart →
               </Link>
             </div>
@@ -307,7 +307,7 @@ export default function Home(): React.ReactElement {
                 <span className={styles.linkCardLabel}>License</span>
                 <span className={styles.linkCardSub}>Apache 2.0</span>
               </Link>
-              <Link className={styles.linkCard} to="/docs">
+              <Link className={styles.linkCard} to="/docs/agro/intro">
                 <span className={styles.linkCardLabel}>Documentation</span>
                 <span className={styles.linkCardSub}>
                   Quickstart, architecture, agents

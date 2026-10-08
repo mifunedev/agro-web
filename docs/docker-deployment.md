@@ -7,7 +7,7 @@ sidebar_position: 8
 
 Run the public AGRO image directly with Docker—no checkout, local build, CLI wrapper, or Compose required. This walkthrough creates two containers on one private network, each with its own persistent home.
 
-This is the CLI-free path. The default path is the `agro` CLI: [`agro sandbox install docker`](/docs/deployment-prebuilt-image) creates a registry-backed sandbox from any directory and owns its lifecycle (`agro shell`, `agro stop`, `agro destroy`). Use the recipe below when you want plain `docker run` and nothing else on the host.
+This is the CLI-free path. The default path is the `agro` CLI: [`agro sandbox install docker`](/docs/agro/deployment-prebuilt-image) creates a registry-backed sandbox from any directory and owns its lifecycle (`agro shell`, `agro stop`, `agro destroy`). Use the recipe below when you want plain `docker run` and nothing else on the host.
 
 Everything a sandbox persists lives in a **single mount at `/home/sandbox`**: the workspace and control plane at `/home/sandbox/harness`, and the provider authentication under `/home/sandbox/.config`, `/home/sandbox/.ssh`, `/home/sandbox/.claude`, and `/home/sandbox/.pi`. One volume per sandbox, and nothing to keep in sync.
 
@@ -203,12 +203,12 @@ No ports are published by these commands; the `agro` network remains private unt
 
 ## Full-option references
 
-The `docker run` path above is the recommended walkthrough. For the complete image/boot model and advanced settings, see [Creating a sandbox](/docs/deployment-prebuilt-image). The [canonical image-only Compose file](https://github.com/mifunedev/agro/blob/main/.devcontainer/docker-compose.image-only.yml) is available as a reference for operators who specifically need Compose-managed options.
+The `docker run` path above is the recommended walkthrough. For the complete image/boot model and advanced settings, see [Creating a sandbox](/docs/agro/deployment-prebuilt-image). The [canonical image-only Compose file](https://github.com/mifunedev/agro/blob/main/.devcontainer/docker-compose.image-only.yml) is available as a reference for operators who specifically need Compose-managed options.
 
 ## The same image runs under MicroSandbox
 
 `msb` runs standard OCI images, so this image is also what you point MicroSandbox
 at if you want a microVM rather than a container. The `docker run` recipe above is
 the invocation to translate — see
-[Running AGRO on MicroSandbox](./runtimes/microsandbox.md#running-agro-on-microsandbox).
+[Running AGRO on MicroSandbox](./agro/runtimes/microsandbox.md).
 Untested end to end; the risks are listed there.

@@ -13,7 +13,7 @@ This post dates from 2026-06-07 and is kept as a record of how Open Harness work
 predates the v0.5.x migration that removed the `Makefile` and made the `oh` CLI the only
 lifecycle door, so the `make ...` commands below no longer exist. The steps still
 describe the right *shape* of the workflow; for commands that run today, see the
-[Quickstart](/docs/quickstart) and the [lifecycle command reference](/docs/lifecycle-commands).
+[Quickstart](/docs/agro/quickstart) and the [lifecycle command reference](/docs/agro/lifecycle-commands).
 
 :::
 
@@ -135,4 +135,4 @@ There's a second axis this piece sets aside on purpose: *where the container run
 
 ## Try it
 
-The container harness is open today. Start at the [installation guide](/docs/installation) or the [quickstart](/docs/quickstart) — clone it, point it at a repo, and watch an agent work in a box that boots before you've let go of the Enter key. The microVM tier is being researched in the open; the trade-offs above are the whole reason it's a tier and not a replacement.
+The container harness is open today. Start at the [installation guide](/docs/agro/installation) or the [quickstart](/docs/agro/quickstart) — clone it, point it at a repo, and watch an agent work in a box that boots before you've let go of the Enter key. The microVM tier is being researched in the open; the trade-offs above are the whole reason it's a tier and not a replacement.

@@ -23,7 +23,7 @@ the second-sandbox section has been rewritten to say so: sharing logins between 
 keeping their workspaces separate is no longer something the image-only path can do, because the
 workspace now lives *inside* the home mount.
 
-See [Installation](/docs/installation) and the [Docker deployment guide](/docs/docker-deployment).
+See [Installation](/docs/agro/installation) and the [Docker deployment guide](/docs/docker-deployment).
 
 :::
 
@@ -58,7 +58,7 @@ docker ps --filter name=oh-a --format 'table {{.Names}}\t{{.Status}}'
 
 ## 2. Attach — use VS Code
 
-Attaching with **VS Code** is the nicest way in — Dev Containers extension → **Attach to Running Container** → `oh-a` opens a full editor *and* auto-forwards any app UIs you launch to your laptop ([Connecting → Option B](/docs/connecting#option-b--vscode-attach-to-running-container-local-host)). But every login below works headless — device codes, token paste, and OAuth URLs — so on a remote host a plain shell is enough:
+Attaching with **VS Code** is the nicest way in — Dev Containers extension → **Attach to Running Container** → `oh-a` opens a full editor *and* auto-forwards any app UIs you launch to your laptop ([Connecting → Option B](/docs/agro/connecting#option-b--vs-code-attach-to-running-container-local-host)). But every login below works headless — device codes, token paste, and OAuth URLs — so on a remote host a plain shell is enough:
 
 ```bash
 docker exec -it -u sandbox oh-a zsh
@@ -119,7 +119,7 @@ Two more things Pi does out of the box: it can run on **OpenAI Codex** (your Cha
   -e PI_SLACK_BOT_TOKEN=xoxb-…
 ```
 
-Then `gateway pi` starts the bridge with the tokens already in place, and you grant trust from inside it with `/msg-bridge` ([Slack integration](/docs/integrations/slack)). (Under the `oh` CLI these same tokens are set with `oh secret set --sandbox <name> PI_SLACK_BOT_TOKEN <value>`, which writes them to the sandbox's registry entry.)
+Then `gateway pi` starts the bridge with the tokens already in place, and you grant trust from inside it with `/msg-bridge` ([Slack integration](/docs/agro/integrations/slack)). (Under the `oh` CLI these same tokens are set with `oh secret set --sandbox <name> PI_SLACK_BOT_TOKEN <value>`, which writes them to the sandbox's registry entry.)
 
 ### Hermes
 
@@ -225,7 +225,7 @@ half above is real and unchanged.
 If you want the old combination, use the checkout-based path instead of image-only: there
 the repo is bind-mounted at `/home/sandbox/harness` from the host, *over* the home mount, so
 two sandboxes pointing `storage.homePath` at one directory share every credential while each
-keeps its own checkout. See [Configuration → `storage.homePath`](/docs/configuration).
+keeps its own checkout. See [Configuration → `storage.homePath`](/docs/agro/configuration).
 
 :::
 

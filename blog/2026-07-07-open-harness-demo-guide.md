@@ -21,8 +21,8 @@ the installer and wizard screens they show have since changed.
 
 Two spellings in particular: `oh-sbx-1` is now the **default** sandbox name rather than one typed
 during setup, and the `make ...` lifecycle commands are long gone — `oh` is the only door. For
-commands that run today, see the [Quickstart](/docs/quickstart) and the
-[lifecycle command reference](/docs/lifecycle-commands).
+commands that run today, see the [Quickstart](/docs/agro/quickstart) and the
+[lifecycle command reference](/docs/agro/lifecycle-commands).
 
 :::
 
@@ -93,8 +93,8 @@ oh sandbox install docker --repo "$PWD" --name openharness
 ```
 
 — which bind-mounts the clone at `/home/sandbox/harness`. Then make your own repo the private
-`origin` and keep `mifunedev/openharness` as `upstream`. See [Installation](/docs/installation)
-and the [Quickstart](/docs/quickstart) for the full matrix.
+`origin` and keep `mifunedev/openharness` as `upstream`. See [Installation](/docs/agro/installation)
+and the [Quickstart](/docs/agro/quickstart) for the full matrix.
 
 ## 2. Choose safe defaults
 
@@ -141,7 +141,7 @@ The connection options are:
 | VS Code Dev Containers attach | local workstation flow | yes |
 | VS Code Remote-SSH, then attach | remote VM/server flow | yes |
 
-Full details are in [Connecting to the Sandbox](/docs/connecting).
+Full details are in [Connecting to the Sandbox](/docs/agro/connecting).
 
 ## 5. Verify the harnesses share the same environment
 
@@ -183,7 +183,7 @@ Two guardrails:
 - Open Harness does not create a token for you. You create or supply the token, then `gh` stores it in the sandbox config volume.
 - Do not paste tokens into prompts, screenshots, blog posts, or memory files. Use `gh auth login`, environment variables, or the documented secret paths.
 
-The full flow is in [GitHub integration](/docs/integrations/github). For a deeper auth-focused walkthrough, see [Your first sandbox: signing in gh, Claude, Pi, and Hermes](/blog/first-sandbox-agent-auth).
+The full flow is in [GitHub integration](/docs/agro/integrations/github). For a deeper auth-focused walkthrough, see [Your first sandbox: signing in gh, Claude, Pi, and Hermes](/blog/first-sandbox-agent-auth).
 
 ## 7. Use worktrees for isolated agent work
 
@@ -232,10 +232,10 @@ If the sandbox runs on an always-on remote host, the agent can keep working afte
 
 Start here:
 
-- [Installation](/docs/installation)
-- [Quickstart](/docs/quickstart)
-- [Connecting to the Sandbox](/docs/connecting)
-- [GitHub integration](/docs/integrations/github)
-- [Harnesses overview](/docs/harnesses/overview)
+- [Installation](/docs/agro/installation)
+- [Quickstart](/docs/agro/quickstart)
+- [Connecting to the Sandbox](/docs/agro/connecting)
+- [GitHub integration](/docs/agro/integrations/github)
+- [Harnesses overview](/docs/agro/harnesses/overview)
 
 Then run the loop yourself: install, attach, authenticate, isolate, and open the first PR from inside the sandbox.

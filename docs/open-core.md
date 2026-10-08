@@ -53,4 +53,4 @@ and future releases; it does not revoke past grants.
 ## Related
 
 - [`LICENSE`](https://github.com/mifunedev/agro/blob/development/LICENSE) · [`NOTICE`](https://github.com/mifunedev/agro/blob/development/NOTICE)
-- [Security considerations](security-considerations.md)
+- [Security considerations](agro/security-considerations.md)

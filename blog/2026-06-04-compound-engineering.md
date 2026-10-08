@@ -47,6 +47,6 @@ The honest test came up while writing this. The natural move was to add a new `c
 
 ## Try it
 
-If you want to see compound engineering as running code instead of a manifesto, the harness is open. Start at the [installation guide](/docs/installation) or jump straight to the [quickstart](/docs/quickstart). Clone it, read `context/IDENTITY.md` and `context/rules/memory.md`, and watch what the agent leaves behind after a session — that residue is the whole idea.
+If you want to see compound engineering as running code instead of a manifesto, the harness is open. Start at the [installation guide](/docs/agro/installation) or jump straight to the [quickstart](/docs/agro/quickstart). Clone it, read `context/IDENTITY.md` and `context/rules/memory.md`, and watch what the agent leaves behind after a session — that residue is the whole idea.
 
 The code was never really the point. The system that writes the next code is.

@@ -21,8 +21,7 @@ const config: Config = {
 
   trailingSlash: false,
 
-  onBrokenLinks: "warn",
-  onBrokenMarkdownLinks: "warn",
+  onBrokenLinks: "throw",
 
   i18n: {
     defaultLocale: "en",
@@ -31,6 +30,7 @@ const config: Config = {
 
   markdown: {
     mermaid: true,
+    hooks: { onBrokenMarkdownLinks: "warn" },
   },
 
   headTags: [
@@ -91,15 +91,15 @@ const config: Config = {
         // below preserve old deep-links into the harness pages; deepagents
         // left the catalog, so both of its old paths land on the overview.
         redirects: [
-          { from: "/docs/agents/claude-code", to: "/docs/harnesses/claude-code" },
-          { from: "/docs/agents/codex", to: "/docs/harnesses/codex" },
-          { from: "/docs/agents/deepagents", to: "/docs/harnesses/overview" },
-          { from: "/docs/harnesses/deepagents", to: "/docs/harnesses/overview" },
-          { from: "/docs/agents/grok-build", to: "/docs/harnesses/grok-build" },
-          { from: "/docs/agents/opencode", to: "/docs/harnesses/opencode" },
-          { from: "/docs/agents/pi", to: "/docs/harnesses/pi" },
-          { from: "/docs/agents/t3code", to: "/docs/harnesses/t3code" },
-          { from: "/docs/oh-directory-layout", to: "/docs/agro-directory-layout" },
+          { from: "/docs/agents/claude-code", to: "/docs/agro/harnesses/claude-code" },
+          { from: "/docs/agents/codex", to: "/docs/agro/harnesses/codex" },
+          { from: "/docs/agents/deepagents", to: "/docs/agro/harnesses/overview" },
+          { from: "/docs/harnesses/deepagents", to: "/docs/agro/harnesses/overview" },
+          { from: "/docs/agents/grok-build", to: "/docs/agro/harnesses/grok-build" },
+          { from: "/docs/agents/opencode", to: "/docs/agro/harnesses/opencode" },
+          { from: "/docs/agents/pi", to: "/docs/agro/harnesses/pi" },
+          { from: "/docs/agents/t3code", to: "/docs/agro/harnesses/t3code" },
+          { from: "/docs/oh-directory-layout", to: "/docs/agro/agro-directory-layout" },
         ],
       },
     ],
@@ -113,7 +113,9 @@ const config: Config = {
           path: "docs",
           sidebarPath: "./sidebars.ts",
           editUrl: ({ docPath }) =>
-            `https://github.com/mifunedev/agro-web/edit/main/docs/${docPath}`,
+            docPath.startsWith("agro/")
+              ? `https://github.com/mifunedev/agro/edit/main/docs/${docPath.slice("agro/".length)}`
+              : `https://github.com/mifunedev/agro-web/edit/main/docs/${docPath}`,
           routeBasePath: "docs",
           showLastUpdateTime: true,
         },
@@ -176,7 +178,7 @@ const config: Config = {
       },
       items: [
         {
-          to: "/docs",
+          to: "/docs/agro/intro",
           label: "Start Here",
           position: "left",
         },
@@ -206,7 +208,7 @@ const config: Config = {
           items: [
             {
               label: "Introduction",
-              to: "/docs",
+              to: "/docs/agro/intro",
             },
           ],
         },

@@ -9,6 +9,9 @@ static/get-oh.sh
 static/agro.js
 static/oh.js
 
+# Build-time copy of the AGRO release docs/ (scripts/sync-agro-docs.mjs)
+docs/agro/
+
 # Dependencies
 node_modules/
 node_modules/

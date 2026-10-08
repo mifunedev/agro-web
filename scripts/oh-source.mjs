@@ -68,7 +68,7 @@ function authHeaders() {
 
 const defaultFetch = () => globalThis.fetch.bind(globalThis);
 
-async function get(url, fetchImpl, headers = {}) {
+export async function get(url, fetchImpl, headers = {}) {
   let res;
   try {
     res = await fetchImpl(url, { headers: { ...headers, ...authHeaders() } });
