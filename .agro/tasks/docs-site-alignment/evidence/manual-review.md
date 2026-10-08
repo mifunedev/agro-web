@@ -39,7 +39,7 @@ The run used agent-browser 0.38.1 with the session `us-015`. The run took each s
 
    <img src="https://github.com/mifunedev/agro-web/blob/<commit-sha>/.agro/tasks/docs-site-alignment/evidence/before-home-1280.png?raw=true" width="720" alt="Live home page at 1280x720 before the change">
    </details>
-   Caption: before the change, the home page had no Console path and installed from `get-agro.sh` on agro.mifune.dev.
+   Callouts: 1 is the old navbar Start Here, Docs, Blog. 2 is the old hero buttons. Before the change, the home page had no Console path and installed from `get-agro.sh` on agro.mifune.dev.
 
 3. Open `http://localhost:3299/` at 414x896. Expected: the hero buttons stack as "Read the Console guide", "Open the Console", "Self-host AGRO". The quickstart panel shows "npm install -g @mifune/agro".
    <details><summary>Screenshot</summary>
@@ -53,7 +53,7 @@ The run used agent-browser 0.38.1 with the session `us-015`. The run took each s
 
    <img src="https://github.com/mifunedev/agro-web/blob/<commit-sha>/.agro/tasks/docs-site-alignment/evidence/before-home-414.png?raw=true" width="720" alt="Live home page at 414x896 before the change">
    </details>
-   Caption: before the change, the mobile hero showed "Get started" and "★ Star on GitHub".
+   Callouts: 1 is the old hero buttons. Before the change, the mobile hero showed "Get started" and "★ Star on GitHub".
 
 **B. Console guide**
 
@@ -69,7 +69,7 @@ The run used agent-browser 0.38.1 with the session `us-015`. The run took each s
 
    <img src="https://github.com/mifunedev/agro-web/blob/<commit-sha>/.agro/tasks/docs-site-alignment/evidence/before-console-intro-1280.png?raw=true" width="720" alt="Live docs introduction at 1280x720 before the change">
    </details>
-   Caption: before the change, `/docs` was the AGRO introduction, and the site had no Console guide.
+   Callouts: 1 is the old navbar Start Here, Docs, Blog. 2 is the old AGRO sidebar. Before the change, `/docs` was the AGRO introduction, and the site had no Console guide.
 
 3. Open `http://localhost:3299/docs` at 414x896. Expected: the breadcrumb shows "Introduction". The page title is "Mifune Console".
    <details><summary>Screenshot</summary>
@@ -83,7 +83,7 @@ The run used agent-browser 0.38.1 with the session `us-015`. The run took each s
 
    <img src="https://github.com/mifunedev/agro-web/blob/<commit-sha>/.agro/tasks/docs-site-alignment/evidence/before-console-intro-414.png?raw=true" width="720" alt="Live docs introduction at 414x896 before the change">
    </details>
-   Caption: before the change, the mobile `/docs` page showed the title "AGRO".
+   Callouts: 1 is the old page title AGRO.
 
 5. Open `http://localhost:3299/docs/console/nodes` at 1280x720. Expected: the sidebar marks "Nodes" as active. The page title is "Nodes". The first heading is "Roles for each action".
    <details><summary>Screenshot</summary>
@@ -117,7 +117,7 @@ The run used agent-browser 0.38.1 with the session `us-015`. The run took each s
 
    <img src="https://github.com/mifunedev/agro-web/blob/<commit-sha>/.agro/tasks/docs-site-alignment/evidence/before-agro-quickstart-1280.png?raw=true" width="720" alt="Live quickstart at 1280x720 before the change">
    </details>
-   Caption: before the change, the quickstart lived at `/docs/quickstart` and named `get-agro.sh` as the bootstrap.
+   Callouts: 1 is the old npm install line. 2 is the get-agro.sh install line. Before the change, the quickstart lived at `/docs/quickstart` and named `get-agro.sh` as the bootstrap.
 
 4. Look at `/docs/agro/quickstart` at 414x896. Expected: the step heading is "1. Get agro". The first command is "npm install -g @mifune/agro".
    <details><summary>Screenshot</summary>
@@ -131,7 +131,7 @@ The run used agent-browser 0.38.1 with the session `us-015`. The run took each s
 
    <img src="https://github.com/mifunedev/agro-web/blob/<commit-sha>/.agro/tasks/docs-site-alignment/evidence/before-agro-quickstart-414.png?raw=true" width="720" alt="Live quickstart at 414x896 before the change">
    </details>
-   Caption: before the change, the mobile quickstart showed "Before you start" and named `get-agro.sh`.
+   Callouts: 1 is the old npm install line. 2 is the get-agro.sh install line.
 
 **D. Blog post**
 
@@ -147,7 +147,7 @@ The run used agent-browser 0.38.1 with the session `us-015`. The run took each s
 
    <img src="https://github.com/mifunedev/agro-web/blob/<commit-sha>/.agro/tasks/docs-site-alignment/evidence/before-blog-1280.png?raw=true" width="720" alt="Live blog post at 1280x720 before the change">
    </details>
-   Caption: before the change, the post used the name "Open Harness" and `oh` commands.
+   Callouts: 1 is the old title with Open Harness. 2 is the old Commands updated note. Before the change, the post used the name "Open Harness" and `oh` commands.
 
 3. Open the post at 414x896. Expected: the date is "July 7, 2026". The note shows "Updated on 2026-10-08. Open Harness is now AGRO."
    <details><summary>Screenshot</summary>
@@ -161,7 +161,7 @@ The run used agent-browser 0.38.1 with the session `us-015`. The run took each s
 
    <img src="https://github.com/mifunedev/agro-web/blob/<commit-sha>/.agro/tasks/docs-site-alignment/evidence/before-blog-414.png?raw=true" width="720" alt="Live blog post at 414x896 before the change">
    </details>
-   Caption: before the change, the mobile post used the name "Open Harness".
+   Callouts: 1 is the old title with Open Harness. 2 is the old Commands updated note.
 
 **E. Cleanup**
 
