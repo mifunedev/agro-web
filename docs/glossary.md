@@ -1,170 +1,36 @@
 ---
 sidebar_position: 13
+title: "Glossary"
 ---
 
 # Glossary
 
-A canonical, **descriptive** glossary of AGRO's core vocabulary — each
-term defined as this repo actually uses it today, with a pointer to a canonical
-source file or skill. This is a plain reference page, not a standards document:
-there are no normative requirements here, only working definitions.
+This page defines the terms that the AGRO pages use. Each entry links to the page that owns the term.
 
-Terms are listed alphabetically below.
+- **`agro` CLI** — The one command for the sandbox lifecycle. `agro` creates, starts, stops, and removes each sandbox. See [Lifecycle commands](agro/lifecycle-commands.md).
 
-## Layers
+- **coding harness** — The agent interface that runs in the sandbox, for example Claude Code, Codex, or Pi. You choose the coding harness. Run `agro harness install <id>` to install one. See [Harnesses overview](agro/harnesses/overview.md).
 
-These names describe separate layers, not interchangeable jobs:
+- **control plane** — The `.agro/` directory. The control plane holds the `agro` CLI package, the lifecycle scripts, the skills, the hooks, and the task plans. See [`.agro/` directory layout](agro/agro-directory-layout.md).
 
-- **Model** — The LLM selected by a provider; it proposes text and tool calls, while the surrounding agent, harness, and policy decide where those requests run and what is allowed. See the **model** glossary entry.
-- **Agent / CLI** — The process that wraps a model with tools, instructions, and session state, such as Claude Code, Codex, or Pi. It is the runtime: the active session owns the work. See the **agent** glossary entry.
-- **Harness** — The repo, Docker sandbox, and `.agro/` control plane that give agents a reproducible workspace and lifecycle. See the **harness** glossary entry.
-- **Loop** — A repeated workflow that the harness drives until a terminal state, such as the `/delegate` implementation cycle ending after every story passes. See the **loop** and **terminal state** glossary entries.
-- **Policy** — The provider-portable rules, skills, and hooks that constrain agent behavior and tool use. See the **policy** and **tool** glossary entries.
-- **Trace** — Recorded session evidence consumed later by analysis, not the live execution layer itself. See the **trace** glossary entry.
+- **cron** — A Markdown file in `crons/` that declares a schedule. The cron runtime sends the body of the file to the agent as a prompt. See [Introduction](agro/intro.md).
 
-## Terms
+- **cron runtime** — The service that reads `crons/*.md` and fires each cron on its schedule. In the sandbox, systemd runs the cron runtime as `agro-cron.service`. See [Introduction](agro/intro.md).
 
-- **advisor** — The active session's behavior of deciding, assigning bounded
-  work, verifying the result, and accepting it. The advisor is a behavior, not an
-  identity, a model, or a terminal, and it stays with the active session unless
-  the operator requests a transfer. Source: [`AGENTS.md`](https://github.com/mifunedev/agro/blob/development/AGENTS.md) and
-  [`.agro/skills/delegate/SKILL.md`](https://github.com/mifunedev/agro/blob/development/.agro/skills/delegate/SKILL.md).
+- **Herdr** — The interactive terminal workspace for agents in the sandbox. Run `agro tool install herdr`, then run `herdr`. See [Herdr](agro/integrations/herdr.md).
 
-- **agent / coding agent** — The running model-plus-tools process that reads the
-  workspace and drives the task: Claude Code, Codex, Pi, or another coding harness
-  running inside the sandbox. The agent is the **runtime and the owner of the
-  work**: it advises, assigns bounded work, and accepts the result, while bounded
-  workers perform the tracked edits. A role never implies a separate session or
-  process. The repository authors no agent definition files — a durable role is a
-  **skill** the active session adopts. Source: [`AGENTS.md`](https://github.com/mifunedev/agro/blob/development/AGENTS.md).
+- **home volume** — The one mount at `/home/sandbox`. The home volume holds the agent logins, the installs, and the workspace at `/home/sandbox/harness`. `agro stop` keeps the home volume. `agro destroy` deletes the home volume. See [Installation](agro/installation.md).
 
-- **artifact** — Any inspectable file a workflow stage produces and a later stage
-  or a human then consumes. The canonical example is the `.agro/tasks/<slug>/` task
-  folder and its two-file contract (`prd.md` and `prd.json`), which `/prd`
-  writes and `/delegate` reads and updates.
-  Source: [`.agro/tasks/AGENTS.md`](https://github.com/mifunedev/agro/blob/development/.agro/tasks/AGENTS.md).
+- **hook** — A script in `.agro/hooks/` that runs before each tool call. A hook can deny a tool call, for example an environment dump. See [Security considerations](agro/security-considerations.md).
 
-- **capability** — What the harness can actually do end-to-end, measured by the
-  capability benchmark rather than by how much machinery it accumulates. The
-  `.agro/evals/capability/` suite grades concrete deliverables (a shipped PR, a
-  passing eval), so a rising score is evidence the loop got
-  better. Source: [`.agro/evals/capability/`](https://github.com/mifunedev/agro/tree/development/.agro/evals/capability/).
+- **orchestrator** — The agent in the first Herdr pane at `/home/sandbox/harness`. The orchestrator manages git, the sandbox lifecycle, and the shared agent setup. See [Introduction](agro/intro.md).
 
-- **checkpoint** — An intermediate, observable stage output that is explicitly
-  *not* the terminal state. For example, the draft PR opens with the plan
-  before implementation, and the advisor marks it ready only after the gates
-  pass.
-  Source: [`.agro/skills/git/SKILL.md`](https://github.com/mifunedev/agro/blob/development/.agro/skills/git/SKILL.md) § Draft PR for a task.
+- **registry entry** — The host directory `${AGRO_HOME:-~/.agro}/sandboxes/<name>/`. The registry entry holds the settings, the secrets, and the generated Compose files of one sandbox. See [`.agro/` directory layout](agro/agro-directory-layout.md).
 
-- **evaluator / eval** — A deterministic, exit-code-scored probe that checks
-  harness state against a recorded lesson; the probe corpus and the `/eval`
-  skill that runs it form the harness's fitness function, reporting PASS /
-  REGRESSION / SKIPPED per probe. Source: [`.agro/evals/`](https://github.com/mifunedev/agro/tree/development/.agro/evals/).
+- **sandbox** — The Docker container where the agent works. The sandbox keeps the agent, its tools, and its logins off your host. See [Introduction](agro/intro.md).
 
-- **harness** — The whole portable setup: one git repo that boots one Docker
-  sandbox, wraps your project inside it, and versions the agent's identity,
-  skills, crons, and memory. "AGRO" names both this project and any
-  single repo-per-sandbox instance of it. "AGRO" is the former name of
-  this project and names nothing current.
-  Source: [`intro.md`](agro/intro.md).
+- **skill** — A shared procedure in `.agro/skills/`. Each coding harness reads the same skills through provider links, for example `.claude/skills` and `.agents/skills`. See [`.agro/` directory layout](agro/agro-directory-layout.md).
 
-- **knowledge** — Durable repository knowledge kept under `.agro/knowledge/`: a
-  derived cache of understanding that the repository itself always outranks.
-  `source/` and `patterns/` entity pages are tracked and queryable; `local/` is
-  ignored per-machine scratch that nothing reads.
-  Source: [`.agro/knowledge/`](https://github.com/mifunedev/agro/tree/development/.agro/knowledge/).
+- **task plan** — The files of one task in `.agro/tasks/`. `prd.md` holds the plan, and `prd.json` holds the story state. See [`.agro/` directory layout](agro/agro-directory-layout.md).
 
-- **loop** — A repeated implement → commit → check cycle driven until the task
-  graph is satisfied. `/delegate` owns the implementation cycle; completion
-  is structured state in `prd.json` — every entry in `userStories` carrying
-  `"passes": true` — not a marker in prose.
-  Source: [`.agro/skills/delegate/SKILL.md`](https://github.com/mifunedev/agro/blob/development/.agro/skills/delegate/SKILL.md).
-
-- **model** — The LLM an agent or CLI uses to produce reasoning, text, and
-  tool-call requests. The model is only one part of an agent session; the
-  harness, tools, and policy decide where it runs and which actions are allowed.
-  Source: [`docs/harnesses/overview.md`](agro/harnesses/overview.md).
-
-- **orchestrator** — The root-level role that manages the sandbox lifecycle and
-  git but does not write application code; its job is provisioning, scaffolding
-  the workspace, and running lifecycle skills. Its instructions live in the root
-  `AGENTS.md`, which every coding harness reads directly.
-  Source: [`AGENTS.md`](https://github.com/mifunedev/agro/blob/development/AGENTS.md).
-
-- **policy** — The provider-portable conventions and guardrails the harness
-  follows — for example the git workflow (branch names, commit format, PR
-  targets, changelog discipline) codified in the `/git` skill, alongside the
-  hook-enforced security rules.
-  Source: [`.agro/skills/git/SKILL.md`](https://github.com/mifunedev/agro/blob/development/.agro/skills/git/SKILL.md).
-
-- **primitive** — A reusable unit from the shared pack — skills and hooks —
-  vendored directly into the `.agro/` control plane and exposed through the
-  standard `.agents/skills` surface plus `.claude/` and `.codex/` symlinks into `.agro/`.
-  Source: [`README.md`](https://github.com/mifunedev/agro/blob/development/docs/README.md) (the primitive pack under `.agro/skills/`,
-  `.agro/hooks/`).
-
-- **rfc / adr** — A durable architecture decision, recorded as a GitHub issue
-  titled `RFC:` or `ADR:` and indexed on the RFC/ADR page. Three states —
-  `Draft`, `Accepted`, `Superseded` — and no further taxonomy. This is the only
-  decision store; `/architect` points durable decisions here rather than
-  creating another one. Source: [`docs/rfcs/README.md`](https://github.com/mifunedev/agro/blob/development/docs/rfcs/README.md).
-
-- **rule** — Ambient repository policy an agent carries without invoking
-  anything: an `AGENTS.md` that
-  applies to every task under its directory, or a path-scoped reference skill.
-  Distinct from a skill, which is invoked for a job.
-  Source: [`AGENTS.md`](https://github.com/mifunedev/agro/blob/development/AGENTS.md).
-
-- **runtime** — The always-on machinery that wakes the agent on a schedule: a
-  tiny croner that reads scheduled-agent definitions from `crons/` and fires
-  them inside the sandbox.
-  Source: [`.agro/scripts/cron-runtime.ts`](https://github.com/mifunedev/agro/blob/development/.agro/scripts/cron-runtime.ts).
-
-- **sandbox** — The isolated Docker container the agent runs inside, built from
-  `.devcontainer/`, so the agent works against your code without touching the
-  host machine. Source: [`.devcontainer/`](https://github.com/mifunedev/agro/tree/development/.devcontainer/).
-
-- **session** — A terminal-backend run of an agent: a tmux session, a Herdr pane, or a
-  plain shell. It is a *backend*, not an identity. Distinguish it from the
-  **advisor** — the role that owns one task from the isolated worktree through the
-  final PR gates. The advisor keeps the decisions, validation, evidence, and PR
-  finalization, whatever backend it runs in. Bounded workers perform the tracked
-  edits, and the advisor launches no session of its own.
-  Source: [`.agro/skills/delegate/SKILL.md`](https://github.com/mifunedev/agro/blob/development/.agro/skills/delegate/SKILL.md) and
-  [`sandbox-processes.md`](https://github.com/mifunedev/agro/blob/development/.agro/skills/t3/references/sandbox-processes.md).
-
-- **skill** — A packaged, invocable workflow (a `SKILL.md` plus optional
-  references and scripts) that an agent runs via the Skill tool or a `/name`
-  slash command; the shared set lives under `.agro/skills/`. **Skills are the
-  canonical primitive for a reusable role, procedure, checklist, constraint set,
-  or body of domain judgment** — `/architect`, `/prd`, `/audit`, and
-  `/delegate` are roles encoded this way, loaded into the active session rather
-  than spawned as separate identities. Source: [`.agro/skills/`](https://github.com/mifunedev/agro/tree/development/.agro/skills/).
-
-- **terminal state** — The end state that closes a workflow cycle. `/delegate`
-  completes implementation only after every story passes. The advisor then marks
-  the PR ready for review. A human merges, and the advisor cleans up only after
-  `gh pr view` reports `MERGED`.
-  Source: [`.agro/skills/git/SKILL.md`](https://github.com/mifunedev/agro/blob/development/.agro/skills/git/SKILL.md) § Ready for review and § After the merge.
-
-- **tool** — A discrete action an agent can invoke — read a file, run a command,
-  call an MCP server. Hooks under `.agro/hooks/` intercept tool calls to enforce
-  policy before they run. Source: [`.agro/hooks/`](https://github.com/mifunedev/agro/tree/development/.agro/hooks/).
-
-- **trace** — The recorded log of a past agent session (prompts, tool calls,
-  results) that later analysis mines. `/prompt-miner` runs `mine-traces.mjs`
-  over Claude and Pi session traces to score prompts by outcome.
-  Source: [`mine-traces.mjs`](https://github.com/mifunedev/agro/blob/development/.agro/skills/prompt-miner/scripts/mine-traces.mjs).
-
-- **worker / subagent** — An optional bounded, isolated execution context the
-  active agent spawns for one self-contained job — parallelism, context
-  isolation, verbose disposable output, or a deliberate tool restriction. It is
-  an execution primitive, not a project role: workers are provider built-ins
-  with no repository definition file, and `/delegate` owns when one is
-  justified. Source:
-  [`.agro/skills/delegate/SKILL.md`](https://github.com/mifunedev/agro/blob/development/.agro/skills/delegate/SKILL.md).
-
-- **worktree** — A separate git working directory under `.worktrees/` that
-  isolates a branch so parallel work doesn't collide; the `/worktrees` skill
-  manages their lifecycle, and `/delegate` builds each task in one.
-  Source: [`.agro/skills/worktrees/SKILL.md`](https://github.com/mifunedev/agro/blob/development/.agro/skills/worktrees/SKILL.md).
+- **worktree** — An isolated branch checkout in `.worktrees/`. See [`.agro/` directory layout](agro/agro-directory-layout.md).

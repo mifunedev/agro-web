@@ -23,7 +23,7 @@ the second-sandbox section has been rewritten to say so: sharing logins between 
 keeping their workspaces separate is no longer something the image-only path can do, because the
 workspace now lives *inside* the home mount.
 
-See [Installation](/docs/agro/installation) and the [Docker deployment guide](/docs/docker-deployment).
+See [Installation](/docs/agro/installation) and the [Docker deployment guide](/docs/agro/deployment-prebuilt-image).
 
 :::
 

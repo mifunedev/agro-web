@@ -5,52 +5,22 @@ title: "Open-core boundary"
 
 # Open-core boundary
 
-AGRO ships under [Apache-2.0](https://github.com/mifunedev/agro/blob/development/LICENSE). Mifune's hosted control
-plane is separate and proprietary. This page states that split explicitly so
-an evaluator does not have to infer it from the code.
+Mifune makes two products. AGRO is open source. Mifune Console is a managed service that Mifune operates. This page shows which product is which.
 
 ## The split
 
-| Apache-2.0 | Proprietary |
-|---|---|
-| The runtime | The Mifune Console |
-| The `agro` CLI and public SDKs | Provisioning and fleet-management control plane |
-| Container definitions and public deployment integrations | Billing, enterprise policy, RBAC, hosted operations |
-| The harness spec and interop formats | — |
+| Product | Status | What you get |
+|---|---|---|
+| AGRO | Open source, [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0) | The `agro` CLI, the sandbox image, and the `.agro/` control plane. You run AGRO on your own laptop or VM. |
+| Mifune Console | Proprietary managed service | Managed AGRO nodes that Mifune operates for you. The Console also includes provisioning, billing, and enterprise policy. |
 
-Customer harness repos stay customer-owned. Open core without crippling the
-open core: the moat is the managed platform, not restrictions on modifying
-the runtime.
+The source of AGRO is at [github.com/mifunedev/agro](https://github.com/mifunedev/agro). You can read, change, and run the AGRO source under the Apache-2.0 terms.
 
-## Why Apache-2.0 rather than MIT
+Mifune Console runs at [console.mifune.dev](https://console.mifune.dev).
 
-AGRO's documented adoption model is clone-and-own — companies fork
-the repo into private infrastructure and extend it. MIT's bare copyright
-grant is sufficient for that but leaves three gaps Apache-2.0 closes:
+## Choose a product
 
-- an **explicit patent license** from every contributor for claims their
-  contribution infringes,
-- **patent-retaliation termination** if a recipient sues over the project,
-- an **explicit withholding of trademark rights** ([§6](https://github.com/mifunedev/agro/blob/development/LICENSE)) — a
-  fork may run and sell the software but may not present itself as *Mifune*.
+- To run agents on your own machine, use AGRO. Start with the [AGRO introduction](agro/intro.md).
+- To let Mifune operate the machine for you, use Mifune Console. Start with the [Console guide](/docs).
 
-The trademark point is load-bearing precisely because clone-and-own is
-encouraged, not merely tolerated.
-
-## Why not the alternatives
-
-- **AGPL / SSPL / BSL** — enterprise review friction, and they contradict
-  the "developer-owned, open by default" positioning this project takes.
-- **Apache-2.0 + a commercial dual license** — Apache-2.0 already permits
-  commercial use, so a paid alternative license grants nothing a licensee
-  doesn't already have.
-
-## Prior releases
-
-Prior MIT releases remain usable under MIT. This change governs new code
-and future releases; it does not revoke past grants.
-
-## Related
-
-- [`LICENSE`](https://github.com/mifunedev/agro/blob/development/LICENSE) · [`NOTICE`](https://github.com/mifunedev/agro/blob/development/NOTICE)
-- [Security considerations](agro/security-considerations.md)
+For Console prices, see [mifune.dev/pricing](https://mifune.dev/pricing).

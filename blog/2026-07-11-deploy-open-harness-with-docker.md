@@ -24,7 +24,7 @@ path — the workspace now lives *inside* the home mount, so B either has its ow
 logins) or shares A's entirely. The section on sandbox B says so.
 
 See [Installation](/docs/agro/installation) and the
-[Docker deployment guide](/docs/docker-deployment).
+[Docker deployment guide](/docs/agro/deployment-prebuilt-image).
 
 :::
 
@@ -218,6 +218,6 @@ docker network connect --alias app openharness my-app
 # A and B can now reach http://app:<container-port>
 ```
 
-The alias is private to that Docker network; it does not publish a host port. These containers publish no ports and do not mount the host Docker socket. See the [Docker deployment guide](/docs/docker-deployment) for verification, lifecycle, destructive volume cleanup, the Linux/AMD64 caveat, and advanced source references.
+The alias is private to that Docker network; it does not publish a host port. These containers publish no ports and do not mount the host Docker socket. See the [Docker deployment guide](/docs/agro/deployment-prebuilt-image) for verification, lifecycle, destructive volume cleanup, the Linux/AMD64 caveat, and advanced source references.
 
 Self-hosted Docker is available today. Open Harness Cloud is a future possibility, not a shipped service.
