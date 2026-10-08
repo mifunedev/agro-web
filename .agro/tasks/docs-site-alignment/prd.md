@@ -275,4 +275,8 @@ None.
 
 ## Lessons
 
-Filled by the advisor before undraft.
+- **A hand copy of the AGRO docs drifted and then broke the deploy.** Evidence: the site documented AGRO 0.15.0 while AGRO was at v0.18.1, and each daily build from 2026-10-04 failed on the renamed installer. Outcome: fixed in this PR. The build now copies the docs, the installer, and `agro.js` from one release tag, and CI runs the drift check and the STE checker before each deploy.
+- **A failed scheduled build sent no alert for four days.** Evidence: `pages.yml` runs a daily cron, and the failures from 2026-10-04 to 2026-10-08 stayed unseen until a manual check. Outcome: proposed issue on agro-web, "notify on a failed scheduled deploy". The issue is not open yet; it waits for operator approval.
+- **Console UI copy contradicts the Console behavior.** Evidence: at v1.8.1, the first-run checklist names a monthly rate, the spec picker says that Destroy is how you stop paying, the Destroy dialog names a monthly subscription, the Restart dialog says "container", the role description says that an `operator` can destroy a node, the token prefix is `ohc_`, and the unpaid-invoice warning says "organization" in a personal space. The docs follow the code. Outcome: proposed issue on agro-console. The issue is not open yet; it waits for operator approval.
+- **The Console API has no published contract.** Evidence: `docs/console/api-tokens.md` shows `GET /api/nodes`, which accepts a token at v1.8.1, but no document marks the path as stable. Outcome: proposed issue on agro-console, "publish the token API contract". The issue is not open yet; it waits for operator approval.
+- **Titles made from headings kept inline Markdown.** Evidence: the US-015 review found literal backticks in two sidebar labels. Outcome: fixed in this PR (`da3cfca`), with a test.

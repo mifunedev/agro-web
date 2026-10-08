@@ -385,8 +385,8 @@
         "Typecheck passes"
       ],
       "priority": 15,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Executed on b9199d2 + e982729: (1) manual-review.md holds 10 annotated after-screenshots of /, /docs, /docs/console/nodes, /docs/agro/quickstart, /blog/open-harness-demo-guide at 1280x720 and 414x896, each with a Callouts line. (2) 8 before-screenshots of the live site; /docs/console/nodes had no earlier page (live 404). (3) local pnpm build (v0.18.1) and pnpm serve --port 3299, stopped by PID; ss shows port 3299 free. (4) cmp of local /install.sh and /get-agro.sh against the v0.18.1 release install.sh exits 0; live /install.sh returns HTTP/2 404 before deploy. (5) Typecheck passes: pnpm typecheck exit 0; pnpm test, check:docs-drift, check:ste, pnpm build exit 0 on e982729. Defects found and fixed in da3cfca: backticks in synced sidebar titles, byte count in logs.",
       "dependsOn": [
         "US-001",
         "US-002",
@@ -405,7 +405,8 @@
       ],
       "files": [
         ".agro/tasks/docs-site-alignment/evidence/"
-      ]
+      ],
+      "commit": "e982729"
     }
   ]
 }
