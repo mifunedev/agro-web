@@ -23,6 +23,9 @@ The [introduction](intro.md) tells you what the Console is.
 3. To open the default way, click **Connect**.
 4. To select a different way, click the arrow next to **Connect**. The menu shows the four items.
 
+![The node page of web-app shows the open Connect menu with four items.](/img/console/connect-1.png)
+Callouts: 1 is the arrow next to **Connect**. 2 is the Connect menu.
+
 The default is **Browser editor (code-server)**. If the browser editor is not available, **Connect** opens the browser terminal.
 
 If **Connect** is not available, the Console shows the cause below the button.
@@ -84,6 +87,9 @@ The Console adds your SSH keys to a node only when you create the node. A key th
 
 Open **Keys** in the Console, then click **Add SSH key**. The dialog has two tabs.
 
+![The Add SSH key dialog shows the Use your own key tab.](/img/console/connect-3.png)
+Callouts: 1 is the **Use your own key** tab. 2 is the **Generate one for me** tab. 3 is the **Add key** button.
+
 To use your own key, select **Use your own key**:
 
 1. On your computer, create a key. Press Enter at each prompt:
@@ -138,6 +144,9 @@ When you create a node, open **Advanced: direct SSH access (optional)** and sele
    ```bash
    ssh -i ~/.ssh/<your-key-file> <user>@<node-ip>
    ```
+
+   ![The SSH dialog shows the SSH command for web-app.](/img/console/connect-2.png)
+   Callouts: 1 is the SSH command. 2 is the copy button.
 
 5. Replace `<your-key-file>` with your private key file. Make sure that the file has the permissions `600`.
 6. Run the command in the terminal on your computer.

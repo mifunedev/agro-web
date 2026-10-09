@@ -7,7 +7,15 @@ sidebar_position: 3
 
 A node is one AGRO workspace on its own virtual machine (VM). The [Mifune Console](intro.md) creates, starts, stops, and deletes each node for you.
 
-The **Nodes** page lists the nodes of your current context. Select a node name to open the node page. The node page shows the node actions.
+The **Nodes** page lists the nodes of your current context. Select a node name to open the node page.
+
+![The Nodes page lists four nodes of Example Co with their statuses.](/img/console/nodes-1.png)
+Callouts: 1 is the **Create node** button. 2 is the **web-app** node name.
+
+The node page shows the node actions.
+
+![The node page of web-app shows the node actions.](/img/console/nodes-2.png)
+Callouts: 1 is the **Restart** button. 2 is the **Pause** button. 3 is the **Destroy** button.
 
 ## Roles for each action
 
@@ -121,3 +129,6 @@ The node list and the node page show the status of each node.
 | **Failed** | An operation failed. Destroy the node to recover. |
 
 While a status is in progress, the node page updates the status and the available actions.
+
+![The node page of ci-runner shows the status Creating VM.](/img/console/nodes-3.png)
+Callouts: 1 is the **Creating VM** status.
