@@ -145,8 +145,8 @@ When you create a node, open **Advanced: direct SSH access (optional)** and sele
    ssh -i ~/.ssh/<your-key-file> <user>@<node-ip>
    ```
 
-   ![The SSH dialog shows the SSH command for web-app.](/img/console/connect-2.png)
-   Callouts: 1 is the SSH command. 2 is the copy button.
+   ![The SSH dialog shows the SSH command and the host fingerprint for web-app.](/img/console/connect-2.png)
+   Callouts: 1 is the SSH command. 2 is the host fingerprint.
 
 5. Replace `<your-key-file>` with your private key file. Make sure that the file has the permissions `600`.
 6. Run the command in the terminal on your computer.

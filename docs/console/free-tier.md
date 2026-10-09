@@ -43,7 +43,7 @@ The Console shows the free hours in these locations:
 - The node page of the free node shows **Free hours left** and **Free hours reset**.
 
   ![The Billing card of a running free node shows the free hours left and the reset date.](/img/console/free-tier-1.png)
-  Callouts: 1 is **Free hours left** and **Free hours reset**.
+  Callouts: 1 is the **Billing** card with **Free hours left** and **Free hours reset**.
 
 - The **Billing** page shows the **Free running hours** card. The card shows **Used this month**, **Left this month**, and **Resets**.
 - The **Nodes** page shows the free hours left and the reset date.
