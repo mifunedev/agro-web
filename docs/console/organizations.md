@@ -54,6 +54,9 @@ The **Members** page shows the members of the current organization. The page is 
 2. Open the user menu. The user menu shows your GitHub login.
 3. Select **Members**.
 
+   ![The Members page of Example Co shows the Roster table with three demo members.](/img/console/organizations-members-3.png)
+   Callouts: 1 is the **Roster** table. 2 is the **Status** column.
+
 The **Roster** table shows each member with the **Login**, **Role**, **Status**, and **Created** columns. A member who has not signed in yet shows the status **Hasn't signed in yet**.
 
 ## Invite a member by email
@@ -66,6 +69,9 @@ You must have the `admin` role. An invitation sends a link to an email address. 
 4. In **Role**, select **Viewer**, **Operator**, or **Admin**. The default role is **Viewer**.
 5. Optional: In **Restrict to a GitHub username (optional)**, type a GitHub username. Then only that GitHub account can accept the invitation.
 6. Select **Invite to** and the organization name.
+
+   ![The Invite a member card shows an example.com email address in the Email address field and the Viewer role.](/img/console/organizations-invite-6.png)
+   Callouts: 1 is the **Email address** field. 2 is the **Role** menu. 3 is the **Invite to Example Co** button.
 7. If you selected **Admin**, the Console shows a confirmation. Select **Send admin invitation**.
 8. The Console shows the invitation link one time. Copy the link, then select **Done**.
 

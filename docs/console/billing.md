@@ -18,7 +18,11 @@ Each context has its own billing. The card, the invoices, and the usage of a con
 To open the billing of a context, do these steps:
 
 1. In the context switcher, select the context.
-2. In the navigation, select **Billing**. The **Billing** page opens.
+2. Open the user menu. The user menu shows your GitHub login.
+3. Select **Billing**. The **Billing** page opens.
+
+   ![The Billing page of Example Co shows the Billing current badge, the Payment method card, and the Invoices and history card.](/img/console/billing-3.png)
+   Callouts: 1 is the **Billing current** badge. 2 is the **Update card** button. 3 is the **Open Billing Portal** button.
 
 The status badge at the top of the **Billing** page shows one of these values:
 
@@ -70,6 +74,9 @@ The billing portal is a page of Stripe. In the billing portal, you can change th
 The **Usage & spend** section shows the usage of the current context in the current UTC month. The usage that the section shows is the usage on your invoice. The Console counts whole running hours in UTC.
 
 Only an `admin` sees this section.
+
+![The Usage and spend section of Example Co shows the month-to-date cost, the run rate, and the Daily spend chart.](/img/console/billing-usage.png)
+Callouts: 1 is the **Month to date** value. 2 is the **Run rate** value. 3 is the **Daily spend** chart.
 
 The section shows these values:
 

@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "project": "agro-web",
+  "branchName": "feat/72-console-guide-screenshots",
+  "description": "Add annotated screenshots from a local Console at v1.9.0 with demo data to the 8 Console guide pages after the introduction, and guard the images in CI.",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Prepare a local Console with demo data",
+      "description": "As a docs maintainer, I want a local Console at release v1.9.0 with demo data. Then each screenshot shows the released UI and no real customer data.",
+      "acceptanceCriteria": [
+        "A local Console runs from the `v1.9.0` tag of `mifunedev/agro-console`, in its own worktree.",
+        "The demo data lives in a separate local database. The run does not change the development database of the operator.",
+        "The demo data has one personal space and one organization, with the three roles `viewer`, `operator`, and `admin`.",
+        "The demo data has nodes in the statuses **Running**, **Paused**, **Creating VM**, and **Failed**, one free node with used free hours, one paid node with a snapshot, and one destroyed node with a snapshot.",
+        "Each IPv4 address in the demo data is in the documentation range `192.0.2.0/24`. Each email address is in the `example.com` domain.",
+        "The capture tooling (demo-data script and capture list) lives in the private `mifunedev/agro-console` repo, in a pull request to `development` with its own issue.",
+        "The run creates no VM at a cloud provider and no live payment. The run uses only the Stripe test mode.",
+        "A teardown step stops each process and deletes the local demo data.",
+        "Typecheck passes"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "Executed: tooling merged in agro-console #336 (26b3726) and released in v1.9.0 (4f37b4e). Local v1.9.0 production build serves 127.0.0.1:3105 against agro_console_docs (Herdr w5:p2); the dev Console on 3005 and its database untouched. Demo data: Example Co with demo-admin, demo-operator, demo-viewer; nodes Creating VM, Failed, Paused, Running plus 1 archived; IPv4 192.0.2.x; emails example.com (13 row-builder tests). Seed refuses a name without _docs (exit 1) and a non-empty database (exit 1). No provisioner, gateway, cloudflared, or stripe started; STRIPE_EXPECT_MODE=test. Teardown dropped and recreated agro_console_docs (exit 0). Screenshot: footer \"Mifune Console · v1.9.0\", no dev indicator.",
+      "dependsOn": [],
+      "files": [
+        "mifunedev/agro-console capture tooling (private PR)"
+      ],
+      "commit": "agro-console 4f37b4e (v1.9.0)"
+    },
+    {
+      "id": "US-002",
+      "title": "Add screenshots to the getting-started guide",
+      "description": "As a new Console user, I want to see each step of the first sign-in and the first free node. Then I find each control.",
+      "acceptanceCriteria": [
+        "`docs/console/getting-started.md` shows the sign-in page, the context switcher, the **Create your free node** page, and a running free node.",
+        "Each image is a PNG at 1280x720 in `static/img/console/`, with a name of the form `<page>-<step>.png`.",
+        "Each image has alt text, and a `Callouts:` line under it that names each numbered callout.",
+        "Each callout points at the control that the step names, with the label text from the UI.",
+        "Verify in browser using agent-browser skill.",
+        "Typecheck passes"
+      ],
+      "priority": 2,
+      "passes": true,
+      "notes": "Executed: getting-started.md shows sign-in, context switcher (Personal and Organizations rows), Create your free node (Billing/Free and Create free node, split into two images), and a running free node. Retakes in 1aa1a6c and ccf35d6. On ccf35d6: 21 PNGs in static/img/console, each 1280x720, each referenced from docs/console, each followed by a Callouts line within 3 lines; light mode; demo data only; rates masked as $•.••/hr (operator decision); running nodes ready (agro-console #343). pnpm test, typecheck (Typecheck passes), check:ste, check:docs-drift, build exit 0. Verified in browser with agent-browser by each worker via pnpm serve.",
+      "dependsOn": [
+        "US-001"
+      ],
+      "files": [
+        "docs/console/getting-started.md",
+        "static/img/console/getting-started-*"
+      ],
+      "commit": "063eff5"
+    },
+    {
+      "id": "US-003",
+      "title": "Add screenshots to the nodes and connect pages",
+      "description": "As a Console user, I want to see the node actions and the Connect menu so that I pick the correct control.",
+      "acceptanceCriteria": [
+        "`docs/console/nodes.md` shows the **Nodes** page, the node page with its action buttons, and one status in progress.",
+        "`docs/console/connect.md` shows the open Connect menu, the **SSH** dialog, and the **Add SSH key** dialog.",
+        "Each image follows the file, size, alt-text, and `Callouts:` rules of US-002.",
+        "Verify in browser using agent-browser skill.",
+        "Typecheck passes"
+      ],
+      "priority": 3,
+      "passes": true,
+      "notes": "Executed: nodes.md shows the Nodes page, node actions, and Creating VM; connect.md shows the Connect menu with the browser editor as Default, the SSH dialog with the host fingerprint, and the Add SSH key dialog (cancelled). Retakes in 1aa1a6c, 8cb6e7f, ccf35d6. On ccf35d6: 21 PNGs in static/img/console, each 1280x720, each referenced from docs/console, each followed by a Callouts line within 3 lines; light mode; demo data only; rates masked as $•.••/hr (operator decision); running nodes ready (agro-console #343). pnpm test, typecheck (Typecheck passes), check:ste, check:docs-drift, build exit 0. Verified in browser with agent-browser by each worker via pnpm serve.",
+      "dependsOn": [
+        "US-001"
+      ],
+      "files": [
+        "docs/console/nodes.md",
+        "docs/console/connect.md",
+        "static/img/console/nodes-*",
+        "static/img/console/connect-*"
+      ],
+      "commit": "43f0407"
+    },
+    {
+      "id": "US-004",
+      "title": "Add screenshots to the snapshots and free-tier pages",
+      "description": "As a Console user, I want to see the snapshot card and the free-hours cards so that I recognize each state.",
+      "acceptanceCriteria": [
+        "`docs/console/snapshots.md` shows the **Snapshot** card and the **Snapshots** page.",
+        "`docs/console/free-tier.md` shows the free-hours values on the node page and the **Free hours used for this month** card of a paused free node.",
+        "Each image follows the file, size, alt-text, and `Callouts:` rules of US-002.",
+        "Verify in browser using agent-browser skill.",
+        "Typecheck passes"
+      ],
+      "priority": 4,
+      "passes": true,
+      "notes": "Executed: snapshots.md shows the Snapshot card and the Snapshots page; free-tier.md shows the free hours on the node page and the Free hours used for this month card of a paused free node. Retakes in 1aa1a6c, 8cb6e7f. On ccf35d6: 21 PNGs in static/img/console, each 1280x720, each referenced from docs/console, each followed by a Callouts line within 3 lines; light mode; demo data only; rates masked as $•.••/hr (operator decision); running nodes ready (agro-console #343). pnpm test, typecheck (Typecheck passes), check:ste, check:docs-drift, build exit 0. Verified in browser with agent-browser by each worker via pnpm serve.",
+      "dependsOn": [
+        "US-001"
+      ],
+      "files": [
+        "docs/console/snapshots.md",
+        "docs/console/free-tier.md",
+        "static/img/console/snapshots-*",
+        "static/img/console/free-tier-*"
+      ],
+      "commit": "6396b5c"
+    },
+    {
+      "id": "US-005",
+      "title": "Add screenshots to the billing, organizations, and API tokens pages",
+      "description": "As an organization admin, I want to see the billing, member, and token pages so that I find each setting.",
+      "acceptanceCriteria": [
+        "`docs/console/billing.md` shows the **Billing** page and the **Usage & spend** view.",
+        "`docs/console/organizations.md` shows the **Members** page and the invite dialog.",
+        "`docs/console/api-tokens.md` shows the **API tokens** page and the **Token created** dialog.",
+        "The **Token created** screenshot shows a token from the local Console only, and the run revokes that token before the teardown.",
+        "Each image follows the file, size, alt-text, and `Callouts:` rules of US-002.",
+        "Verify in browser using agent-browser skill.",
+        "Typecheck passes"
+      ],
+      "priority": 5,
+      "passes": true,
+      "notes": "Executed: billing.md shows Billing and Usage & spend; organizations.md shows Members and the inline invite form (not sent); api-tokens.md shows API tokens and Token created with the value masked. Two local docs-example tokens were created (one in a dark-mode capture) and both show Revoked. Prose fix: Billing is in the user menu. On ccf35d6: 21 PNGs in static/img/console, each 1280x720, each referenced from docs/console, each followed by a Callouts line within 3 lines; light mode; demo data only; rates masked as $•.••/hr (operator decision); running nodes ready (agro-console #343). pnpm test, typecheck (Typecheck passes), check:ste, check:docs-drift, build exit 0. Verified in browser with agent-browser by each worker via pnpm serve.",
+      "dependsOn": [
+        "US-001"
+      ],
+      "files": [
+        "docs/console/billing.md",
+        "docs/console/organizations.md",
+        "docs/console/api-tokens.md",
+        "static/img/console/billing-*",
+        "static/img/console/organizations-*",
+        "static/img/console/api-tokens-*"
+      ],
+      "commit": "2a709df"
+    },
+    {
+      "id": "US-006",
+      "title": "Guard the images",
+      "description": "As a docs maintainer, I want CI to stop a missing image or a missing callout line so that each guide page stays complete.",
+      "acceptanceCriteria": [
+        "A test in `scripts/` fails when an image link in `docs/console/` names a file that does not exist in `static/img/console/`.",
+        "The test fails when an image in `docs/console/` has no alt text, or has no `Callouts:` line within the next 3 lines.",
+        "The test fails when a file in `static/img/console/` has no reference from `docs/console/`.",
+        "`pnpm test`, `pnpm typecheck`, `pnpm build`, `pnpm run check:docs-drift`, and `pnpm run check:ste` exit 0.",
+        "Typecheck passes"
+      ],
+      "priority": 6,
+      "passes": true,
+      "notes": "Executed on d8355b7: scripts/console-images.mjs checks missing file, empty alt text, missing Callouts line within 3 lines, unreferenced file, and non-1280x720 PNG; 7 tests failed before the module and pass now. Advisor probe: renaming connect-2.png to connect-9.png in connect.md makes the test exit 1; reverted. pnpm test, typecheck (Typecheck passes), build, check:docs-drift, check:ste exit 0. CI runs pnpm test before the build.",
+      "dependsOn": [
+        "US-002",
+        "US-003",
+        "US-004",
+        "US-005"
+      ],
+      "files": [
+        "scripts/console-images.test.mjs",
+        "scripts/console-images.mjs"
+      ],
+      "commit": "d8355b7"
+    },
+    {
+      "id": "US-007",
+      "title": "Manual review evidence",
+      "description": "As the operator, I want a recorded browser review of each Console page with its images so that I accept the change from evidence.",
+      "acceptanceCriteria": [
+        "Depends on US-002 through US-006.",
+        "`.agro/tasks/console-guide-screenshots/evidence/manual-review.md` holds an annotated screenshot of each of the 8 changed Console pages at 1280x720 and 414x896.",
+        "The review confirms that each image loads, and that no image shows a real name, a real email address, a real IP address, or a live payment detail.",
+        "The run uses a local `pnpm build` and `pnpm serve`, and stops each process that the run starts.",
+        "Typecheck passes"
+      ],
+      "priority": 7,
+      "passes": true,
+      "notes": "Executed on 5ad474b + 87d43d4: evidence/manual-review.md holds 16 annotated screenshots (8 pages at 1280x720 and 414x896). agent-browser eval confirmed each of the 21 embedded images has complete=true and naturalWidth 1280 at both widths. All 21 images opened and checked: demo data only, support@mifune.dev on the sign-in page, rates masked, token masked. Local pnpm build and pnpm serve --port 3299, stopped by PID; port free. Three badge defects fixed in 531f66e and the evidence refreshed. Typecheck passes: pnpm typecheck exit 0.",
+      "dependsOn": [
+        "US-001",
+        "US-002",
+        "US-003",
+        "US-004",
+        "US-005",
+        "US-006"
+      ],
+      "files": [
+        ".agro/tasks/console-guide-screenshots/evidence/"
+      ],
+      "commit": "87d43d4"
+    }
+  ]
+}
