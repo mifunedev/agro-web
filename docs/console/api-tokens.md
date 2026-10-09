@@ -29,9 +29,15 @@ A token stops working in these conditions:
 
 1. Open the user menu. The user menu shows your GitHub login.
 2. Select **Tokens**. The **API tokens** page opens.
+
+   ![The API tokens page shows the Inventory table with one active demo token and two revoked demo tokens.](/img/console/api-tokens-2.png)
+   Callouts: 1 is the **Create token** button. 2 is the **Prefix** column. 3 is the **Revoked** label.
 3. Select **Create token**.
 4. In **Name**, type a name for the token. The name has 1 to 120 characters.
 5. Select **Create**. The **Token created** dialog shows the token.
+
+   ![The Token created dialog shows a new token with a mask on the token value.](/img/console/api-tokens-5.png)
+   Callouts: 1 is the token, with a mask on the value. 2 is the copy button. 3 is the **Done** button.
 6. Select the copy button, and keep the token in a secure location.
 7. Select **Done**.
 
