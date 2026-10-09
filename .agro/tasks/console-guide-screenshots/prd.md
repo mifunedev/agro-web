@@ -6,11 +6,11 @@ Status: DRAFT
 
 ### US-001: Prepare a local Console with demo data
 
-**Description:** As a docs maintainer, I want a local Console at release v1.8.1 with demo data. Then each screenshot shows the released UI and no real customer data.
+**Description:** As a docs maintainer, I want a local Console at release v1.9.0 with demo data. Then each screenshot shows the released UI and no real customer data.
 
 **Acceptance Criteria:**
 
-- [ ] A local Console runs from the `v1.8.1` tag of `mifunedev/agro-console`, in its own worktree.
+- [ ] A local Console runs from the `v1.9.0` tag of `mifunedev/agro-console`, in its own worktree.
 - [ ] The demo data lives in a separate local database. The run does not change the development database of the operator.
 - [ ] The demo data has one personal space and one organization, with the three roles `viewer`, `operator`, and `admin`.
 - [ ] The demo data has nodes in the statuses **Running**, **Paused**, **Creating VM**, and **Failed**, one free node with used free hours, one paid node with a snapshot, and one destroyed node with a snapshot.
@@ -94,7 +94,8 @@ The Console guide on `https://agro.mifune.dev` has 9 pages of text and no image.
 
 Operator decisions:
 
-- The screenshots come from a local Console at release `v1.8.1` with demo data. The screenshots show no real user, no real IP address, and no billing data.
+- The capture uses release `v1.9.0`. That release renames the UI to Mifune Console and fixes the Console messages that contradicted the Console behavior (agro-console#335, agro-console#338).
+- The screenshots come from a local Console at release `v1.9.0` with demo data. The screenshots show no real user, no real IP address, and no billing data.
 - The AGRO self-host pages get screenshots in a later task, in the `mifunedev/agro` repo `docs/`. The site sync copies those pages, so this task changes no file in `docs/agro/`.
 
 Verified facts:
@@ -113,7 +114,7 @@ Verified facts:
 | `scripts/*.test.mjs` | image guard | US-006 |
 | `.github/workflows/pages.yml` | `pnpm test` step | Runs the guard |
 | `/home/sandbox/harness/.agro/skills/agent-browser/scripts/annotate-screenshot.sh` | callouts | Capture |
-| `mifunedev/agro-console` at `v1.8.1` | local development mode, seed command | Capture environment |
+| `mifunedev/agro-console` at `v1.9.0` | local development mode, seed command | Capture environment |
 | `mifunedev/agro-console` capture tooling | demo-data script, capture list | US-001, in a private pull request |
 
 ## Interface Integration Points
@@ -129,7 +130,7 @@ The screenshots are PNG files in `static/img/console/`. The demo data lives only
 
 ## Architectural Decisions
 
-- **Released UI only.** The capture runs the `v1.8.1` tag. A later Console release that changes a captured screen needs a new capture.
+- **Released UI only.** The capture runs the `v1.9.0` tag. A later Console release that changes a captured screen needs a new capture.
 - **No real data.** The demo data uses the documentation IP range and the `example.com` domain. The run starts no provisioner and makes no live payment.
 - **Public repo.** The agro-web repo is public. The plan, the images, and the alt text name no internal hostname, no Console source path, and no Console database detail.
 - **One image source.** Each image file has one guide page that links it.
@@ -164,7 +165,7 @@ None. The operator accepted the recommendation: the capture tooling lives in the
 ## Acceptance Criteria
 
 - [ ] Each of the 8 Console guide pages after the introduction shows at least one annotated screenshot.
-- [ ] Each image shows the `v1.8.1` UI with demo data only.
+- [ ] Each image shows the `v1.9.0` UI with demo data only.
 - [ ] CI fails on a missing image, a missing alt text, a missing `Callouts:` line, or an unreferenced image file.
 - [ ] Each changed page passes the STE checker.
 

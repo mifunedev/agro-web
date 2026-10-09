@@ -2,14 +2,14 @@
   "schemaVersion": 1,
   "project": "agro-web",
   "branchName": "feat/72-console-guide-screenshots",
-  "description": "Add annotated screenshots from a local Console at v1.8.1 with demo data to the 8 Console guide pages after the introduction, and guard the images in CI.",
+  "description": "Add annotated screenshots from a local Console at v1.9.0 with demo data to the 8 Console guide pages after the introduction, and guard the images in CI.",
   "userStories": [
     {
       "id": "US-001",
       "title": "Prepare a local Console with demo data",
-      "description": "As a docs maintainer, I want a local Console at release v1.8.1 with demo data. Then each screenshot shows the released UI and no real customer data.",
+      "description": "As a docs maintainer, I want a local Console at release v1.9.0 with demo data. Then each screenshot shows the released UI and no real customer data.",
       "acceptanceCriteria": [
-        "A local Console runs from the `v1.8.1` tag of `mifunedev/agro-console`, in its own worktree.",
+        "A local Console runs from the `v1.9.0` tag of `mifunedev/agro-console`, in its own worktree.",
         "The demo data lives in a separate local database. The run does not change the development database of the operator.",
         "The demo data has one personal space and one organization, with the three roles `viewer`, `operator`, and `admin`.",
         "The demo data has nodes in the statuses **Running**, **Paused**, **Creating VM**, and **Failed**, one free node with used free hours, one paid node with a snapshot, and one destroyed node with a snapshot.",
