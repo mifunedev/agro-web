@@ -1,19 +1,23 @@
 ---
 sidebar_position: 12
-title: "Choosing a Model"
+title: "Choosing a model"
 ---
 
-# Choosing a Model
+# Choosing a model
 
-AGRO currently consults [DeepSWE](https://deepswe.datacurve.ai/) as its public resource for gauging newly released coding models and informing the best model fit for a task. DeepSWE is an independent benchmark of frontier coding agents on original, long-horizon software-engineering tasks; AGRO does not own or run it. Its public methodology and data are available in the [DeepSWE source repository](https://github.com/datacurve-ai/deep-swe).
+AGRO does not choose a model for you. The coding harness that you install selects the model. Use the settings of that harness to change the model. See [Harnesses overview](agro/harnesses/overview.md).
 
-Treat DeepSWE as evidence, not an automatic model picker. Compare long-horizon SWE results together with cost, output-token, and agent-step context. A leaderboard rank alone does not determine the best model for your task.
+A public benchmark, for example [DeepSWE](https://deepswe.datacurve.ai/), compares coding models. A benchmark rank alone does not identify the best model for your task.
 
-## Task-fit process
+## Choose a model for a task
 
-1. **Define the task.** Note its scope, risk, required tools, context size, and depth of reasoning.
-2. **Read the benchmark in context.** Compare long-horizon results and the cost, output-token, and agent-step tradeoffs—not rank alone.
-3. **Filter for your environment.** Check provider availability, budget and latency, tool compatibility, and context/reasoning needs.
-4. **Run a local trial.** Test the strongest candidates on a representative task, then choose the model that delivers the best practical fit.
+1. Write down the scope, the risk, the tools, and the context size of the task.
+2. Read the benchmark results for long tasks.
+3. Compare the cost of each candidate model.
+4. Compare the speed of each candidate model.
+5. Remove each model that your provider account does not offer.
+6. Remove each model that your coding harness does not support.
+7. Run each remaining model on one typical task in your sandbox.
+8. Select the model that gives the best result on that task.
 
-Recheck DeepSWE when evaluating a newly released model, because benchmark results and available models change over time.
+When a provider releases a new model, do this procedure again.

@@ -7,79 +7,89 @@ import styles from "./index.module.css";
 const GITHUB_REPO = "mifunedev/agro";
 const GITHUB_URL = `https://github.com/${GITHUB_REPO}`;
 const FALLBACK_STARS = 18;
+const CONSOLE_URL = "https://console.mifune.dev";
+const PRICING_URL = "https://mifune.dev/pricing";
 
-const QUICKSTART = `# 1 · install the agro CLI  (host: Docker + git + Node.js ≥ 20)
-curl -fsSL https://agro.mifune.dev/get-agro.sh | bash
-# ...or: npm install -g @mifune/agro
+const QUICKSTART = `# The host needs Docker, Git, and Node.js 20 or newer.
+npm install -g @mifune/agro
 
-# 2 · create a sandbox from any directory, then open a shell in it
-agro sandbox install docker   # wizard: name, timezone, git identity, SSH, Docker socket
-agro shell <name>             # default name oh-sbx-1; omit it when it is your only sandbox
+# Without Node, run the release installer.
+curl -fsSL https://github.com/mifunedev/agro/releases/latest/download/install.sh | bash
 
-# 3 · nothing installs at boot — add tools through the one door, inside the sandbox
-agro tool install herdr && herdr     # persistent terminal workspace
-agro harness install claude-code     # or codex · pi · opencode · hermes · grok-build · muse-code
-claude
+# Create the sandbox, then open a shell in it.
+agro sandbox install docker
+agro shell <name>
 
-# 4 · optional — Hermes + Slack messaging (in order)
-agro harness install hermes
-hermes setup            # 1. model/provider auth
-hermes gateway setup    # 2. configure the Slack gateway
-gateway hermes          # 3. start the Slack session`;
+# In the sandbox, start Herdr, then install a harness.
+agro tool install herdr
+herdr
+agro harness install claude-code
+claude auth login`;
 
 const AGENTS: Array<{
+  id: string;
   name: string;
   description: string;
-  href?: string;
-  comingSoon?: boolean;
   icon: React.ReactElement;
 }> = [
   {
+    id: "claude-code",
     name: "Claude Code",
-    description: "Anthropic's terminal coding agent.",
-    href: "/docs/harnesses/claude-code",
+    description: "Claude Code is the terminal coding agent from Anthropic.",
     icon: <img src="/img/agents/claude-code.png" alt="" width={28} height={28} />,
   },
   {
+    id: "codex",
     name: "Codex",
-    description: "OpenAI's CLI coding agent.",
-    href: "/docs/harnesses/codex",
+    description: "Codex is the CLI coding agent from OpenAI.",
     icon: <img src="/img/agents/codex.png" alt="" width={28} height={28} />,
   },
   {
-    name: "OpenCode",
-    description: "Terminal agent with OpenAI OAuth support.",
-    href: "/docs/harnesses/opencode",
-    icon: <OpenCodeIcon />,
-  },
-  {
+    id: "pi",
     name: "Pi",
-    description: "A lightweight, customizable agent.",
-    href: "/docs/harnesses/pi",
+    description: "Pi is a lightweight agent framework that you can change.",
     icon: <PiIcon />,
   },
   {
-    name: "Hermes",
-    description: "Nous Research's self-improving agent CLI.",
-    href: "/docs/harnesses/hermes",
-    icon: <img src="https://hermes-agent.nousresearch.com/favicon.ico" alt="" width={28} height={28} />,
+    id: "opencode",
+    name: "OpenCode",
+    description: "OpenCode is a terminal coding agent.",
+    icon: <OpenCodeIcon />,
   },
   {
+    id: "grok-build",
     name: "Grok Build",
-    description: "xAI's terminal coding agent and CLI.",
-    href: "/docs/harnesses/grok-build",
+    description: "Grok Build is the terminal coding agent from xAI.",
     icon: <img src="https://x.ai/favicon.ico" alt="" width={28} height={28} />,
   },
   {
+    id: "hermes",
+    name: "Hermes",
+    description: "Hermes is the agent runtime from Nous Research.",
+    icon: <img src="https://hermes-agent.nousresearch.com/favicon.ico" alt="" width={28} height={28} />,
+  },
+  {
+    id: "muse-code",
     name: "Muse Code",
-    description: "Meta's terminal coding agent.",
-    href: "/docs/harnesses/muse-code",
+    description: "Muse Code is the terminal coding agent from Meta.",
     icon: <img src="/img/agents/muse-code.ico" alt="" width={28} height={28} />,
   },
   {
+    id: "antigravity-cli",
+    name: "Antigravity CLI",
+    description: "Antigravity CLI is the terminal coding agent from Google.",
+    icon: <MonogramIcon letter="A" />,
+  },
+  {
+    id: "fx",
+    name: "fx",
+    description: "fx is an experimental coding agent CLI from Vercel Labs.",
+    icon: <MonogramIcon letter="fx" />,
+  },
+  {
+    id: "t3code",
     name: "T3 Code",
-    description: "Browser UI over Claude/Codex/OpenCode (port 3773).",
-    href: "/docs/harnesses/t3code",
+    description: "T3 Code is a browser UI over Claude Code, Codex, or OpenCode.",
     icon: (
       <img
         src="https://github.com/pingdotgg.png"
@@ -89,26 +99,50 @@ const AGENTS: Array<{
       />
     ),
   },
+];
+
+const PRODUCTS: Array<{
+  title: string;
+  body: string[];
+  links: Array<{ label: string; to?: string; href?: string }>;
+}> = [
   {
-    name: "OpenClaw",
-    description: "Coming soon.",
-    comingSoon: true,
-    icon: <OpenClawIcon />,
+    title: "Mifune Console",
+    body: [
+      "Mifune operates each node for you.",
+      "Sign in with GitHub, create a node, and open the node from the Console.",
+      "The free tier gives one n4 node for 24 running hours per UTC month, with no card.",
+      "AI usage is not included.",
+      "You sign in to your agent provider with your own account.",
+    ],
+    links: [
+      { label: "Read the Console guide →", to: "/docs" },
+      { label: "See pricing →", href: PRICING_URL },
+    ],
+  },
+  {
+    title: "Self-hosted AGRO",
+    body: [
+      "You run the sandbox on your own laptop or remote VM.",
+      "The host needs Docker, Git, and Node.js 20 or newer.",
+      "The agent keeps working after you disconnect.",
+    ],
+    links: [{ label: "Read the self-host guide →", to: "/docs/agro/intro" }],
   },
 ];
 
 const WHY: Array<{ title: string; body: string }> = [
   {
-    title: "Isolation by default",
-    body: "Your project's agent lives in a Docker-isolated sandbox. No leaked env vars, no host pollution, no toolchain rot on your laptop.",
+    title: "A clean host",
+    body: "The agent, its tools, and its logins stay off your host.",
   },
   {
-    title: "Persistent and patient",
-    body: "The sandbox is long-lived. Authenticate once, restart never. A markdown-defined cron runtime keeps the agent working while you sleep.",
+    title: "A persistent home",
+    body: "Logins, tools, and the workspace live in one volume. The volume survives a restart.",
   },
   {
-    title: "Composable substrate",
-    body: "Postgres ships as an opt-in compose overlay; add tunnels, reverse proxies, or multi-agent setups as harness packs.",
+    title: "Markdown crons",
+    body: "Each crons/*.md file declares a schedule. The cron runtime sends the file body to the agent as a prompt.",
   },
 ];
 
@@ -117,7 +151,7 @@ export default function Home(): React.ReactElement {
   const starLabel = formatStars(stars);
 
   return (
-    <Layout description="AGRO is a durable Docker workspace for coding agents. Bring Claude Code, Codex, OpenCode, or Pi; keep its tools, identity, schedules, branches, and communication channels together on a laptop or remote VM.">
+    <Layout description="Run coding agents in a durable AGRO workspace. Use the Mifune Console for a node that Mifune operates, or self-host AGRO on your own laptop or remote VM.">
       <main>
         <section className={styles.hero}>
           <div className={styles.heroBg} aria-hidden="true" />
@@ -125,69 +159,89 @@ export default function Home(): React.ReactElement {
             <div className={styles.heroCopy}>
               <p className={styles.heroEyebrow}>
                 <span className={styles.heroEyebrowDot} aria-hidden="true" />
-                Durable workspace for coding agents
+                Mifune Console and self-hosted AGRO
               </p>
               <h1 className={styles.heroTitle}>
-                Give coding agents a place to live and work.
+                Give each coding agent a durable workspace.
               </h1>
               <p className={styles.heroSubtitle}>
-                AGRO turns your repository into a persistent Docker workspace for autonomous coding agents. Bring Claude Code, Codex, OpenCode, or Pi; keep its tools, identity, schedules, branches, and Slack access together locally or on a remote VM.
+                AGRO gives a coding agent an isolated Docker sandbox. Use the Mifune Console to get a node that Mifune operates. Or run AGRO on your own laptop or remote VM.
               </p>
               <div className={styles.heroButtons}>
-                <Link
-                  className="button button--primary button--lg"
-                  to="/docs/quickstart"
-                >
-                  Get started
+                <Link className="button button--primary button--lg" to="/docs">
+                  Read the Console guide
                 </Link>
-                <Link
-                  className="button button--secondary button--lg"
-                  href={GITHUB_URL}
-                  aria-label={`Star AGRO on GitHub, ${starLabel} stars`}
-                >
-                  ★ Star on GitHub
+                <Link className="button button--secondary button--lg" href={CONSOLE_URL}>
+                  Open the Console
+                </Link>
+                <Link className="button button--secondary button--lg" to="/docs/agro/intro">
+                  Self-host AGRO
                 </Link>
               </div>
               <div className={styles.heroMeta}>
+                <span>Console operated by Mifune</span>
+                <span aria-hidden="true">·</span>
+                <span>AGRO is Apache-2.0 open source</span>
+                <span aria-hidden="true">·</span>
                 <span>{starLabel} GitHub stars</span>
-                <span aria-hidden="true">·</span>
-                <span>Apache 2.0 licensed</span>
-                <span aria-hidden="true">·</span>
-                <span>Self-hosted</span>
-                <span aria-hidden="true">·</span>
-                <span>No host toolchains</span>
               </div>
             </div>
-            <aside className={styles.heroTerminal} aria-label="Quickstart commands">
+            <aside className={styles.heroTerminal} aria-label="Self-host quickstart commands">
               <div className={styles.terminalChrome}>
                 <span className={`${styles.terminalDot} ${styles.terminalDotR}`} aria-hidden="true" />
                 <span className={`${styles.terminalDot} ${styles.terminalDotY}`} aria-hidden="true" />
                 <span className={`${styles.terminalDot} ${styles.terminalDotG}`} aria-hidden="true" />
-                <span className={styles.terminalLabel}>~/open-harness — zsh</span>
+                <span className={styles.terminalLabel}>self-host quickstart</span>
               </div>
               <CodeBlock language="bash" children={QUICKSTART} />
               <div className={styles.terminalFooter}>
-                <Link
-                  className={styles.terminalFooterLink}
-                  to="/docs/docker-deployment"
-                >
-                  Raw Docker, no CLI →
+                <Link className={styles.terminalFooterLink} to="/docs/agro/quickstart">
+                  Read the self-host quickstart →
                 </Link>
               </div>
             </aside>
           </div>
         </section>
 
+        <section className={styles.section}>
+          <div className={styles.container}>
+            <h2 className={styles.sectionTitle}>Choose how you run AGRO.</h2>
+            <div className={styles.whyGrid}>
+              {PRODUCTS.map((product) => (
+                <article key={product.title} className={styles.whyCard}>
+                  <h3 className={styles.whyTitle}>{product.title}</h3>
+                  {product.body.map((sentence) => (
+                    <p key={sentence} className={styles.whyBody}>
+                      {sentence}
+                    </p>
+                  ))}
+                  <div className={styles.heroButtons} style={{ marginTop: "1rem", marginBottom: 0 }}>
+                    {product.links.map((link) => (
+                      <Link
+                        key={link.label}
+                        className={styles.archLink}
+                        to={link.to}
+                        href={link.href}
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section className={styles.starSection} aria-labelledby="github-stars-title">
           <div className={`${styles.container} ${styles.starBand}`}>
             <div className={styles.starCopy}>
-              <p className={styles.starEyebrow}>Open source signal</p>
+              <p className={styles.starEyebrow}>Open source</p>
               <h2 id="github-stars-title" className={styles.starTitle}>
                 Help more agent builders find AGRO.
               </h2>
               <p className={styles.starBody}>
-                If the sandbox model saves you from one broken local agent setup,
-                star the repo so the next Claude Code, Codex, OpenCode, or Hermes user can find it faster.
+                If AGRO saves you time, star the repository. A star helps other developers find the project.
               </p>
             </div>
             <div className={styles.starPanel} aria-label={`${starLabel} GitHub stars for ${GITHUB_REPO}`}>
@@ -209,50 +263,31 @@ export default function Home(): React.ReactElement {
           <div className={styles.container}>
             <h2 className={styles.sectionTitle}>Pick your agent.</h2>
             <p className={styles.sectionLede}>
-              Nothing installs at boot. Add Claude Code, Codex, Pi, OpenCode, Hermes, Grok Build, or Muse Code with one <code>oh harness install &lt;id&gt;</code> inside the sandbox; T3 Code runs on demand. Switch between them inside the sandbox — or add your own as a harness pack.
+              The sandbox installs no agent at boot. In the sandbox, run <code>agro harness install &lt;id&gt;</code> to add a harness. T3 Code runs on demand and needs no install.
             </p>
             <div className={styles.agentGrid}>
-              {AGENTS.map((agent) => {
-                const body = (
-                  <>
-                    <span className={styles.agentIcon} aria-hidden="true">
-                      {agent.icon}
-                    </span>
-                    <span className={styles.agentText}>
-                      <h3 className={styles.agentName}>{agent.name}</h3>
-                      <p className={styles.agentDescription}>{agent.description}</p>
-                    </span>
-                  </>
-                );
-
-                if (agent.href && !agent.comingSoon) {
-                  return (
-                    <Link key={agent.name} className={styles.agentCard} to={agent.href}>
-                      {body}
-                    </Link>
-                  );
-                }
-
-                // Coming-soon agents have no docs page yet — render a
-                // non-navigating, visually de-emphasized card.
-                return (
-                  <div
-                    key={agent.name}
-                    className={styles.agentCard}
-                    aria-disabled="true"
-                    style={{ opacity: 0.6, cursor: "default" }}
-                  >
-                    {body}
-                  </div>
-                );
-              })}
+              {AGENTS.map((agent) => (
+                <Link
+                  key={agent.id}
+                  className={styles.agentCard}
+                  to={`/docs/agro/harnesses/${agent.id}`}
+                >
+                  <span className={styles.agentIcon} aria-hidden="true">
+                    {agent.icon}
+                  </span>
+                  <span className={styles.agentText}>
+                    <h3 className={styles.agentName}>{agent.name}</h3>
+                    <p className={styles.agentDescription}>{agent.description}</p>
+                  </span>
+                </Link>
+              ))}
             </div>
           </div>
         </section>
 
         <section className={styles.sectionAlt}>
           <div className={styles.container}>
-            <h2 className={styles.sectionTitle}>Why a sandbox instead of running it on your laptop?</h2>
+            <h2 className={styles.sectionTitle}>Why run the agent in a sandbox?</h2>
             <div className={styles.whyGrid}>
               {WHY.map((item) => (
                 <article key={item.title} className={styles.whyCard}>
@@ -272,16 +307,16 @@ export default function Home(): React.ReactElement {
             <h2 className={styles.sectionTitle}>A durable home for agent work.</h2>
             <div className={styles.archCard}>
               <p>
-                AGRO keeps the agent environment with the project instead of scattering it across a laptop. Git versions the portable control plane: identity, task procedures, schedules, and checks. Docker provides the isolated runtime. Herdr preserves interactive terminals, and git worktrees keep parallel agent sessions from colliding. The agent owns its workspace while the host stays clean.
+                Skills and hooks in <code>.agro/</code> serve every harness. Herdr is the persistent workspace for agents, tests, and development servers. The container keeps running after you detach from Herdr.
               </p>
               <p>
-                A markdown cron runtime reads <code>crons/*.md</code> and wakes the agent on a schedule — issue triage, PR review, background grooming, anything you want running while you sleep. Each sandbox is a registry entry at <code>~/.oh/sandboxes/&lt;name&gt;/oh.json</code>, written by the <code>oh sandbox install docker</code> wizard and edited with <code>oh config set --sandbox &lt;name&gt;</code>; Postgres and other overlays are opt-in, and extra infra (tunnels, reverse proxies) is registered through <code>composeOverrides[]</code>.
+                SSH, the host Docker socket, Cloudflared tunnels, and Slack stay off until you turn them on.
               </p>
               <p>
-                Multi-agent setups — like a Pi+Mom Slack bot — ship as separate harness packs you <code>git clone</code> into the workspace.
+                The <code>agro stop</code> command keeps the home volume. The <code>agro destroy</code> command deletes the home volume, and it asks before it runs.
               </p>
-              <Link className={styles.archLink} to="/docs/quickstart">
-                Read the quickstart →
+              <Link className={styles.archLink} to="/docs/agro/quickstart">
+                Read the self-host quickstart →
               </Link>
             </div>
           </div>
@@ -291,13 +326,22 @@ export default function Home(): React.ReactElement {
           <div className={styles.container}>
             <h2 className={styles.sectionTitle}>Get involved</h2>
             <div className={styles.linkGrid}>
-              <Link
-                className={styles.linkCard}
-                href={GITHUB_URL}
-              >
+              <Link className={styles.linkCard} to="/docs">
+                <span className={styles.linkCardLabel}>Console guide</span>
+                <span className={styles.linkCardSub}>
+                  Start with a node that Mifune operates.
+                </span>
+              </Link>
+              <Link className={styles.linkCard} to="/docs/agro/intro">
+                <span className={styles.linkCardLabel}>Self-host guide</span>
+                <span className={styles.linkCardSub}>
+                  Install and run AGRO on your own machine.
+                </span>
+              </Link>
+              <Link className={styles.linkCard} href={GITHUB_URL}>
                 <span className={styles.linkCardLabel}>Star AGRO</span>
                 <span className={styles.linkCardSub}>
-                  Help others discover the project on GitHub
+                  Help others find the project on GitHub.
                 </span>
               </Link>
               <Link
@@ -305,13 +349,7 @@ export default function Home(): React.ReactElement {
                 href="https://github.com/mifunedev/agro/blob/main/LICENSE"
               >
                 <span className={styles.linkCardLabel}>License</span>
-                <span className={styles.linkCardSub}>Apache 2.0</span>
-              </Link>
-              <Link className={styles.linkCard} to="/docs">
-                <span className={styles.linkCardLabel}>Documentation</span>
-                <span className={styles.linkCardSub}>
-                  Quickstart, architecture, agents
-                </span>
+                <span className={styles.linkCardSub}>AGRO uses the Apache-2.0 license.</span>
               </Link>
             </div>
           </div>
@@ -383,16 +421,21 @@ function OpenCodeIcon(): React.ReactElement {
   );
 }
 
-function OpenClawIcon(): React.ReactElement {
+function MonogramIcon({ letter }: { letter: string }): React.ReactElement {
   return (
     <svg viewBox="0 0 28 28" width="28" height="28" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <rect x="3" y="3" width="22" height="22" rx="5" fill="currentColor" opacity="0.14" />
-      <g fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M9.5 8.2c1.4 1.6 1.9 3.6 1.5 6.1" />
-        <path d="M14 7.6c1.5 1.8 2 4 1.6 6.8" />
-        <path d="M18.5 8.2c1.4 1.6 1.9 3.6 1.5 6.1" />
-        <path d="M9 18.4c1.7 1.6 3.2 2.4 5 2.4s3.3-.8 5-2.4" />
-      </g>
+      <text
+        x="14"
+        y="18.5"
+        textAnchor="middle"
+        fontSize={letter.length > 1 ? 10 : 13}
+        fontWeight={700}
+        fontFamily="ui-monospace, monospace"
+        fill="currentColor"
+      >
+        {letter}
+      </text>
     </svg>
   );
 }

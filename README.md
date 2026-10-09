@@ -18,92 +18,61 @@ pnpm build
 
 The Open Harness core repo now keeps concise GitHub-readable markdown and points readers here/DeepWiki for the rendered site experience.
 
-## Docs drift detection
+## Drift and prose checks
 
-`docs/` is a hand-copied duplicate of the harness repo's `docs/`, and nothing syncs
-prose. That gap once let the site keep recommending `make` for weeks after the
-harness deleted its Makefile, so `scripts/check-docs-drift.mjs` fails when a file
-under `docs/` or `promos/` names something the harness has retired:
+Each build runs two checks before `pnpm run build`, and a failure stops the deploy.
+`pnpm run check:docs-drift` fails when `docs/`, `blog/`, `promos/`, or `src/pages/`
+names a command, file, or setting that AGRO retired. It skips `docs/agro/`, which
+the build syncs from the AGRO release. `pnpm run check:ste` runs the STE checker
+from the synced AGRO release on `docs/*.md`, `docs/console/`, `blog/`, and the
+visible text of `src/pages/*.tsx`. When AGRO retires a command, add the command
+to `RETIRED` in `scripts/check-docs-drift.mjs` in the same change.
 
 ```bash
 pnpm run check:docs-drift
+pnpm run check:ste
 ```
-
-`RETIRED` in that file is the token list. **Adding to it is how the next migration
-protects itself** — when you remove a command, file, or knob from the harness, add
-its name there in the same change. A page that names a retired thing *in order to
-say it is retired* gets a per-file, per-token entry in `ALLOW` with its reason.
-
-`promos/` is scanned because it was missed the first time. Its banner recipes are
-the source the social cards are rendered from, so a retired command left there
-reappears the next time a card is generated — the published image looks fine until
-someone regenerates it.
-
-`blog/` is deliberately not scanned. Those posts are dated records; they carry an
-admonition rather than an edit.
-
-The check runs on pull requests only. It does **not** gate the deploy: a stale doc
-line is worth less than a stale `oh.js`, and blocking the scheduled rebuild would
-hold the mirror back to punish a prose typo.
 
 ## The script mirror
 
 Four paths under the site root serve executable content that users pipe into a
-shell. Three of them are built here; one is not, and that asymmetry is the thing to
-know before changing any of it.
+shell. The build copies each one from a GitHub Release asset of `mifunedev/agro`.
 
-| URL | Served by | Source |
+| URL | Written by | Release asset |
 | --- | --- | --- |
-| `/get-agro.sh` | `scripts/sync-external-scripts.mjs` → `static/get-agro.sh` | `.agro/scripts/get-agro.sh` in the harness repo |
-| `/agro.js` | `scripts/build-oh-cli.mjs` → `static/agro.js` | built from `.agro/cli` in the harness repo |
-| `/oh.js` | `scripts/build-oh-cli.mjs` → `static/oh.js` | the same bundle as `/agro.js` |
-| `/install.sh` | **an HTTP 302 configured at the CDN, outside this repo** | `.oh/scripts/install.sh` on `main`, via `raw.githubusercontent.com` |
+| `/install.sh` | `scripts/sync-external-scripts.mjs` → `static/install.sh` | `install.sh` |
+| `/get-agro.sh` | `scripts/sync-external-scripts.mjs` → `static/get-agro.sh` | `install.sh` |
+| `/agro.js` | `scripts/build-oh-cli.mjs` → `static/agro.js` | `agro.js` |
+| `/oh.js` | `scripts/build-oh-cli.mjs` → `static/oh.js` | `agro.js` |
 
-Both build scripts resolve their upstream repo and ref through `scripts/oh-source.mjs`,
-which is the single place they are decided. `AGRO_GITHUB_REPO` and `AGRO_SCRIPTS_REF`
-win over `OH_GITHUB_REPO` and `OH_SCRIPTS_REF`; setting both forms to different
-values prints a warning. The repo defaults to **`mifunedev/agro`** and the ref to **`main`** — the release ref.
-`development` carries unreleased CLI behaviour and must not be published to people
-running `curl … | bash`.
+Both scripts resolve the repo and the release tag through `scripts/oh-source.mjs`.
+The repo defaults to **`mifunedev/agro`** and the tag to its **latest release**.
+Set `AGRO_SCRIPTS_REF` to a release tag (for example `v0.18.1`) to mirror that
+release instead. `AGRO_GITHUB_REPO` sets the repo. The `OH_*` names still work;
+the `AGRO_*` names win when both are set. A ref that is not a release tag fails the
+build. The build log names the release asset URL of each file.
 
-Each script resolves that ref to a full commit SHA, then fetches that commit.
-The CLI builder checks the commit out detached and fails if `git rev-parse HEAD`
-does not match the resolved SHA. The script mirror downloads from
-`raw.githubusercontent.com/<repo>/<sha>/…`, not from a moving branch URL.
-A successful build log names the source commit of each `agro.js` / `oh.js` bundle
-and the mirrored `get-agro.sh`. Stale-artifact fallback on a
-transient network error is not source-identity evidence.
-
-A ref that predates the `.oh/` → `.agro/` rename still builds: both scripts fall back
-to `.oh/scripts/` and `.oh/cli` when the `.agro/` path is absent at the pinned ref.
+`scripts/sync-agro-docs.mjs` copies `docs/` of the same release to the gitignored `docs/agro/`.
 
 All four artifacts are gitignored. They exist only as build output, so the deployed
 site is always as fresh as its last successful build.
 
-**A failed mirror fails the build.** A missing file, a ref that does not resolve, a
-body without a shebang, or a CLI build error all exit non-zero rather than deploying.
-Only a genuinely transient network failure (DNS, TCP, 5xx, rate limit) warns and
-keeps the previously published artifact — and even that is fatal when no previous
-artifact exists. This is deliberate: `oh` is the only door into Open Harness, and a
-silently skipped build is how the published CLI fell weeks behind its own docs.
-
-**The `/install.sh` redirect is not managed here.** GitHub Pages cannot issue a 302,
-so the rule lives at the CDN/DNS layer in front of `static/CNAME`. It is pinned to
-`main` with no override, and it bypasses the shebang check the other two get. Do not
-add `install.sh` to `SCRIPTS[]` while the redirect exists — the redirect would shadow
-the static file and two mechanisms would serve one path. Removing the CDN rule and
-mirroring it properly needs whoever owns that layer.
+**A failed mirror fails the build.** A missing asset, a tag that does not resolve, a
+body without a shebang, or an `agro.js` that does not contain the tag's version all
+exit non-zero rather than deploying. Only a transient network failure (DNS, TCP,
+5xx, rate limit) warns and keeps the previously published artifact, and even that is
+fatal when no previous artifact exists.
 
 ### Refreshing the mirror
 
 The site rebuilds on push to `main`, on a daily schedule, on manual
-`workflow_dispatch` (which takes a `ref` input), and on a `repository_dispatch` of
+`workflow_dispatch` (whose optional `ref` input names a release tag), and on a `repository_dispatch` of
 type `agro-release` (the legacy `openharness-release` type still works):
 
 ```bash
 gh api repos/mifunedev/agro-web/dispatches \
   -f event_type=agro-release \
-  -F 'client_payload[ref]=main'
+  -F 'client_payload[ref]=v0.18.1'
 ```
 
 Sending that dispatch from the harness repo's release workflow is a follow-up on the

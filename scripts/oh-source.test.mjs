@@ -6,7 +6,9 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 
-import { isRateLimited, isTransientResponse, rawBaseFor, gitUrlFor, MirrorError, resolveSha } from "./oh-source.mjs";
+import {
+  fetchReleaseAsset, isRateLimited, isTransientResponse, MirrorError, resolveReleaseTag,
+} from "./oh-source.mjs";
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const SOURCE = join(SCRIPT_DIR, "oh-source.mjs");
@@ -82,80 +84,120 @@ function loadSource(env) {
 }
 
 test("AGRO_SCRIPTS_REF wins over OH_SCRIPTS_REF", () => {
-  const sha = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
   const result = loadSource({
-    AGRO_SCRIPTS_REF: sha,
-    OH_SCRIPTS_REF: "main",
+    AGRO_SCRIPTS_REF: "v0.18.1",
+    OH_SCRIPTS_REF: "v0.17.0",
   });
   assert.equal(result.status, 0, result.stderr);
   const payload = JSON.parse(result.stdout.trim().split("\n").at(-1));
-  assert.equal(payload.REF, sha);
+  assert.equal(payload.REF, "v0.18.1");
 });
 
 test("OH_SCRIPTS_REF is used when AGRO_SCRIPTS_REF is unset", () => {
-  const sha = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
   const result = loadSource({
     AGRO_SCRIPTS_REF: "",
-    OH_SCRIPTS_REF: sha,
+    OH_SCRIPTS_REF: "v0.17.0",
   });
   assert.equal(result.status, 0, result.stderr);
   const payload = JSON.parse(result.stdout.trim().split("\n").at(-1));
-  assert.equal(payload.REF, sha);
+  assert.equal(payload.REF, "v0.17.0");
 });
 
-test("rawBaseFor pins the URL to the resolved commit", () => {
-  const sha = "cccccccccccccccccccccccccccccccccccccccc";
-  assert.equal(rawBaseFor(sha), `https://raw.githubusercontent.com/mifunedev/agro/${sha}`);
-  assert.ok(!rawBaseFor(sha).includes("/main/"));
-  assert.equal(gitUrlFor("mifunedev/agro"), "https://github.com/mifunedev/agro.git");
+test("no ref setting means the latest release", () => {
+  const result = loadSource({ AGRO_SCRIPTS_REF: "", OH_SCRIPTS_REF: "" });
+  assert.equal(result.status, 0, result.stderr);
+  const payload = JSON.parse(result.stdout.trim().split("\n").at(-1));
+  assert.equal(payload.REF, "");
 });
 
-test("resolveSha returns the full SHA and never substitutes main", async () => {
-  const sha = "dddddddddddddddddddddddddddddddddddddddd";
-  const orig = globalThis.fetch;
+const json = (body, status = 200, headers = {}) =>
+  new Response(JSON.stringify(body), { status, headers });
+
+test("resolveReleaseTag asks GitHub for the latest release by default", async () => {
   const urls = [];
-  globalThis.fetch = async (url) => {
+  const fetchImpl = async (url) => {
     urls.push(String(url));
-    return new Response(sha, { status: 200 });
+    return json({ tag_name: "v0.18.1" });
   };
-  try {
-    assert.equal(await resolveSha(), sha);
-    assert.ok(urls.every((url) => !url.endsWith("/main") || url.includes("/commits/")));
-  } finally {
-    globalThis.fetch = orig;
-  }
+  assert.equal(await resolveReleaseTag({ ref: "", fetchImpl }), "v0.18.1");
+  assert.deepEqual(urls, ["https://api.github.com/repos/mifunedev/agro/releases/latest"]);
 });
 
-test("a 404 ref is fatal and does not become main", async () => {
-  const orig = globalThis.fetch;
-  globalThis.fetch = async () => new Response("Not Found", { status: 404 });
-  try {
-    await assert.rejects(
-      () => resolveSha(),
-      (err) => {
-        assert.ok(err instanceof MirrorError);
-        assert.equal(err.transient, false);
-        assert.match(err.message, /does not resolve/);
-        assert.ok(!err.message.includes("substitut"));
-        return true;
-      },
-    );
-  } finally {
-    globalThis.fetch = orig;
-  }
+test("an explicit ref overrides the latest release without a lookup", async () => {
+  const fetchImpl = async () => {
+    throw new Error("must not fetch");
+  };
+  assert.equal(await resolveReleaseTag({ ref: "v0.17.0", fetchImpl }), "v0.17.0");
 });
 
-test("a non-SHA GitHub body is fatal", async () => {
-  const orig = globalThis.fetch;
-  globalThis.fetch = async () => new Response("main", { status: 200 });
-  try {
-    await assert.rejects(() => resolveSha(), /did not resolve to a full SHA/);
-  } finally {
-    globalThis.fetch = orig;
-  }
+test("a missing latest release is fatal", async () => {
+  const fetchImpl = async () => json({ message: "Not Found" }, 404);
+  await assert.rejects(
+    () => resolveReleaseTag({ ref: "", fetchImpl }),
+    (err) => {
+      assert.ok(err instanceof MirrorError);
+      assert.equal(err.transient, false);
+      assert.match(err.message, /latest release/);
+      return true;
+    },
+  );
 });
 
-test("a shell-metacharacter ref exits before any git or fetch", () => {
+test("a rate-limited or unreachable release lookup is transient", async () => {
+  const limited = async () => json({}, 403, { "x-ratelimit-remaining": "0" });
+  await assert.rejects(
+    () => resolveReleaseTag({ ref: "", fetchImpl: limited }),
+    (err) => err instanceof MirrorError && err.transient === true,
+  );
+  const down = async () => {
+    throw new Error("ECONNRESET");
+  };
+  await assert.rejects(
+    () => resolveReleaseTag({ ref: "", fetchImpl: down }),
+    (err) => err instanceof MirrorError && err.transient === true,
+  );
+});
+
+test("an unsafe tag name from GitHub is rejected", async () => {
+  const fetchImpl = async () => json({ tag_name: "-v1;rm" });
+  await assert.rejects(() => resolveReleaseTag({ ref: "", fetchImpl }), /not a valid ref/);
+});
+
+test("fetchReleaseAsset downloads from the release of the tag", async () => {
+  const urls = [];
+  const fetchImpl = async (url) => {
+    urls.push(String(url));
+    return new Response("#!/bin/sh\n", { status: 200 });
+  };
+  const { url, body } = await fetchReleaseAsset("v0.18.1", "install.sh", { fetchImpl });
+  assert.equal(url, "https://github.com/mifunedev/agro/releases/download/v0.18.1/install.sh");
+  assert.deepEqual(urls, [url]);
+  assert.equal(body, "#!/bin/sh\n");
+});
+
+test("a ref without that release asset fails with a clear fatal error", async () => {
+  const fetchImpl = async () => new Response("Not Found", { status: 404 });
+  await assert.rejects(
+    () => fetchReleaseAsset("main", "install.sh", { fetchImpl }),
+    (err) => {
+      assert.ok(err instanceof MirrorError);
+      assert.equal(err.transient, false);
+      assert.match(err.message, /main/);
+      assert.match(err.message, /release tag/);
+      return true;
+    },
+  );
+});
+
+test("a 5xx asset download is transient", async () => {
+  const fetchImpl = async () => new Response("", { status: 502 });
+  await assert.rejects(
+    () => fetchReleaseAsset("v0.18.1", "agro.js", { fetchImpl }),
+    (err) => err instanceof MirrorError && err.transient === true,
+  );
+});
+
+test("a shell-metacharacter ref exits before any fetch", () => {
   const pwned = join(tmpdir(), `oh-source-pwned-${process.pid}`);
   rmSync(pwned, { force: true });
   const result = spawnSync(process.execPath, [SOURCE], {

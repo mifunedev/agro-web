@@ -2,11 +2,15 @@
 .docusaurus/
 build/
 
-# Build-time synced/built artifacts from the harness repo (scripts/sync-external-scripts.mjs, scripts/build-oh-cli.mjs)
+# Build-time mirrored AGRO release assets (scripts/sync-external-scripts.mjs, scripts/build-oh-cli.mjs)
+static/install.sh
 static/get-agro.sh
 static/get-oh.sh
 static/agro.js
 static/oh.js
+
+# Build-time copy of the AGRO release docs/ (scripts/sync-agro-docs.mjs)
+docs/agro/
 
 # Dependencies
 node_modules/

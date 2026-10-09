@@ -8,45 +8,51 @@ tags: [agents, mental-models, architecture]
 
 # Four words that made multi-agent click: Operator, Sandbox, Orchestrator, Harness.
 
-For two years I called everything "an agent." The thing typing in my terminal — agent. The shell script that ran it — agent harness. The container it lived in — also "the agent." When I tried to describe my setup to someone else, the word stopped working halfway through the second sentence.
+:::note
 
-Then I drew it on a whiteboard. The boxes had different shapes. Four shapes, four jobs. And the reason my setup felt fragile — the reason I kept tripping over myself reasoning about it — was that I'd been collapsing four distinct things into one word.
+Updated on 2026-10-08. Open Harness is now AGRO. This post uses the current names and commands.
 
-Here are the four.
+:::
+
+For two years, I called every part of my setup "an agent." The model that typed in my terminal was an agent. The shell script that ran the model was an agent harness. The container around both was also "the agent." I tried to describe my setup to a colleague. The word stopped working in the second sentence.
+
+Then I drew the setup on a whiteboard. The boxes had different shapes. Four shapes did four jobs. My setup felt fragile for one reason. I used one word for four different parts, and I tripped over that word each time I reasoned about the setup.
+
+Here are the four words.
 
 <!-- truncate -->
 
 ## Operator
 
-The human. You. The one with the goal, the deadline, the taste.
+The operator is the human. You are the operator. You own the goal, the deadline, and the taste.
 
-The operator does not write code or run commands directly; the operator *directs* the layer below. The operator is the only layer with a will. Everything below is a means.
+The operator does not write code or run commands directly. The operator *directs* the layer below. The operator is the only layer with a will. Every layer below the operator is a means.
 
 ## Sandbox
 
-A property, not a thing. The sandbox is the isolation boundary around an agent layer — a container, a worktree, a VM, a separate machine. Its job is exactly one: **changes inside cannot affect anything outside unless explicitly promoted.**
+A sandbox is a property, not a component. The sandbox is the isolation boundary around an agent layer: a container, a worktree, a VM, or a separate machine. The sandbox has exactly one job: **a change inside the sandbox cannot affect the outside until a layer promotes the change explicitly.**
 
-Sandboxes are orthogonal to the rest of the stack. They wrap. Any layer can have one. Different layers can have different ones. A sandbox doesn't *do* anything — it constrains what the layer it wraps is allowed to break.
+Sandboxes are orthogonal to the rest of the stack. A sandbox wraps a layer. Each layer can have a sandbox. Different layers can have different sandboxes. A sandbox does not *do* work. A sandbox limits what the wrapped layer can break.
 
 ## Orchestrator
 
-The conductor. Operates on behalf of the operator. Reads the goal, decomposes it, delegates to one or more harnesses — or to sub-orchestrators — and aggregates the results.
+The orchestrator is the conductor. The orchestrator acts for the operator. The orchestrator reads the goal and splits the goal into tasks. The orchestrator delegates each task to a harness or to a sub-orchestrator, then collects the results.
 
-The orchestrator's defining property: **it does not do the work itself.** It coordinates. The moment you find your orchestrator writing application code, you've collapsed a layer; the cost shows up later as fragility no one can explain.
+The defining property of the orchestrator: **the orchestrator does not do the work itself.** The orchestrator coordinates. If your orchestrator writes application code, you have collapsed a layer. You pay for the collapse later, as fragility that nobody can explain.
 
 ## Harness
 
-The leaf. The combination of an *agent* — the LLM doing the thinking — plus the *environment engineering* around it: prompts, tools, context, memory, filesystem, network access. A harness is what actually touches reality.
+The harness is the leaf. A harness combines an *agent* with the *environment engineering* around the agent. The agent is the LLM, and the LLM does the thinking. The environment engineering is the prompts, tools, context, memory, filesystem, and network access. The harness is the layer that touches reality.
 
-A harness has no children. If you find yourself wanting to give a harness sub-agents, you've discovered it should have been an orchestrator.
+A harness has no children. If you want to give a harness sub-agents, the harness should have been an orchestrator.
 
 ## The unlock: orchestrator and harness are the same shape
 
-Once I named these, the recursion fell out for free.
+After I named the four parts, the recursion became clear.
 
-An orchestrator delegates to harnesses. Or it delegates to other orchestrators, which delegate to *their* harnesses. The recursion bottoms out at the harness — the leaf that does real work.
+An orchestrator delegates to harnesses. An orchestrator can also delegate to other orchestrators, which delegate to *their* harnesses. The recursion stops at the harness. The harness is the leaf, and the leaf does the real work.
 
-Sandboxes wrap each level independently. The main orchestrator runs in one sandbox; a sub-orchestrator can run in its own. A harness can share its orchestrator's sandbox, or get its own when a sub-task needs full isolation.
+Sandboxes wrap each level independently. The main orchestrator runs in one sandbox. A sub-orchestrator can run in its own sandbox. A harness can share the sandbox of its orchestrator. A harness gets its own sandbox when a sub-task needs full isolation.
 
 ```mermaid
 flowchart TB
@@ -61,19 +67,19 @@ flowchart TB
     end
 ```
 
-That's the whole model. Four roles. Two of them — orchestrator and harness — are the same recursive shape at different depths. One — sandbox — is an isolation property that wraps anything. One — operator — is you.
+That diagram is the whole model. The model has four roles. Two roles, orchestrator and harness, are the same recursive shape at different depths. The sandbox is an isolation property that wraps each layer. The operator is you.
 
-## How this lives in Open Harness
+## How this model lives in AGRO
 
-The clearest worked example I can point at:
+AGRO gives me the clearest worked example:
 
-- **Operator** — me at the keyboard, holding the goal.
-- **Sandbox** — the Docker container the orchestrator runs in. A worktree with its own `.devcontainer` becomes a sandbox-within-a-sandbox when a sub-task needs full isolation.
-- **Orchestrator** — `claude` at the repo root, with a `CLAUDE.md` that enforces *"do not write application code."* Its job is to spawn harnesses, run skills, manage git, ship PRs.
-- **Harness** — a sub-agent the orchestrator delegates to via the `Agent` tool: `implementer`, `critic`, `pm`, `general-purpose`. Each is an LLM + a constrained tool list + a focused prompt. Each touches code.
+- **Operator**: me at the keyboard, with the goal.
+- **Sandbox**: the Docker container that the orchestrator runs in. Each parallel task gets an isolated git worktree under `.worktrees/`.
+- **Orchestrator**: the agent in the first Herdr pane at `/home/sandbox/harness`. The root `AGENTS.md` tells the orchestrator *"do not write application code at the root."* The orchestrator manages git, the sandbox lifecycle, and the shared agent setup.
+- **Harness**: a bounded worker that the orchestrator assigns through the `/delegate` skill. Each worker is an LLM with a constrained tool list and a focused assignment. Each worker touches code.
 
-The orchestrator is itself a harness for *me*. The implementer is a harness for the orchestrator. Same shape, different depth, sandboxes wrapping each layer.
+The orchestrator is a harness for *me*. A worker is a harness for the orchestrator. Each layer has the same shape at a different depth, and a sandbox wraps each layer.
 
-Naming was the unlock. Once I had the words, I stopped writing setups that felt mysterious to debug — because I could now point at which layer the bug lived in.
+Names were the unlock. With the names, I stopped building setups with mysterious bugs. I can now point at the layer that holds the bug.
 
-If you've been calling everything "an agent," try the four for a week. The setups you build after will be easier to draw — and the ones you've already built will be easier to fix.
+Do you call every part of your setup "an agent"? Try the four words for a week. Your next setups will be easier to draw. Your current setups will be easier to fix.

@@ -1,0 +1,412 @@
+{
+  "schemaVersion": 1,
+  "project": "agro-web",
+  "branchName": "feat/70-docs-site-alignment",
+  "description": "Align the docs site with the Console and AGRO: restore the build from the latest AGRO release, sync the AGRO pages from that release, add a Console-first guide, and rewrite the home page, site-only pages, and blog posts to current names and commands.",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Restore the build with the release installer",
+      "description": "As a site maintainer, I want the build to mirror the AGRO release installer so that the site deploys again.",
+      "acceptanceCriteria": [
+        "`scripts/oh-source.mjs` resolves the latest `mifunedev/agro` release tag by default, and `AGRO_SCRIPTS_REF` still overrides the tag.",
+        "`scripts/sync-external-scripts.mjs` copies the release asset `install.sh` to `static/install.sh` and to `static/get-agro.sh`, and no source names `.agro/scripts/get-agro.sh`.",
+        "`scripts/build-oh-cli.mjs` builds `static/agro.js` from the same release tag, and `static/agro.js` contains the version of that tag.",
+        "After a deploy, `curl -fsSI https://agro.mifune.dev/install.sh` returns HTTP 200. Today the path returns HTTP 404 from GitHub Pages.",
+        "`scripts/sync-external-scripts.mjs` contains no comment about a CDN redirect for `install.sh`.",
+        "`pnpm test` and `pnpm build` exit 0.",
+        "Typecheck passes"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "Executed on 8cc6ae4: (1) oh-source.test.mjs covers latest-release default and AGRO_SCRIPTS_REF override; build log shows mifunedev/agro@v0.18.1 with refs unset. (2) static/install.sh and static/get-agro.sh are byte-identical to releases/download/v0.18.1/install.sh (cmp exit 0); grep for .agro/scripts/get-agro.sh outside .agro/ and build/ exits 1. (3) agro.js downloaded from the release asset, not rebuilt; node static/agro.js --version prints 0.18.1. (4) grep -niE \"cdn|302\" sync-external-scripts.mjs finds nothing. (5) post-deploy curl HTTP 200 is a post-merge check, unverified. (6) pnpm test exit 0 (49 pass), pnpm build exit 0. (7) pnpm typecheck exit 0. Extra: pages.yml defaults to the latest release; README mirror section rewritten; oh.js still written from agro.js.",
+      "dependsOn": [],
+      "files": [
+        "scripts/oh-source.mjs",
+        "scripts/sync-external-scripts.mjs",
+        "scripts/build-oh-cli.mjs",
+        "scripts/*.test.mjs",
+        "static/install.sh",
+        "static/get-agro.sh",
+        ".gitignore",
+        ".github/workflows/pages.yml",
+        "README.md"
+      ],
+      "commit": "8cc6ae4"
+    },
+    {
+      "id": "US-002",
+      "title": "Sync the AGRO docs from the latest release",
+      "description": "As a self-hosting user, I want the AGRO pages to match the latest AGRO release so that each command works.",
+      "acceptanceCriteria": [
+        "A prebuild script copies `docs/` from the latest `mifunedev/agro` release tag to `docs/agro/`, and git ignores `docs/agro/`.",
+        "The script adds a `title` frontmatter field to each copied page that has none, from the first `#` heading.",
+        "The script rewrites each relative link that leaves `docs/` to a `https://github.com/mifunedev/agro/blob/<tag>/<path>` URL.",
+        "The repository holds no hand copy of a page that the sync script writes.",
+        "`docusaurus.config.ts` sets `onBrokenLinks: \"throw\"`, and `pnpm build` exits 0.",
+        "A test in `scripts/` covers the frontmatter step and the link rewrite.",
+        "Typecheck passes"
+      ],
+      "priority": 2,
+      "passes": true,
+      "notes": "Executed on 0b01030: (1) prebuild runs scripts/sync-agro-docs.mjs; build log shows mifunedev/agro@v0.18.1, 32 pages; git check-ignore docs/agro/intro.md exit 0; file list of docs/agro equals the v0.18.1 tarball docs/ (diff exit 0). (2) configuration.md gains title frontmatter from its # heading; covered in sync-agro-docs.test.mjs. (3) slack.md ../../.pi links become github.com/mifunedev/agro/blob/v0.18.1 URLs; covered in tests. 16 of 32 files differ from upstream, each only by frontmatter, link rewrite, or _category_ link.id prefix. (4) git ls-files docs lists only the 8 site-only pages. (5) onBrokenLinks: \"throw\"; pnpm build exit 0; only warning is the untracked-file update date. (6) pnpm test exit 0, 60 pass. (7) pnpm typecheck exit 0. Link targets in site pages, blog, home page, navbar, footer, and redirects moved to /docs/agro/*.",
+      "dependsOn": [
+        "US-001"
+      ],
+      "files": [
+        "scripts/sync-agro-docs.mjs",
+        "scripts/sync-agro-docs.test.mjs",
+        "package.json",
+        ".gitignore",
+        "docs/",
+        "docusaurus.config.ts",
+        "src/",
+        "blog/",
+        "README.md",
+        "scripts/oh-source.mjs"
+      ],
+      "commit": "0b01030"
+    },
+    {
+      "id": "US-003",
+      "title": "Make the Console the first path in the site structure",
+      "description": "As a visitor, I want the Console guide first and the self-host guide second so that I find my product.",
+      "acceptanceCriteria": [
+        "The navbar shows \"Console\", \"Self-host AGRO\", \"Blog\", and \"GitHub\", in that order.",
+        "`sidebars.ts` defines one sidebar for `docs/console/` and one sidebar for `docs/agro/`.",
+        "`/docs` opens the Console introduction.",
+        "Each earlier `/docs/<page>` URL of an AGRO page redirects to `/docs/agro/<page>`.",
+        "Verify in browser using agent-browser skill.",
+        "`pnpm build` exits 0.",
+        "Typecheck passes"
+      ],
+      "priority": 3,
+      "passes": true,
+      "notes": "Executed on fbbabd6 + 0e3761d: (1) navbar shows Console, Self-host AGRO, Blog, GitHub (screenshot evidence/us-003/docs-console.png). (2) sidebars.ts has console and agro sidebars, autogenerated per dir; site-only pages sit in a collapsed More category. (3) /docs renders docs/console/intro.md (slug /), STE exit 0. (4) 29 redirects /docs/<page> -> /docs/agro/<page> added (38 total); built redirect pages for quickstart, intro, harnesses/pi, integrations/slack carry url=/docs/agro/...; live sitemap had no other AGRO URLs. (5) Verified in browser with agent-browser at 1280x720; screenshots in evidence/us-003/. (6) pnpm build exit 0. (7) pnpm typecheck exit 0; pnpm test exit 0 (64 pass). Repair: the self-host sidebar order now comes from the upstream docs/README.md link order, and the sync skips README.md; /docs/agro is now 404 and was never in the live sitemap (US-011 adds a redirect to /docs/agro/intro).",
+      "dependsOn": [
+        "US-002"
+      ],
+      "files": [
+        "docusaurus.config.ts",
+        "sidebars.ts",
+        "docs/console/intro.md",
+        "scripts/sync-agro-docs.mjs",
+        "scripts/sync-agro-docs.test.mjs",
+        ".agro/tasks/docs-site-alignment/evidence/us-003/"
+      ],
+      "commit": "0e3761d"
+    },
+    {
+      "id": "US-004",
+      "title": "Rewrite the home page for both products",
+      "description": "As a first-time visitor, I want the home page to state both products and the current commands so that my first step works.",
+      "acceptanceCriteria": [
+        "`src/pages/index.tsx` contains no `oh ` command, no `oh-sbx`, no `open-harness`, and no `get-agro.sh`.",
+        "The hero links to the Console guide first and to the self-host guide second.",
+        "The self-host quickstart block uses `npm install -g @mifune/agro` and the release `install.sh` command.",
+        "The harness grid lists each harness in the AGRO catalog of the synced release.",
+        "Each visible sentence passes the STE checker.",
+        "Verify in browser using agent-browser skill.",
+        "Typecheck passes"
+      ],
+      "priority": 4,
+      "passes": true,
+      "notes": "Executed: (1) grep -nE for oh , oh-sbx, open-harness, get-agro.sh in src/pages/index.tsx exits 1. (2) hero buttons: Read the Console guide (/docs), Open the Console, Self-host AGRO (/docs/agro/intro); screenshot evidence/us-004/home-1280x720.png. (3) self-host block uses npm install -g @mifune/agro and the releases/latest/download/install.sh command, as the synced quickstart does. (4) grid lists the 10 harnesses of the v0.18.1 catalog incl. fx and antigravity-cli; OpenClaw removed. (5) STE exit 0 on evidence/us-004/strings.md. (6) agent-browser at 1280x720 and 414x896. On integrated task branch at 932ed89: pnpm test exit 0, pnpm typecheck exit 0 (Typecheck passes), pnpm build exit 0.",
+      "dependsOn": [
+        "US-003"
+      ],
+      "files": [
+        "src/pages/index.tsx",
+        "src/pages/index.module.css",
+        ".agro/tasks/docs-site-alignment/evidence/us-004/"
+      ],
+      "commit": "932ed89"
+    },
+    {
+      "id": "US-005",
+      "title": "Write the Console getting-started guide",
+      "description": "As a new Console user, I want one guide from sign-in to a running free node so that I start without help.",
+      "acceptanceCriteria": [
+        "`docs/console/intro.md` states what the Console is, who operates it, and that AI usage is not included.",
+        "`docs/console/getting-started.md` covers GitHub sign-in, the personal and organization contexts, and the creation of a first free `n4` node.",
+        "The guide covers the \"After you connect\" steps: `gh auth login`, `agro harness install <id> --host`, and the editor folder `/home/sandbox/.agro/workspaces/harness`.",
+        "Each page passes the STE checker.",
+        "Typecheck passes"
+      ],
+      "priority": 5,
+      "passes": true,
+      "notes": "Executed: (1) intro.md states the product, that Mifune operates each node, and an AI-usage-not-included section. (2) getting-started.md covers Continue with GitHub, the Personal and Organizations contexts, and Create free node (n4) with labels from Console v1.8.1. (3) After you connect: gh auth login && gh auth setup-git, agro harness install <id> --host, /home/sandbox/.agro/workspaces/harness. (4) STE exit 0 on both pages. On integrated task branch at 932ed89: pnpm test exit 0, pnpm typecheck exit 0 (Typecheck passes), pnpm build exit 0.",
+      "dependsOn": [
+        "US-003"
+      ],
+      "files": [
+        "docs/console/intro.md",
+        "docs/console/getting-started.md"
+      ],
+      "commit": "9d77180"
+    },
+    {
+      "id": "US-006",
+      "title": "Document nodes and their lifecycle",
+      "description": "As a Console user, I want each node action and its billing effect documented so that I control my cost.",
+      "acceptanceCriteria": [
+        "`docs/console/nodes.md` covers Create, Rename, Restart, Pause, Resume, Rebuild, and Destroy, with the role that each action needs.",
+        "The page states that Pause and Destroy stop billing, and that Rebuild changes the IPv4 address.",
+        "The page lists the node specs `n4`, `n8`, `n16`, `n32`, and `n64`, and links to `https://mifune.dev/pricing` for prices.",
+        "The page explains each node status that the Console shows to a user.",
+        "Each page passes the STE checker.",
+        "Typecheck passes"
+      ],
+      "priority": 6,
+      "passes": true,
+      "notes": "Executed: (1) Create, Rename, Restart, Pause, Resume, Rebuild, Destroy with roles from v1.8.1 permission checks (Destroy needs admin). (2) Pause and Destroy stop billing; Rebuild and Resume change the IPv4 address. Divergence: on a paid node Destroy keeps the latest snapshot. (3) n4..n64 with vCPU/RAM/disk, pricing link, no prices. (4) table of 16 user-visible statuses. (5) STE exit 0. On integrated task branch at 932ed89: pnpm test exit 0, pnpm typecheck exit 0 (Typecheck passes), pnpm build exit 0.",
+      "dependsOn": [
+        "US-003"
+      ],
+      "files": [
+        "docs/console/nodes.md"
+      ],
+      "commit": "8179fa3"
+    },
+    {
+      "id": "US-007",
+      "title": "Document browser access and SSH",
+      "description": "As a Console user, I want to know each way to open a node so that I pick the right one.",
+      "acceptanceCriteria": [
+        "`docs/console/connect.md` covers the browser editor, the browser terminal, the remote desktop, and SSH.",
+        "The page marks the remote desktop as experimental and states that it runs over Tailscale.",
+        "The page states that the SSH key is optional, and that a node with no key accepts no SSH connection.",
+        "The page covers the key generation, the key paste, and the SSH command from the Connect menu.",
+        "Each page passes the STE checker.",
+        "Typecheck passes"
+      ],
+      "priority": 7,
+      "passes": true,
+      "notes": "Executed: (1) browser editor, browser terminal, remote desktop, SSH with v1.8.1 menu labels. (2) remote desktop marked experimental, over Tailscale. (3) SSH key optional; no key means no SSH (password login off). (4) ssh-keygen, paste, Generate one for me, and SSH command with placeholders. (5) STE exit 0. On integrated task branch at 932ed89: pnpm test exit 0, pnpm typecheck exit 0 (Typecheck passes), pnpm build exit 0.",
+      "dependsOn": [
+        "US-003"
+      ],
+      "files": [
+        "docs/console/connect.md"
+      ],
+      "commit": "285a495"
+    },
+    {
+      "id": "US-008",
+      "title": "Document snapshots",
+      "description": "As a Console user, I want to save and restore my workspace so that I recover from a mistake.",
+      "acceptanceCriteria": [
+        "`docs/console/snapshots.md` covers Create, Replace, Restore, Delete, and the creation of a node from a snapshot.",
+        "The page states that an archive snapshot restores only to a new node.",
+        "The page uses the term \"snapshot\" and no \"recovery point\".",
+        "Each page passes the STE checker.",
+        "Typecheck passes"
+      ],
+      "priority": 8,
+      "passes": true,
+      "notes": "Executed: (1) Create, Replace, Restore, Delete, and create node from snapshot, with warnings before Restore, Replace, Delete. (2) archive snapshots restore only to a new node, explained by kind. (3) grep -ci 'recovery point' returns 0. (4) STE exit 0. On integrated task branch at 932ed89: pnpm test exit 0, pnpm typecheck exit 0 (Typecheck passes), pnpm build exit 0.",
+      "dependsOn": [
+        "US-003"
+      ],
+      "files": [
+        "docs/console/snapshots.md"
+      ],
+      "commit": "cae055a"
+    },
+    {
+      "id": "US-009",
+      "title": "Document the free tier and billing",
+      "description": "As a Console user, I want the free-tier limits and the billing steps documented so that no charge surprises me.",
+      "acceptanceCriteria": [
+        "`docs/console/free-tier.md` states one `n4` node, 24 running hours per UTC month, no card, the pause at the limit, the 60-day workspace retention, and \"Continue on paid usage\".",
+        "`docs/console/billing.md` covers the card, the billing portal, the spend view, the unpaid-invoice block, and billing managers.",
+        "Neither page states a monthly plan.",
+        "Each page passes the STE checker.",
+        "Typecheck passes"
+      ],
+      "priority": 9,
+      "passes": true,
+      "notes": "Executed: (1) free-tier.md states one n4 node, 24 running hours per UTC month, no card, pause at the limit, 60-day retention, and Continue on paid usage (operator role, card, no unpaid invoice), from Console v1.8.1. (2) billing.md covers Add card, Open Billing Portal, Usage & spend, the unpaid-invoice block, and Billing Account Managers. (3) grep -ci 'monthly plan' returns 0 on both. (4) STE exit 0. On integrated task branch at 16211ca: pnpm test exit 0, pnpm typecheck exit 0 (Typecheck passes), pnpm build exit 0, check:docs-drift exit 0.",
+      "dependsOn": [
+        "US-003"
+      ],
+      "files": [
+        "docs/console/free-tier.md",
+        "docs/console/billing.md"
+      ],
+      "commit": "76e6ab5"
+    },
+    {
+      "id": "US-010",
+      "title": "Document organizations and access",
+      "description": "As an organization admin, I want members, roles, and tokens documented so that I share access safely.",
+      "acceptanceCriteria": [
+        "`docs/console/organizations.md` covers the creation of an organization, invitations, the three roles `viewer`, `operator`, and `admin`, and leaving or deleting an organization.",
+        "The page has a table of the actions that each role can take.",
+        "`docs/console/api-tokens.md` covers token creation and the `Authorization: Bearer` header.",
+        "Each page passes the STE checker.",
+        "Typecheck passes"
+      ],
+      "priority": 10,
+      "passes": true,
+      "notes": "Executed: (1) organizations.md covers create, invite by email or GitHub username, accept and decline, roles, change role, remove, leave, rename, and delete with a warning first. (2) role table consistent with nodes.md, snapshots.md, and the v1.8.1 role checks. (3) api-tokens.md covers creation (operator), shown once, context scope, no expiry, revoke, and curl -H 'Authorization: Bearer <token>' https://console.mifune.dev/api/nodes. (4) STE exit 0. On integrated task branch at 16211ca: pnpm test exit 0, pnpm typecheck exit 0 (Typecheck passes), pnpm build exit 0, check:docs-drift exit 0.",
+      "dependsOn": [
+        "US-003"
+      ],
+      "files": [
+        "docs/console/organizations.md",
+        "docs/console/api-tokens.md"
+      ],
+      "commit": "e709083"
+    },
+    {
+      "id": "US-011",
+      "title": "Resolve the site-only pages",
+      "description": "As a visitor, I want each remaining site page to be current so that no page contradicts another.",
+      "acceptanceCriteria": [
+        "`docs/property-testing.md` and `docs/agro-compatibility.md` are removed, with a redirect for each URL.",
+        "`docs/open-core.md` names the Console and links to the Console guide.",
+        "`docs/glossary.md`, `docs/model-selection.md`, and `docs/resources.md` contain no retired term that `scripts/check-docs-drift.mjs` lists.",
+        "`docs/docker-deployment.md` and `docs/runtimes/docker.md` are merged into a synced AGRO page or removed, with a redirect for each URL.",
+        "Each remaining site page passes the STE checker.",
+        "Typecheck passes",
+        "`/docs/agro` redirects to `/docs/agro/intro`."
+      ],
+      "priority": 11,
+      "passes": true,
+      "notes": "Executed: (1) property-testing.md and agro-compatibility.md removed; built redirects go to /docs/agro/contributing and /docs/agro/intro. (2) open-core.md names the Mifune Console, links /docs, and lists only released features (repair 9b17bdd removed enterprise policy). (3) check:docs-drift exit 0; no RETIRED pattern in glossary, model-selection, resources. (4) docker-deployment.md and runtimes/docker.md removed; redirects to /docs/agro/deployment-prebuilt-image and /docs/agro/runtimes/overview. (5) STE exit 0 on the four remaining site pages. (6) /docs/agro redirects to /docs/agro/intro. On integrated task branch at 16211ca: pnpm test exit 0, pnpm typecheck exit 0 (Typecheck passes), pnpm build exit 0, check:docs-drift exit 0.",
+      "dependsOn": [
+        "US-003"
+      ],
+      "files": [
+        "docs/property-testing.md",
+        "docs/agro-compatibility.md",
+        "docs/open-core.md",
+        "docs/glossary.md",
+        "docs/model-selection.md",
+        "docs/resources.md",
+        "docs/docker-deployment.md",
+        "docs/runtimes/",
+        "docusaurus.config.ts",
+        "sidebars.ts",
+        "blog/"
+      ],
+      "commit": "9b17bdd"
+    },
+    {
+      "id": "US-012",
+      "title": "Rewrite the 2026-05 and 2026-06 blog posts",
+      "description": "As a reader, I want each older post to use current names and commands so that I can follow it.",
+      "acceptanceCriteria": [
+        "The five posts dated 2026-05-19 to 2026-06-16 contain no `oh ` command, no `.oh/`, no `oh.json`, and no \"Open Harness\" except one dated note on the former name.",
+        "Each post keeps its URL.",
+        "Each post passes the STE checker.",
+        "Typecheck passes"
+      ],
+      "priority": 12,
+      "passes": true,
+      "notes": "Executed: (1) name grep on the five posts finds only the dated note line and the slug tokenmaxxing-openharness. (2) file names, dates, slugs unchanged; every live-sitemap blog URL exists in the build (comm -23 empty). (3) STE exit 0 on each post. Corrected claims: Docker socket opt-in, MicroSandbox planned, make sandbox -> agro sandbox install docker, /ship-spec -> /prd. On integrated task branch at 16211ca: pnpm test exit 0, pnpm typecheck exit 0 (Typecheck passes), pnpm build exit 0, check:docs-drift exit 0.",
+      "dependsOn": [
+        "US-003"
+      ],
+      "files": [
+        "blog/"
+      ],
+      "commit": "b56c899"
+    },
+    {
+      "id": "US-013",
+      "title": "Rewrite the 2026-07 blog posts and the archive",
+      "description": "As a reader, I want each recent post to state the current product so that no post makes a false claim.",
+      "acceptanceCriteria": [
+        "The posts dated 2026-07-06 to 2026-07-11 and the post in `blog/archive/` use `agro` commands and current names.",
+        "No post states that the Mifune Console is not a shipped service.",
+        "Each post keeps its URL.",
+        "Each post passes the STE checker.",
+        "Typecheck passes"
+      ],
+      "priority": 13,
+      "passes": true,
+      "notes": "Executed: (1) name grep on the three July posts and the archive finds only the dated note per post. (2) the Cloud-is-a-future-possibility line is gone; posts name the Mifune Console and link /docs. (3) file names, dates, slugs, images unchanged; every live-sitemap blog URL exists in the build. (4) STE exit 0 on each post. Cherry-pick conflict with US-011 link edits resolved to the US-013 text, which already uses /docs/agro/deployment-prebuilt-image. On integrated task branch at 16211ca: pnpm test exit 0, pnpm typecheck exit 0 (Typecheck passes), pnpm build exit 0, check:docs-drift exit 0.",
+      "dependsOn": [
+        "US-003"
+      ],
+      "files": [
+        "blog/"
+      ],
+      "commit": "16211ca"
+    },
+    {
+      "id": "US-014",
+      "title": "Guard the site against drift",
+      "description": "As a site maintainer, I want CI to stop a stale or unclear page so that the site stays aligned.",
+      "acceptanceCriteria": [
+        "`scripts/check-docs-drift.mjs` lists `get-agro.sh` outside `static/`, `agro migrate`, `agro start`, `oh-sbx`, and the `oh <verb>` pattern in `src/pages/`.",
+        "`.github/workflows/pages.yml` runs the drift check and the STE checker on `docs/console/`, the site pages, `src/pages/`, and `blog/`, and a failure stops the deploy.",
+        "The workflow runs the STE checker from `mifunedev/agro` at the synced release tag.",
+        "`pnpm test` covers each new drift rule.",
+        "Typecheck passes"
+      ],
+      "priority": 14,
+      "passes": true,
+      "notes": "Executed on 41f99ca: (1) RETIRED lists get-agro.sh outside static/, agro migrate, agro start, oh-sbx, and oh <verb>; blog/ scanned with the dated-note exemption; docs/agro/ skipped; a probe post with `oh harness install pi` made check:docs-drift exit 1, removed after. Divergence: oh <verb> also applies to docs/ and blog/. (2) pages.yml runs check:docs-drift and check:ste on every event before pnpm run build; the deploy depends on the build job. (3) scripts/check-ste.mjs fetches ste-check.sh from mifunedev/agro at the resolved tag (v0.18.1) and scans docs/*.md, docs/console/, blog/, and visible text of src/pages/*.tsx; exit 0 on 23 files. (4) pnpm test exit 0, 82 pass, each new rule with positive and negative cases. (5) pnpm typecheck exit 0; pnpm build exit 0.",
+      "dependsOn": [
+        "US-004",
+        "US-005",
+        "US-006",
+        "US-007",
+        "US-008",
+        "US-009",
+        "US-010",
+        "US-011",
+        "US-012",
+        "US-013"
+      ],
+      "files": [
+        "scripts/check-docs-drift.mjs",
+        "scripts/check-docs-drift.test.mjs",
+        ".github/workflows/pages.yml",
+        "scripts/check-ste.mjs",
+        "package.json",
+        "README.md"
+      ],
+      "commit": "41f99ca"
+    },
+    {
+      "id": "US-015",
+      "title": "Manual review evidence",
+      "description": "As the operator, I want a recorded browser review of the site so that I accept the change from evidence.",
+      "acceptanceCriteria": [
+        "Depends on US-001 through US-014.",
+        "`.agro/tasks/docs-site-alignment/evidence/manual-review.md` holds annotated screenshots of the home page, the Console introduction, one Console guide page, one synced AGRO page, and one blog post, at 1280x720 and 414x896.",
+        "Each screenshot of a changed page has a matching screenshot of the live site before the change.",
+        "The run uses a local `pnpm build` and `pnpm serve`, and stops each process that the run starts.",
+        "The run records that `/install.sh` and `/get-agro.sh` return the release installer.",
+        "Typecheck passes"
+      ],
+      "priority": 15,
+      "passes": true,
+      "notes": "Executed on b9199d2 + e982729: (1) manual-review.md holds 10 annotated after-screenshots of /, /docs, /docs/console/nodes, /docs/agro/quickstart, /blog/open-harness-demo-guide at 1280x720 and 414x896, each with a Callouts line. (2) 8 before-screenshots of the live site; /docs/console/nodes had no earlier page (live 404). (3) local pnpm build (v0.18.1) and pnpm serve --port 3299, stopped by PID; ss shows port 3299 free. (4) cmp of local /install.sh and /get-agro.sh against the v0.18.1 release install.sh exits 0; live /install.sh returns HTTP/2 404 before deploy. (5) Typecheck passes: pnpm typecheck exit 0; pnpm test, check:docs-drift, check:ste, pnpm build exit 0 on e982729. Defects found and fixed in da3cfca: backticks in synced sidebar titles, byte count in logs.",
+      "dependsOn": [
+        "US-001",
+        "US-002",
+        "US-003",
+        "US-004",
+        "US-005",
+        "US-006",
+        "US-007",
+        "US-008",
+        "US-009",
+        "US-010",
+        "US-011",
+        "US-012",
+        "US-013",
+        "US-014"
+      ],
+      "files": [
+        ".agro/tasks/docs-site-alignment/evidence/"
+      ],
+      "commit": "e982729"
+    }
+  ]
+}

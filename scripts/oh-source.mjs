@@ -1,13 +1,5 @@
-// Shared resolution of the upstream openharness ref that the site mirrors.
-//
-// Both mirror scripts (sync-external-scripts.mjs, build-oh-cli.mjs) must agree on
-// exactly one ref. They previously disagreed: one defaulted to "refs/heads/main"
-// and the other to "main", so an operator setting OH_SCRIPTS_REF in one form got
-// a working sync and a silently skipped CLI build, or the reverse.
-//
-// The default is `main`, the release ref. `development` carries unreleased CLI
-// behaviour; the site must not serve a bundle strangers `curl | bash` from a
-// branch that has not been promoted.
+// Shared resolution of the AGRO release that the site mirrors. Both mirror scripts
+// must agree on one release tag. With no ref setting the tag is the latest release.
 import { existsSync } from "node:fs";
 import process from "node:process";
 
@@ -23,18 +15,14 @@ function resolveSetting(agroName, legacyName, fallback, normalize = (value) => v
 }
 
 const repoSetting = resolveSetting("AGRO_GITHUB_REPO", "OH_GITHUB_REPO", "mifunedev/agro");
-const refSetting = resolveSetting("AGRO_SCRIPTS_REF", "OH_SCRIPTS_REF", "main", stripHeads);
+const refSetting = resolveSetting("AGRO_SCRIPTS_REF", "OH_SCRIPTS_REF", "", stripHeads);
 
 export const REPO = repoSetting.value;
 export const REF = refSetting.value;
-export const RAW_BASE = `https://raw.githubusercontent.com/${REPO}/${REF}`;
 
-// REF and REPO reach `git clone` as command arguments. Reject anything that is not
-// a plausible ref/slug, and anything leading with `-`, which git would read as a flag.
 const SAFE = /^[A-Za-z0-9][A-Za-z0-9._\/-]*$/;
-const FULL_SHA = /^[0-9a-f]{40}$/i;
 for (const { name, value } of [repoSetting, refSetting]) {
-  if (!SAFE.test(value)) {
+  if (value && !SAFE.test(value)) {
     console.error(`[oh-source] FATAL: ${name}=${JSON.stringify(value)} is not a valid ref or repo slug.`);
     process.exit(1);
   }
@@ -47,16 +35,6 @@ export function assertSafeRef(value, label = "ref") {
   return value;
 }
 
-export function rawBaseFor(sha) {
-  assertSafeRef(sha, "commit");
-  return `https://raw.githubusercontent.com/${REPO}/${sha}`;
-}
-
-export function gitUrlFor(repo = REPO) {
-  assertSafeRef(repo, "repo");
-  return `https://github.com/${repo}.git`;
-}
-
 export class MirrorError extends Error {
   constructor(message, { transient = false } = {}) {
     super(message);
@@ -67,8 +45,7 @@ export class MirrorError extends Error {
 
 // A transient failure is one where the upstream content is presumably fine and we
 // simply could not reach it: DNS, TCP, TLS, 5xx, or a rate limit. Everything else
-// — a missing ref, a 404, a file that is not a script, a failed build — means the
-// mirror would publish something wrong, and must fail the deploy instead.
+// means the mirror would publish something wrong, and must fail the deploy instead.
 const RATE_LIMIT_REMAINING_HEADER = "x-ratelimit-remaining";
 
 export function isRateLimited(headers) {
@@ -89,34 +66,47 @@ function authHeaders() {
   return token ? { authorization: `Bearer ${token}` } : {};
 }
 
-// Resolves REF to a commit SHA. Doubles as the existence check for the ref, so a
-// typo or an unpromoted branch fails here with a clear message rather than deep
-// inside a `git clone`. Never substitutes `main`.
-export async function resolveSha() {
-  const url = `https://api.github.com/repos/${REPO}/commits/${encodeURIComponent(REF)}`;
+const defaultFetch = () => globalThis.fetch.bind(globalThis);
+
+export async function get(url, fetchImpl, headers = {}) {
   let res;
   try {
-    res = await fetch(url, {
-      headers: { accept: "application/vnd.github.sha", ...authHeaders() },
-    });
+    res = await fetchImpl(url, { headers: { ...headers, ...authHeaders() } });
   } catch (err) {
     throw classifyFetchError(err);
   }
+  if (!res.ok && isTransientResponse(res)) {
+    const reason = isRateLimited(res.headers) ? "GitHub rate limit exhausted" : "could not reach GitHub";
+    throw new MirrorError(`${reason} (${url} -> HTTP ${res.status})`, { transient: true });
+  }
+  return res;
+}
+
+export async function resolveReleaseTag({ ref = REF, fetchImpl = defaultFetch() } = {}) {
+  if (ref) return assertSafeRef(ref, "AGRO_SCRIPTS_REF");
+  const url = `https://api.github.com/repos/${REPO}/releases/latest`;
+  const res = await get(url, fetchImpl, { accept: "application/vnd.github+json" });
   if (!res.ok) {
-    const detail = `${url} -> HTTP ${res.status}`;
-    if (isTransientResponse(res)) {
-      const reason = isRateLimited(res.headers)
-        ? "GitHub rate limit exhausted"
-        : "could not reach GitHub";
-      throw new MirrorError(`${reason} (${detail})`, { transient: true });
-    }
-    throw new MirrorError(`ref ${REPO}@${REF} does not resolve (${detail})`);
+    throw new MirrorError(`latest release of ${REPO} does not resolve (${url} -> HTTP ${res.status})`);
   }
-  const sha = (await res.text()).trim();
-  if (!FULL_SHA.test(sha)) {
-    throw new MirrorError(`ref ${REPO}@${REF} did not resolve to a full SHA`);
+  const { tag_name: tag } = await res.json();
+  if (!tag) throw new MirrorError(`latest release of ${REPO} has no tag_name`);
+  return assertSafeRef(tag, "tag_name");
+}
+
+export function releaseAssetUrl(tag, asset) {
+  return `https://github.com/${REPO}/releases/download/${assertSafeRef(tag, "tag")}/${asset}`;
+}
+
+export async function fetchReleaseAsset(tag, asset, { fetchImpl = defaultFetch() } = {}) {
+  const url = releaseAssetUrl(tag, asset);
+  const res = await get(url, fetchImpl);
+  if (!res.ok) {
+    throw new MirrorError(
+      `${REPO}@${tag} has no release asset ${asset} (${url} -> HTTP ${res.status}); AGRO_SCRIPTS_REF must name a release tag`,
+    );
   }
-  return sha.toLowerCase();
+  return { url, body: await res.text() };
 }
 
 // A transient failure is survivable only when there is already a good artifact to
@@ -127,7 +117,7 @@ export function reportAndExit(tag, err, artifacts = []) {
     const missing = artifacts.filter((path) => !existsSync(path));
     if (missing.length === 0) {
       console.warn(`[${tag}] transient: ${err.message} — keeping the previously published artifact`);
-      return { fallback: true, sha: null };
+      return { fallback: true };
     }
     console.error(`[${tag}] FATAL: ${err.message}`);
     console.error(`[${tag}] the failure looks transient, but there is no previous artifact to fall back on: ${missing.join(", ")}`);

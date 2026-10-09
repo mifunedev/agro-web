@@ -7,23 +7,29 @@ tags: [agents, ai-engineering, tokenmaxxing, open-harness]
 slug: tokenmaxxing-openharness
 ---
 
-Tokenmaxxing is getting the hangover treatment. The same behavior that looked like aggressive AI adoption a few months ago is now being written up as runaway cost: [Pylon's bill jumping into enterprise pricing](https://www.businessinsider.com/pylon-ceo-tokenmaxxing-era-coming-to-end-ai-spend-limits-2026-6), [Fortune calling tokenmaxxing a bad ROI metric](https://fortune.com/2026/05/28/tokenmaxxing-is-dead-companies-didnt-get-the-roi-from-ai-they-wanted-to-see/), [WSJ covering the companies that treated it as survival](https://www.wsj.com/cio-journal/why-some-companies-say-ai-tokenmaxxing-is-key-to-survival-e699a128), and [Satya Nadella admitting the habit is addictive](https://www.windowscentral.com/artificial-intelligence/microsoft-ceo-satya-nadella-says-ai-tokenmaxxing-is-costly-im-a-tokenmaxxer-too-its-addictive).
+:::note
 
-The obvious lesson is that tokens are not output. A leaderboard that rewards the person who burned the most model context is just a speedometer bolted to the wrong machine. It tells you activity happened. It does not tell you whether the spec improved, whether the code survived review, or whether the next run got easier.
+Updated on 2026-10-08. Open Harness is now AGRO. This post uses the current names and commands.
 
-But the opposite lesson is wrong too. "Tokenmaxxing is dead" turns into nonsense if it means "stop spending frontier tokens." The useful version is narrower: spend the expensive tokens where they improve the harness, not where they become the scoreboard.
+:::
+
+Tokenmaxxing now gets the hangover treatment. A few months ago, the same behavior looked like aggressive AI adoption. Now the press writes the behavior up as runaway cost. [Pylon's bill jumped into enterprise pricing](https://www.businessinsider.com/pylon-ceo-tokenmaxxing-era-coming-to-end-ai-spend-limits-2026-6). [Fortune called tokenmaxxing a bad ROI metric](https://fortune.com/2026/05/28/tokenmaxxing-is-dead-companies-didnt-get-the-roi-from-ai-they-wanted-to-see/). [WSJ covered the companies that treated tokenmaxxing as survival](https://www.wsj.com/cio-journal/why-some-companies-say-ai-tokenmaxxing-is-key-to-survival-e699a128). [Satya Nadella admitted that the habit is addictive](https://www.windowscentral.com/artificial-intelligence/microsoft-ceo-satya-nadella-says-ai-tokenmaxxing-is-costly-im-a-tokenmaxxer-too-its-addictive).
+
+The obvious lesson: tokens are not output. A leaderboard that rewards the person with the most burned model context is a speedometer on the wrong machine. The leaderboard tells you that activity happened. The leaderboard does not tell you whether the spec improved. The leaderboard does not tell you whether the code survived review, or whether the next run got easier.
+
+But the opposite lesson is also wrong. "Tokenmaxxing is dead" becomes nonsense if the phrase means "stop spending frontier tokens." The useful version is narrower. Spend the expensive tokens where the tokens improve the harness, not where the tokens become the scoreboard.
 
 <!-- truncate -->
 
 ## Bad tokenmaxxing
 
-Bad tokenmaxxing is easy to recognize because the unit of celebration is consumption.
+Bad tokenmaxxing is easy to recognize, because the unit of celebration is consumption.
 
-How many tokens did the team burn? How many prompts did each engineer send? How many seats are active? How many generated lines landed? Those are not useless operational counters, but they are terrible success metrics. They invite the same mistake as measuring a build system by CPU minutes instead of shipped, tested behavior.
+How many tokens did the team burn? How many prompts did each engineer send? How many seats are active? How many generated lines landed? These operational counters have a use, but the counters are terrible success metrics. The counters invite a familiar mistake: a build system judged by CPU minutes instead of shipped, tested behavior.
 
-For agentic engineering, raw token burn is especially misleading. A bad agent can spend a fortune wandering through the repo, rewriting the same file, and asking a bigger model to summarize its own confusion. A good harness can spend a small amount of frontier context to reject a weak plan before any code exists, then let a cheaper or more project-specific executor do the repetitive work.
+For agentic engineering, raw token burn misleads even more. A bad agent can spend a fortune on a walk through the repo. The bad agent rewrites the same file and asks a bigger model to summarize its own confusion. A good harness spends a small amount of frontier context to reject a weak plan before any code exists. Then the good harness gives the repetitive work to a cheaper or more project-specific executor.
 
-The difference is not thrift. The difference is where the intelligence compounds.
+The difference is not thrift. The difference is the place where the intelligence compounds.
 
 ```mermaid
 flowchart LR
@@ -50,29 +56,34 @@ flowchart LR
 
 Good tokenmaxxing is frontier comparison that improves a custom harness.
 
-That means using the strongest model for the moments where the shape of the work is still plastic: naming the problem, comparing plans, finding hidden assumptions, writing the acceptance criteria, and letting adversarial critics attack the spec before the repo has to carry it. Those tokens are not buying output volume. They are buying fewer bad branches.
+Use the strongest model while the shape of the work is still plastic. In that phase, the model names the problem, compares plans, and finds hidden assumptions. The model writes the acceptance criteria. Adversarial critics attack the spec before the repo must carry the spec. Those tokens do not buy output volume. Those tokens buy fewer bad branches.
 
-This is how Open Harness treats Codex `xhigh`. I want it in the comparison path: ideation, brainstorming, plan comparison, `/ship-spec` shaping, and spec critique. It is good at holding multiple possible plans in tension and saying which one is actually simpler. That is the expensive part I want upstream of the work.
+AGRO treats Codex `xhigh` this way. I want Codex `xhigh` in the comparison path: ideation, brainstorming, plan comparison, plan shaping with the `/prd` skill, and spec critique. Codex `xhigh` is good at holding multiple possible plans in tension. Codex `xhigh` can also say which plan is simpler. That expensive step belongs upstream of the work.
 
-After that, implementation should increasingly flow through the harness I am building, not through an endless manual conversation with the frontier model.
+After that step, more and more implementation should flow through the harness that I build. Implementation should not flow through an endless manual conversation with the frontier model.
 
-## The Open Harness split
+## The AGRO split
 
-Open Harness is not an enterprise token-governance product, and this is not a vendor ranking. It is a single-developer harness for one project at a time. The useful question is not "which model wins?" It is "which part of the workflow should carry the most expensive reasoning?"
+AGRO is not an enterprise token-governance product, and this post is not a vendor ranking. AGRO is a single-developer harness for one project at a time. The useful question is not "which model wins?" The useful question is "which part of the workflow should carry the most expensive reasoning?"
 
-For this repo, the split looks like this:
+For this repo, the split has five parts:
 
-**Codex `xhigh` is for comparison.** It belongs before commitment, where the cost of changing your mind is still low. Use it to generate alternative plans, critique the plan you like, tighten `/ship-spec`, and decide whether the task belongs in the harness at all.
+**Codex `xhigh` is for comparison**. Codex `xhigh` belongs before commitment, while a change of mind still costs little. Use Codex `xhigh` to generate alternative plans and to critique the plan you like. Also use Codex `xhigh` to tighten the plan and to decide whether the task belongs in the harness at all.
 
-**Pi is the main coding harness when implementation behavior matters.** Pi is where the project-specific loop can live: planning mode, task tracking, background monitors, statusline context, Codex usage visibility, and fallback model paths. If the goal is to teach the project how it likes work done, Pi is the place to accumulate that behavior.
+**Pi is the main coding harness when implementation behavior matters**. Pi can hold the project-specific loop: planning mode, task tracking, background monitors, statusline context, Codex usage visibility, and fallback model paths. Do you want to teach the project how the project likes work done? Then Pi is the place to accumulate that behavior.
 
-**Hermes is optional, but it is the right primary harness for memory-heavy operator workflows.** Open Harness does not ship Hermes as the default image path; it is enabled explicitly. When the workflow wants persistent memory, self-improving skills, scheduled automation, or Slack/chat operator surfaces, Hermes has a native shape for that. It is not "better than Pi." It is a different center of gravity.
+**Hermes is optional, but Hermes is the right primary harness for memory-heavy operator workflows**. AGRO installs no coding harness at boot, and Hermes is no exception. You install Hermes explicitly with `agro harness install hermes`. Some workflows want persistent memory, self-improving skills, scheduled automation, or Slack and chat operator surfaces. Hermes has a native shape for those workflows. Hermes is not "better than Pi." Hermes has a different center of gravity.
 
-**Claude is for audit, compound, compress, eval, and high-confidence review loops.** In this harness, Claude is still the place I trust for certain review and synthesis passes: turning session evidence into durable memory, checking whether a change really made the system better, compressing context without losing the load-bearing parts, and running the high-confidence audit loop before a PR leaves draft.
+**Claude is for audit, compound, compress, eval, and high-confidence review loops**. In this harness, I still trust Claude for certain review and synthesis passes:
 
-**Haiku-class models are for cleanup.** Summaries, formatting, low-risk polish, changelog drafts, small transformations, mechanical copy passes. If a task has a narrow input, a narrow output, and a cheap way to verify it, it should not be renting the biggest brain in the building.
+- Claude turns session evidence into durable memory.
+- Claude checks whether a change made the harness better.
+- Claude compresses context and keeps the load-bearing parts.
+- Claude runs the high-confidence audit loop before a PR leaves draft.
 
-That split can change. It should change. A harness that cannot route work differently as the tools improve is not a harness; it is just a habit.
+**Haiku-class models are for cleanup**. Cleanup means summaries, formatting, low-risk polish, changelog drafts, small transformations, and mechanical copy passes. A task can have a narrow input, a narrow output, and a cheap way to verify the output. Such a task should not rent the biggest brain in the building.
+
+That split can change. That split should change. A harness that cannot route work differently as the tools improve is not a harness. That harness is a habit.
 
 ```mermaid
 flowchart TD
@@ -101,9 +112,9 @@ flowchart TD
 
 The expensive model should make the next cheaper run better.
 
-That is the rule I care about. Spend frontier tokens on the spec, the critique, the comparison, and the harness behavior that survives the session. Do not spend them to inflate a dashboard. Do not spend them to make a leaderboard feel alive. Do not spend them because an internal graph rewards "AI usage" without proving that the resulting work got safer, clearer, or easier to repeat.
+I care about this rule most. Spend frontier tokens on the spec, the critique, the comparison, and the harness behavior that survives the session. Do not spend frontier tokens to inflate a dashboard. Do not spend frontier tokens to make a leaderboard feel alive. An internal graph can reward "AI usage" without proof that the work got safer, clearer, or easier to repeat. Do not spend frontier tokens for that graph.
 
-The practical loop is:
+The practical loop has five steps:
 
 1. Use frontier context to compare approaches.
 2. Turn the selected approach into a critic-gated spec.
@@ -111,12 +122,12 @@ The practical loop is:
 4. Audit the result with a fresh context.
 5. Promote the durable lesson back into the harness.
 
-That is tokenmaxxing worth keeping. The tokens disappear, but the harness remains sharper than it was before.
+That loop is the tokenmaxxing worth keeping. The tokens disappear, but the harness stays sharper than before.
 
-## Where this leaves Open Harness
+## Where this leaves AGRO
 
-The right endpoint is not a team that burns more tokens every week. The right endpoint is a harness that needs fewer heroic frontier sessions because it has absorbed the last ones.
+The right endpoint is not a team that burns more tokens each week. The right endpoint is a harness with less need for heroic frontier sessions, because the harness absorbed the last sessions.
 
-Codex `xhigh` should raise the quality of the comparison and the spec. Pi or Hermes should absorb the project-specific implementation loop. Claude should keep the audit and memory system honest. Smaller models should take the cheap, bounded work.
+Codex `xhigh` should raise the quality of the comparison and the spec. Pi or Hermes should absorb the project-specific implementation loop. Claude should keep the audit and memory process honest. Smaller models should take the cheap, bounded work.
 
-That is the version of tokenmaxxing I want: not maximizing token burn as a metric, but spending the best tokens where they make the system better at spending the next ones.
+I want this version of tokenmaxxing. The goal is not maximum token burn as a metric. The goal is to spend the best tokens where those tokens make the harness better at spending the next tokens.
