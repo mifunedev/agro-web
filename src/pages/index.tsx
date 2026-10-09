@@ -99,6 +99,12 @@ const AGENTS: Array<{
       />
     ),
   },
+  {
+    id: "openclaw",
+    name: "OpenClaw",
+    description: "OpenClaw is the gateway-first personal agent runtime.",
+    icon: <MonogramIcon letter="OC" />,
+  },
 ];
 
 const PRODUCTS: Array<{
