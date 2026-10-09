@@ -10,6 +10,10 @@ This guide takes you from sign-in to a running free node. You need a GitHub acco
 ## Sign in with GitHub
 
 1. Open [console.mifune.dev](https://console.mifune.dev) in your browser. The **Sign in** page opens.
+
+   ![The Sign in page of the Console shows the Continue with GitHub button.](/img/console/getting-started-1.png)
+   Callouts: 1 is the **Continue with GitHub** button.
+
 2. Select **Continue with GitHub**.
 3. On GitHub, approve the sign-in. The Console opens the **Nodes** page.
 
@@ -23,6 +27,10 @@ A context holds nodes, SSH keys, and billing. The Console gives you two kinds of
 The context switcher in the navigation shows the name of the current context. To change the context, do these steps:
 
 1. Select the context switcher. The menu shows the **Personal** group and the **Organizations** group.
+
+   ![The open context switcher shows the Personal group and the Organizations group.](/img/console/getting-started-2.png)
+   Callouts: 1 is the context switcher. 2 is the **Personal** group. 3 is the **Organizations** group.
+
 2. Select a context. The Console shows the nodes of that context.
 
 To create an organization, do these steps:
@@ -39,10 +47,22 @@ The free node is available only in your personal space. A free node always uses 
 1. In the context switcher, select your personal space.
 2. On the **Nodes** page, select **Create free node**. If the page does not show this button, select **Create node**. The **Create your free node** page opens.
 3. Under **Billing**, select **Free**.
+
+   ![The Create your free node page shows the Billing options with Free selected.](/img/console/getting-started-3.png)
+   Callouts: 1 is **Billing**. 2 is the **Free** option.
+
 4. Optional: in **Name**, enter a name for the node. If you leave the name blank, the Console shows the node UUID.
 5. Optional: open **Advanced: direct SSH access (optional)** and add an SSH key. A free node does not need an SSH key, because you connect in your browser.
 6. Select **Create free node**. The Console opens the page of the new node.
+
+   ![The bottom of the Create your free node page shows the Create free node button.](/img/console/getting-started-4.png)
+   Callouts: 1 is the **Create free node** button.
+
 7. Wait until the node status is **Running**. The status first shows the setup steps, for example **Creating VM** and **Bootstrapping**.
+
+   ![The page of a free node shows the Running status next to the node name.](/img/console/getting-started-5.png)
+   Callouts: 1 is the **Running** status.
+
 
 A free node pauses when the free hours of the month run out. For the free-tier limits, read [Free tier](free-tier.md).
 
