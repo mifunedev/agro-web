@@ -81,6 +81,7 @@ const config: Config = {
     // night window, only when the reader has made no explicit choice and the OS
     // is not already asking for dark. See src/plugins/time-of-day-theme.
     timeOfDayThemePlugin,
+    "docusaurus-plugin-image-zoom",
     [
       "@docusaurus/plugin-client-redirects",
       {
@@ -191,6 +192,13 @@ const config: Config = {
         "tsx",
         "toml",
       ],
+    },
+    zoom: {
+      selector: ".markdown img",
+      background: {
+        light: "var(--ifm-background-color)",
+        dark: "var(--ifm-background-color)",
+      },
     },
     tableOfContents: {
       minHeadingLevel: 2,

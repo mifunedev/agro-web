@@ -231,3 +231,8 @@ article {
     color: inherit !important;
   }
 }
+
+.medium-zoom-overlay,
+.medium-zoom-image--opened {
+  z-index: var(--ifm-z-index-overlay);
+}
