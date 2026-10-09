@@ -143,8 +143,8 @@
         "Typecheck passes"
       ],
       "priority": 6,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Executed on d8355b7: scripts/console-images.mjs checks missing file, empty alt text, missing Callouts line within 3 lines, unreferenced file, and non-1280x720 PNG; 7 tests failed before the module and pass now. Advisor probe: renaming connect-2.png to connect-9.png in connect.md makes the test exit 1; reverted. pnpm test, typecheck (Typecheck passes), build, check:docs-drift, check:ste exit 0. CI runs pnpm test before the build.",
       "dependsOn": [
         "US-002",
         "US-003",
@@ -152,8 +152,10 @@
         "US-005"
       ],
       "files": [
-        "scripts/console-images.test.mjs"
-      ]
+        "scripts/console-images.test.mjs",
+        "scripts/console-images.mjs"
+      ],
+      "commit": "d8355b7"
     },
     {
       "id": "US-007",
