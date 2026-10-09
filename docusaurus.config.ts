@@ -103,6 +103,7 @@ const config: Config = {
           { from: "/docs/harnesses/grok-build", to: "/docs/agro/harnesses/grok-build" },
           { from: "/docs/harnesses/hermes", to: "/docs/agro/harnesses/hermes" },
           { from: "/docs/harnesses/muse-code", to: "/docs/agro/harnesses/muse-code" },
+          { from: "/docs/harnesses/openclaw", to: "/docs/agro/harnesses/openclaw" },
           { from: "/docs/harnesses/opencode", to: "/docs/agro/harnesses/opencode" },
           { from: "/docs/harnesses/pi", to: "/docs/agro/harnesses/pi" },
           { from: "/docs/harnesses/t3code", to: "/docs/agro/harnesses/t3code" },
