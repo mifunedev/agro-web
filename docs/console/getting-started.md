@@ -28,8 +28,8 @@ The context switcher in the navigation shows the name of the current context. To
 
 1. Select the context switcher. The menu shows the **Personal** group and the **Organizations** group.
 
-   ![The open context switcher shows the Personal group and the Organizations group.](/img/console/getting-started-2.png)
-   Callouts: 1 is the context switcher. 2 is the **Personal** group. 3 is the **Organizations** group.
+   ![The open context switcher shows the demo-admin personal space in the Personal group and Example Co in the Organizations group.](/img/console/getting-started-2.png)
+   Callouts: 1 is the **Personal** group. 2 is the **Organizations** group.
 
 2. Select a context. The Console shows the nodes of that context.
 
