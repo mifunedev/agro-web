@@ -34,7 +34,8 @@ An `admin` can do these actions:
 - Add or update the card.
 - Open the billing portal.
 - Read the usage and spend of the context.
-- Add and remove billing managers.
+- Add a billing manager.
+- Remove a billing manager.
 
 A member with the `viewer` role or the `operator` role can open the **Billing** page. The page shows the billing status. The page does not show the billing buttons. The **Payment method** card shows "Ask an admin of" and the name of the context.
 

@@ -31,8 +31,8 @@ Each snapshot shows these fields:
 
 - **Name**: The name that you give. If you give no name, the Console shows the node name, the kind, and the date.
 - **Tags**: Labels that you use to find snapshots. A snapshot has at most 10 tags. A tag uses lowercase letters, digits, and hyphens.
-- **Created**: The time when the snapshot was created.
-- **Kind**: How the snapshot was created. The kinds are `Baseline`, `Manual`, `Pause`, and `Rebuild`. A snapshot that you create is a `Manual` snapshot.
+- **Created**: The creation time of the snapshot.
+- **Kind**: The origin of the snapshot. The kinds are `Baseline`, `Manual`, `Pause`, and `Rebuild`. A snapshot that you create is a `Manual` snapshot.
 
 A name has at most 80 characters.
 

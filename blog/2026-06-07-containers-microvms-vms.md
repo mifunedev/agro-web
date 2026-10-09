@@ -121,7 +121,7 @@ flowchart TB
 
 - **Yes to both**: a developer runs their own agent on their own machine. Pick the container each time. The microVM wall guards against an absent threat. The VM cost buys nothing. Most agent work today fits this case. For this case, the container is not the budget option. The container is optimal.
 - **No**: untrusted, model-generated, or third-party agents, especially many tenants on shared hardware. This case is the reason the microVM exists: VM-grade isolation, cheap enough to run per request at fleet scale.
-- **Full VM** stays the answer only for low churn and a real need for a whole second operating system (a different OS or a full device stack). For on-demand agents, the full VM is the wrong shape. Firecracker exists to fill that gap.
+- **Full VM** stays the answer only for low churn and a real need for a whole second operating system. Examples are a different OS or a full device stack. For on-demand agents, the full VM is the wrong shape. Firecracker exists to fill that gap.
 
 ## Where this leaves AGRO
 

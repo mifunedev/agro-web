@@ -42,7 +42,7 @@ The Console shows the free hours in these locations:
 
 - The node page of the free node shows **Free hours left** and **Free hours reset**.
 - The **Billing** page shows the **Free running hours** card. The card shows **Used this month**, **Left this month**, and **Resets**.
-- The **Nodes** page shows the free hours that are left and the reset date.
+- The **Nodes** page shows the free hours left and the reset date.
 
 ## When the free hours run out
 
@@ -56,7 +56,9 @@ The **Nodes** page shows a banner with the **Continue on paid usage** button. Th
 
 You have two choices:
 
-- Wait until the free hours reset. Then select **Resume** on the node page.
+- Resume the node after the free hours reset:
+  1. Wait until the free hours reset.
+  2. Select **Resume** on the node page.
 - Select **Continue on paid usage**. The node moves to hourly billing.
 
 ## Workspace retention
