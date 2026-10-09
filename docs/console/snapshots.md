@@ -56,6 +56,10 @@ When the node already has a snapshot, the card shows **Replace snapshot** instea
 
 1. Open the node page.
 2. In the **Snapshot** card, select **Replace snapshot**.
+
+   ![The Snapshot card of a running node shows a ready snapshot and the Replace snapshot button.](/img/console/snapshots-1.png)
+   Callouts: 1 is the **Snapshot** card. 2 is the **Replace snapshot** button.
+
 3. Optional: Type a name and add tags for the new snapshot.
 4. Select **Replace snapshot**.
 
@@ -92,6 +96,10 @@ A new node from a snapshot starts with the full workspace of the snapshot. The s
 
 1. Find the snapshot. Use one of these steps:
    - On the **Snapshots** page, select **Create node** in the row of the snapshot.
+
+     ![The Snapshots page lists each snapshot in the organization with its actions.](/img/console/snapshots-2.png)
+     Callouts: 1 is the **Snapshots** page. 2 is the **Create node** link.
+
    - On the page of a running node, select **Duplicate node** in the **Snapshot** card.
    - On the page of a destroyed node, select **Create node from snapshot** in the **Snapshot** card.
 2. Select a size. The Console shows only the sizes with at least as much disk as the source node.

@@ -41,6 +41,10 @@ For more information about snapshots, read [Snapshots](snapshots.md).
 The Console shows the free hours in these locations:
 
 - The node page of the free node shows **Free hours left** and **Free hours reset**.
+
+  ![The Billing card of a running free node shows the free hours left and the reset date.](/img/console/free-tier-1.png)
+  Callouts: 1 is **Free hours left** and **Free hours reset**.
+
 - The **Billing** page shows the **Free running hours** card. The card shows **Used this month**, **Left this month**, and **Resets**.
 - The **Nodes** page shows the free hours left and the reset date.
 
@@ -89,5 +93,9 @@ The personal space must have a card on file. If the personal space has no card, 
 
 1. Open the node page of the paused free node.
 2. On the **Free hours used for this month** card, select **Continue on paid usage**. A confirmation dialog opens.
+
+   ![A paused free node shows the Free hours used for this month card.](/img/console/free-tier-2.png)
+   Callouts: 1 is the **Free hours used for this month** card. 2 is the **Continue on paid usage** button.
+
 3. Select **Continue on paid usage**. The Console shows a message that the node now runs on paid usage.
 4. To start the node, select **Resume**, then select **Resume node**.
