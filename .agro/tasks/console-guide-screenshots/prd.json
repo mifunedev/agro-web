@@ -169,8 +169,8 @@
         "Typecheck passes"
       ],
       "priority": 7,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Executed on 5ad474b + 87d43d4: evidence/manual-review.md holds 16 annotated screenshots (8 pages at 1280x720 and 414x896). agent-browser eval confirmed each of the 21 embedded images has complete=true and naturalWidth 1280 at both widths. All 21 images opened and checked: demo data only, support@mifune.dev on the sign-in page, rates masked, token masked. Local pnpm build and pnpm serve --port 3299, stopped by PID; port free. Three badge defects fixed in 531f66e and the evidence refreshed. Typecheck passes: pnpm typecheck exit 0.",
       "dependsOn": [
         "US-001",
         "US-002",
@@ -181,7 +181,8 @@
       ],
       "files": [
         ".agro/tasks/console-guide-screenshots/evidence/"
-      ]
+      ],
+      "commit": "87d43d4"
     }
   ]
 }

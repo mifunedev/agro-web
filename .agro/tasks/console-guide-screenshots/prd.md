@@ -171,4 +171,9 @@ None. The operator accepted the recommendation: the capture tooling lives in the
 
 ## Lessons
 
-Filled by the advisor before undraft.
+- **The released Console UI used the old product name.** Evidence: the first `v1.8.1` capture showed "AGRO Console" in the brand mark and the footer. Outcome: fixed in agro-console#337 and released in `v1.9.0`. The capture used `v1.9.0`.
+- **Console messages contradicted the Console behavior.** Evidence: the `operator` role text, the Destroy and Restart dialogs, the billing messages, and the token prefix disagreed with the code. Outcome: fixed in agro-console#339 and released in `v1.9.0`.
+- **The demo seed showed running nodes as not ready.** Evidence: the first captures showed "Host registration pending" and a disabled **Connect** button. Outcome: fixed in agro-console#343. Browser access stays ready for 5 minutes after `seed-demo.mjs --reverify`, so the capture runs the command before each running-node screen.
+- **Mixed themes and covered text came from parallel capture workers.** Evidence: some first captures were in dark mode, and three callout badges covered Console text. Outcome: fixed in this PR. The capture brief now names light mode, and US-007 found the covered text.
+- **Prices in images drift from the pricing page.** Evidence: the screenshots showed hourly rates. Outcome: fixed in this PR. The operator chose to mask each rate as `$•.••/hr`.
+- **Images are hard to read at phone width.** Evidence: at 414x896, the text in each 1280x720 image is too small to read. Outcome: dropped. The plan puts mobile screenshots out of scope.
