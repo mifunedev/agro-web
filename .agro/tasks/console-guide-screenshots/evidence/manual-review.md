@@ -298,12 +298,12 @@ Notes:
 
 ## Defects
 
-The review fixed no defect. Each item is for the advisor.
+The review fixed no defect. Commit `531f66e` retook the three images with badge defects. A second run retook `billing-1280.png`, `billing-414.png`, `organizations-1280.png`, and `organizations-414.png` from a new local build. The second run used the same callouts and the same scroll. The printed `Callouts:` lines did not change.
 
-1. `billing-3.png`: the callout badges hide Console text. Badge 1 hides the start of the sentence above the **Billing current** badge. Badge 2 hides the **Card on file** line. Badge 3 hides the end of the **Invoices & history** text.
-2. `organizations-members-3.png`: badge 1 hides the **Search members** field.
-3. `billing-usage.png`: badge 1 hides part of the sentence under **Month-to-date usage**.
-4. At 414x896, the text in each embedded image is too small to read. The plan puts mobile screenshots out of scope.
+1. Fixed in `531f66e`. `billing-3.png`: the callout badges hid Console text. Badge 1 hid the start of the sentence above the **Billing current** badge. Badge 2 hid the **Card on file** line. Badge 3 hid the end of the **Invoices & history** text. The new image shows each badge next to its target.
+2. Fixed in `531f66e`. `organizations-members-3.png`: badge 1 hid the **Search members** field. The new image shows badges 1 and 2 under the **Roster** table.
+3. Fixed in `531f66e`. `billing-usage.png`: badge 1 hid part of the sentence under **Month-to-date usage**. The new image shows the full sentence.
+4. Known limit. At 414x896, the text in each embedded image is too small to read. The plan puts mobile screenshots out of scope.
 
 ## Cleanup
 
