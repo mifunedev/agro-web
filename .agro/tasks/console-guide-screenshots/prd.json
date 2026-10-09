@@ -20,12 +20,13 @@
         "Typecheck passes"
       ],
       "priority": 1,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Executed: tooling merged in agro-console #336 (26b3726) and released in v1.9.0 (4f37b4e). Local v1.9.0 production build serves 127.0.0.1:3105 against agro_console_docs (Herdr w5:p2); the dev Console on 3005 and its database untouched. Demo data: Example Co with demo-admin, demo-operator, demo-viewer; nodes Creating VM, Failed, Paused, Running plus 1 archived; IPv4 192.0.2.x; emails example.com (13 row-builder tests). Seed refuses a name without _docs (exit 1) and a non-empty database (exit 1). No provisioner, gateway, cloudflared, or stripe started; STRIPE_EXPECT_MODE=test. Teardown dropped and recreated agro_console_docs (exit 0). Screenshot: footer \"Mifune Console · v1.9.0\", no dev indicator.",
       "dependsOn": [],
       "files": [
         "mifunedev/agro-console capture tooling (private PR)"
-      ]
+      ],
+      "commit": "agro-console 4f37b4e (v1.9.0)"
     },
     {
       "id": "US-002",
