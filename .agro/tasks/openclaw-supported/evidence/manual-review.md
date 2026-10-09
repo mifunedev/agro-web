@@ -39,8 +39,27 @@ The preview build ran in tmux session `aw77-serve` with `pnpm exec docusaurus se
 | --- | --- |
 | Open `/docs/agro/harnesses/openclaw` | Title `OpenClaw \| AGRO`. H1 `OpenClaw`. The sidebar shows OpenClaw after Hermes. |
 | Open `/docs/harnesses/openclaw` | Redirects to `/docs/agro/harnesses/openclaw` |
-| Landing page entry | Text `OC OpenClaw OpenClaw is the gateway-first personal agent runtime.` after T3 Code |
+| Landing page entry | Text `OpenClaw OpenClaw is the gateway-first personal agent runtime.` after Hermes. The icon `/img/agents/openclaw.png` loads at natural width 180. |
 | Click the landing entry | Opens `/docs/agro/harnesses/openclaw` |
+
+## Landing order repair
+
+The landing list matches the mifune.dev picker (mifunedev/website#76, commit `a890637`, `src/sections/AgentPickerSection.tsx`).
+`static/img/agents/openclaw.png` is `https://openclaw.ai/apple-touch-icon.png`: a 180x180 PNG with sha256 `e8c7ce0a3a6c52bd904cc55e31a5b3a8b6392dcd70ba9e220ecf0ef1d6bd8c16`.
+
+The browser reads this card order from the served preview build:
+
+```
+["Claude Code","Codex","OpenCode","Pi","Hermes","OpenClaw","Grok Build","Muse Code","Antigravity CLI","fx","T3 Code"]
+```
+
+| Command | Exit status | Result |
+| --- | --- | --- |
+| `pnpm test` | 0 | 90 tests pass |
+| `pnpm run check:docs-drift` | 0 | PASS, 26 files |
+| `pnpm run check:ste` | 0 | no findings in 23 files |
+| sync from `e00e5a56`, then `pnpm exec docusaurus build` | 0 | `[SUCCESS] Generated static files in "build".` |
+| `node scripts/check-theme-script-order.mjs` | 0 | PASS |
 
 Screenshots:
 
