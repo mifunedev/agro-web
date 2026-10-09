@@ -41,15 +41,16 @@
         "Typecheck passes"
       ],
       "priority": 2,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Executed: getting-started.md shows sign-in, context switcher (Personal and Organizations rows), Create your free node (Billing/Free and Create free node, split into two images), and a running free node. Retakes in 1aa1a6c and ccf35d6. On ccf35d6: 21 PNGs in static/img/console, each 1280x720, each referenced from docs/console, each followed by a Callouts line within 3 lines; light mode; demo data only; rates masked as $•.••/hr (operator decision); running nodes ready (agro-console #343). pnpm test, typecheck (Typecheck passes), check:ste, check:docs-drift, build exit 0. Verified in browser with agent-browser by each worker via pnpm serve.",
       "dependsOn": [
         "US-001"
       ],
       "files": [
         "docs/console/getting-started.md",
         "static/img/console/getting-started-*"
-      ]
+      ],
+      "commit": "063eff5"
     },
     {
       "id": "US-003",
@@ -63,8 +64,8 @@
         "Typecheck passes"
       ],
       "priority": 3,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Executed: nodes.md shows the Nodes page, node actions, and Creating VM; connect.md shows the Connect menu with the browser editor as Default, the SSH dialog with the host fingerprint, and the Add SSH key dialog (cancelled). Retakes in 1aa1a6c, 8cb6e7f, ccf35d6. On ccf35d6: 21 PNGs in static/img/console, each 1280x720, each referenced from docs/console, each followed by a Callouts line within 3 lines; light mode; demo data only; rates masked as $•.••/hr (operator decision); running nodes ready (agro-console #343). pnpm test, typecheck (Typecheck passes), check:ste, check:docs-drift, build exit 0. Verified in browser with agent-browser by each worker via pnpm serve.",
       "dependsOn": [
         "US-001"
       ],
@@ -73,7 +74,8 @@
         "docs/console/connect.md",
         "static/img/console/nodes-*",
         "static/img/console/connect-*"
-      ]
+      ],
+      "commit": "43f0407"
     },
     {
       "id": "US-004",
@@ -87,8 +89,8 @@
         "Typecheck passes"
       ],
       "priority": 4,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Executed: snapshots.md shows the Snapshot card and the Snapshots page; free-tier.md shows the free hours on the node page and the Free hours used for this month card of a paused free node. Retakes in 1aa1a6c, 8cb6e7f. On ccf35d6: 21 PNGs in static/img/console, each 1280x720, each referenced from docs/console, each followed by a Callouts line within 3 lines; light mode; demo data only; rates masked as $•.••/hr (operator decision); running nodes ready (agro-console #343). pnpm test, typecheck (Typecheck passes), check:ste, check:docs-drift, build exit 0. Verified in browser with agent-browser by each worker via pnpm serve.",
       "dependsOn": [
         "US-001"
       ],
@@ -97,7 +99,8 @@
         "docs/console/free-tier.md",
         "static/img/console/snapshots-*",
         "static/img/console/free-tier-*"
-      ]
+      ],
+      "commit": "6396b5c"
     },
     {
       "id": "US-005",
@@ -113,8 +116,8 @@
         "Typecheck passes"
       ],
       "priority": 5,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Executed: billing.md shows Billing and Usage & spend; organizations.md shows Members and the inline invite form (not sent); api-tokens.md shows API tokens and Token created with the value masked. Two local docs-example tokens were created (one in a dark-mode capture) and both show Revoked. Prose fix: Billing is in the user menu. On ccf35d6: 21 PNGs in static/img/console, each 1280x720, each referenced from docs/console, each followed by a Callouts line within 3 lines; light mode; demo data only; rates masked as $•.••/hr (operator decision); running nodes ready (agro-console #343). pnpm test, typecheck (Typecheck passes), check:ste, check:docs-drift, build exit 0. Verified in browser with agent-browser by each worker via pnpm serve.",
       "dependsOn": [
         "US-001"
       ],
@@ -125,7 +128,8 @@
         "static/img/console/billing-*",
         "static/img/console/organizations-*",
         "static/img/console/api-tokens-*"
-      ]
+      ],
+      "commit": "2a709df"
     },
     {
       "id": "US-006",
