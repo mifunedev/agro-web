@@ -42,7 +42,7 @@ To create an organization, do these steps:
 
 ## Create your first free node
 
-The free node is available only in your personal space. A free node always uses the `n4` size. You can have one free node at a time.
+The free node is available only in your personal space. A free node always uses the `n4` size. You can have up to three free nodes at a time. The free nodes share 24 running hours each UTC month.
 
 1. In the context switcher, select your personal space.
 2. On the **Nodes** page, select **Create free node**. If the page does not show this button, select **Create node**. The **Create your free node** page opens.

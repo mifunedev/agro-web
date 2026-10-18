@@ -7,6 +7,8 @@ sidebar_position: 3
 
 A node is one AGRO workspace on its own virtual machine (VM). The [Mifune Console](intro.md) creates, starts, stops, and deletes each node for you.
 
+> **Warning:** A node is not a sandbox for untrusted code. Each node is a dedicated VM that Mifune operates. A port that a container publishes is open to the internet. No firewall rule closes the port by default. The SSH user has `sudo`. Do not use a node to run untrusted code.
+
 The **Nodes** page lists the nodes of your current context. Select a node name to open the node page.
 
 ![The Nodes page lists four nodes of Example Co with their statuses.](/img/console/nodes-1.png)
@@ -77,13 +79,13 @@ Restart needs the node status **Running**. To restart the node, select **Restart
 
 ## Pause
 
-Pause stops the billing of a node. Pause saves the files of the node in a snapshot, then deletes the VM. The new snapshot replaces the earlier snapshot of the node.
+Pause stops the billing of a node. Pause saves `/home/sandbox` in a snapshot, then deletes the VM. Your repositories are in `/home/sandbox`. The new snapshot replaces the earlier snapshot of the node. Pause does not keep running processes, the data in memory, or the data in Docker volumes.
 
 Pause needs the node status **Running**. Pause is available on a free node and on a paid hourly node. To pause the node, select **Pause**, then select **Pause node**.
 
 ## Resume
 
-Resume starts a paused node on a new VM. Resume brings back the files from the snapshot. The node gets a new IPv4 address. If no prepared VM is ready, Resume takes more time.
+Resume starts a paused node on a new VM. Resume restores `/home/sandbox` from the snapshot. You must start your services again. The node gets a new IPv4 address. If no prepared VM is ready, Resume takes more time.
 
 Resume needs the node status **Paused**. To resume the node, select **Resume**, then select **Resume node**.
 
@@ -119,7 +121,7 @@ The node list and the node page show the status of each node.
 | **Starting container** | The VM starts the AGRO container. |
 | **Running** | The node is ready. You can connect to the node. |
 | **Pausing** | The Console saves the snapshot and deletes the VM. |
-| **Paused** | The node has no VM. The files stay in a snapshot. You cannot connect to the node. |
+| **Paused** | The node has no VM. `/home/sandbox` stays in a snapshot. You cannot connect to the node. |
 | **Resuming** | The Console starts the node on a new VM. |
 | **Rebuilding** | The Console moves the node to a new VM. |
 | **Restoring snapshot** | The Console restores the node from a snapshot. |

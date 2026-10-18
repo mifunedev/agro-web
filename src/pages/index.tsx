@@ -117,7 +117,7 @@ const PRODUCTS: Array<{
     body: [
       "Mifune operates each node for you.",
       "Sign in with GitHub, create a node, and open the node from the Console.",
-      "The free tier gives one n4 node for 24 running hours per UTC month, with no card.",
+      "The free tier is for personal accounts. It gives up to three n4 nodes that share 24 running hours each UTC month, with no card. The Console limits the number of free-tier spots.",
       "AI usage is not included.",
       "You sign in to your agent provider with your own account.",
     ],
@@ -171,7 +171,7 @@ export default function Home(): React.ReactElement {
                 Give each coding agent a durable workspace.
               </h1>
               <p className={styles.heroSubtitle}>
-                AGRO gives a coding agent an isolated Docker sandbox. Use the Mifune Console to get a node that Mifune operates. Or run AGRO on your own laptop or remote VM.
+                AGRO gives coding agents a durable workspace. Two or more agents can run side by side in one workspace. Self-host AGRO in an isolated Docker sandbox on your own laptop or remote VM. Or use the Mifune Console to get a dedicated VM node that Mifune operates.
               </p>
               <div className={styles.heroButtons}>
                 <Link className="button button--primary button--lg" to="/docs">
@@ -316,7 +316,7 @@ export default function Home(): React.ReactElement {
                 Skills and hooks in <code>.agro/</code> serve every harness. Herdr is the persistent workspace for agents, tests, and development servers. The container keeps running after you detach from Herdr.
               </p>
               <p>
-                SSH, the host Docker socket, Cloudflared tunnels, and Slack stay off until you turn them on.
+                In self-hosted AGRO, SSH, the host Docker socket, Cloudflared tunnels, and Slack stay off until you turn them on.
               </p>
               <p>
                 The <code>agro stop</code> command keeps the home volume. The <code>agro destroy</code> command deletes the home volume, and it asks before it runs.

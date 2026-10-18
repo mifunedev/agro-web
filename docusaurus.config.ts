@@ -10,7 +10,7 @@ import timeOfDayThemePlugin from "./src/plugins/time-of-day-theme";
 const config: Config = {
   title: "AGRO",
   tagline:
-    "AGRO is a portable harness for running coding agents in an isolated Docker sandbox.",
+    "AGRO is a portable workspace for coding agents. Self-host it, or run it on a Mifune Console node.",
   favicon: "img/favicon.svg",
 
   url: "https://agro.mifune.dev",

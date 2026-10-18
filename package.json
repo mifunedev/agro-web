@@ -41,6 +41,6 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "description": "Open Harness documentation site.",
+  "description": "AGRO documentation site.",
   "packageManager": "pnpm@10.33.0"
 }
