@@ -5,27 +5,27 @@ sidebar_position: 6
 
 # Free tier
 
-The free tier gives you one free node in the [Mifune Console](intro.md). You do not need a credit card.
+The free tier gives you up to three free nodes in the [Mifune Console](intro.md). You do not need a credit card.
 
 ## What the free tier includes
 
-- One node with the `n4` spec. For the size of the `n4` spec, read [Nodes](nodes.md#node-specs).
-- 24 running hours per UTC month.
+- Up to three nodes with the `n4` spec. For the size of the `n4` spec, read [Nodes](nodes.md#node-specs).
+- 24 running hours per UTC month. The free nodes share these hours.
 - No credit card and no SSH key.
 
-The Console counts the time in which the free node status is **Running**. A paused free node uses no free hours.
+The Console counts the time in which each free node status is **Running**. A paused free node uses no free hours.
 
 The free hours reset at 00:00 UTC on the first day of each month. Unused hours do not move to the next month.
 
 ## Who can use the free tier
 
-The free tier is available only in your personal space. Only the owner of the personal space can create a free node. An organization cannot have a free node.
+The free tier is available only for personal accounts, in your personal space. Only the owner of the personal space can create a free node. An organization cannot have a free node.
 
-You can have one free node at a time. To create a different free node, destroy the current free node first.
+You can have up to three free nodes at a time. If you have three free nodes, destroy a free node before you create a new free node.
 
-If no free-tier spot is open, the Console shows the message "Free-tier enrollment is full."
+The Console limits the number of free-tier spots. If no free-tier spot is open, the Console shows the message "Free-tier enrollment is full."
 
-To create the free node, follow [Getting started](getting-started.md#create-your-first-free-node).
+To create a free node, follow [Getting started](getting-started.md#create-your-first-free-node).
 
 ## Limits of a free node
 
@@ -50,7 +50,7 @@ The Console shows the free hours in these locations:
 
 ## When the free hours run out
 
-When the free hours of the month run out, the Console pauses the free node. Pause saves the files of the node in a snapshot. The node status changes to **Paused**.
+When the free hours of the month run out, the Console pauses each running free node. Pause saves `/home/sandbox` in a snapshot. Pause does not keep running processes, the data in memory, or the data in Docker volumes. The node status changes to **Paused**.
 
 The **Nodes** page shows a banner with the **Continue on paid usage** button. The node page shows the **Free hours used for this month** card. The card shows these rows:
 

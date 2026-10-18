@@ -23,4 +23,6 @@ Mifune Console runs at [console.mifune.dev](https://console.mifune.dev).
 - To run agents on your own machine, use AGRO. Start with the [AGRO introduction](agro/intro.md).
 - To let Mifune operate the machine for you, use Mifune Console. Start with the [Console guide](/docs).
 
+Your git repositories move your work between the two products. To move work from a Console node, push each repository to a git remote. Then run the same work with self-hosted AGRO.
+
 For Console prices, see [mifune.dev/pricing](https://mifune.dev/pricing).
