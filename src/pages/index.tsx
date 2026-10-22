@@ -10,7 +10,7 @@ const FALLBACK_STARS = 18;
 const CONSOLE_URL = "https://console.mifune.dev";
 const PRICING_URL = "https://mifune.dev/pricing";
 
-const QUICKSTART = `# The host needs Docker, Git, and Node.js 20 or newer.
+const QUICKSTART = `# The host needs Docker, Git, and Node.js 22 or newer.
 npm install -g @mifune/agro
 
 # Without Node, run the release installer.
@@ -130,7 +130,7 @@ const PRODUCTS: Array<{
     title: "Self-hosted AGRO",
     body: [
       "You run the sandbox on your own laptop or remote VM.",
-      "The host needs Docker, Git, and Node.js 20 or newer.",
+      "The host needs Docker, Git, and Node.js 22 or newer.",
       "The agent keeps working after you disconnect.",
     ],
     links: [{ label: "Read the self-host guide →", to: "/docs/agro/intro" }],
