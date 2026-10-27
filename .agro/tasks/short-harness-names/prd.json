@@ -18,8 +18,8 @@
         "Verify in browser using agent-browser skill: the landing page quick-start block shows `agro harness install claude`."
       ],
       "priority": 1,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Integrated ff at 5596fa62. C1-C3 reasoned: diff shows claude in index.tsx, getting-started (--host), three blog posts. C4 executed: git grep exits 1. C5 reasoned: diff leaves AGENTS ids unchanged. C6 executed: pnpm typecheck exit 0; pnpm test exit 0 (90 pass). C7 executed by worker: pnpm start in tmux us001-web, agent-browser read pre code containing \"agro harness install claude\", body has no claude-code install line; server and tmux stopped.",
       "dependsOn": [],
       "files": [
         "src/pages/index.tsx",
@@ -27,7 +27,8 @@
         "blog/2026-07-06-first-sandbox-agent-auth.md",
         "blog/2026-07-11-deploy-open-harness-with-docker.md",
         "blog/archive/2026-04-28-byoh.md"
-      ]
+      ],
+      "commit": "5596fa628355f99b28db5dfdbfb66a495519967a"
     },
     {
       "id": "US-002",
