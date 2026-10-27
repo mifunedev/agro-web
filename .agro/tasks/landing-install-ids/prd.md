@@ -86,3 +86,6 @@ None.
 - [ ] `.agro/tasks/landing-install-ids/evidence/manual-review.md` exists.
 
 ## Lessons
+
+1. Claim: PR #83 changed only the `claude` commands, so the site showed no `grok`, `muse`, or `antigravity` command before the next AGRO release. Evidence: the goal check found that the agro-web plan named no short-name criterion. Outcome: fixed in this PR. The agent cards show each canonical install command.
+2. Claim: `prd.md` keeps `Status: DRAFT` and unticked boxes after acceptance. Evidence: the review noted the mismatch with `prd.json`. Outcome: dropped, because `prd.json` records completion by convention.

@@ -49,5 +49,10 @@
       "commit": "d0abf3bbdea299877fdc5ee27129be9adb855ffe"
     }
   ],
-  "pr": 85
+  "pr": 85,
+  "review": {
+    "commit": "91898296af5193dd8deb5b017da17f1f8cc32c8a",
+    "verdict": "pass",
+    "model": "sonnet"
+  }
 }
