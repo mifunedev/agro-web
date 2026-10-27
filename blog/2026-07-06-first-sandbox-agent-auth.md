@@ -71,7 +71,7 @@ Run these commands inside the sandbox:
 
 ```bash
 agro tool install herdr && herdr   # persistent terminal workspace: run your agents in its panes
-agro harness install claude-code
+agro harness install claude
 agro harness install pi
 agro harness install hermes        # optional
 ```
