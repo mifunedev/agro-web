@@ -371,6 +371,20 @@
   margin: 0;
 }
 
+.agentInstall {
+  align-self: flex-start;
+  max-width: 100%;
+  margin-top: 0.35rem;
+  padding: 0.15rem 0.45rem;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.8rem;
+  color: var(--ifm-font-color-base);
+  background: var(--ifm-background-color);
+  border: 1px solid var(--ifm-toc-border-color);
+  border-radius: 6px;
+  overflow-wrap: anywhere;
+}
+
 /* ---------- Why ---------- */
 
 .whyGrid {
