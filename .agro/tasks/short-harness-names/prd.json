@@ -40,14 +40,15 @@
         "The advisor stops `pnpm serve` after the capture."
       ],
       "priority": 2,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Advisor-run. C1 executed: pnpm build exit 0. C2 executed: annotate-screenshot.sh exit 0; manual-review.md embeds landing-quickstart.png; assertion {\"claude\":true,\"oldId\":false}. C3 executed: agent-browser session closed, tmux web83-serve killed, port 3283 refuses.",
       "dependsOn": [
         "US-001"
       ],
       "files": [
         ".agro/tasks/short-harness-names/evidence/"
-      ]
+      ],
+      "commit": "9d8c6014cb769059133ad5d2c62d8d4d1caea7ec"
     }
   ],
   "pr": 83
