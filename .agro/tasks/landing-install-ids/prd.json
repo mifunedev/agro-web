@@ -38,14 +38,15 @@
         "After the merge, the live page at `https://agro.mifune.dev/` shows `agro harness install grok`, `agro harness install muse`, and `agro harness install antigravity`."
       ],
       "priority": 2,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Advisor-run. C1 executed: pnpm build exit 0. C2 executed: annotate-screenshot.sh exit 0 with callouts on Grok Build, Muse Code, Antigravity CLI commands; advisor viewed the image. C3 executed: browser session closed, tmux web85-serve killed, port 3285 refuses. C4 runs after the merge against https://agro.mifune.dev/; the advisor reports that result on PR #85.",
       "dependsOn": [
         "US-001"
       ],
       "files": [
         ".agro/tasks/landing-install-ids/evidence/"
-      ]
+      ],
+      "commit": "d0abf3bbdea299877fdc5ee27129be9adb855ffe"
     }
   ],
   "pr": 85
