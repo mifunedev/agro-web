@@ -30,66 +30,77 @@ const AGENTS: Array<{
   id: string;
   name: string;
   description: string;
+  install?: string;
   icon: React.ReactElement;
 }> = [
   {
     id: "claude-code",
     name: "Claude Code",
     description: "Claude Code is the terminal coding agent from Anthropic.",
+    install: "claude",
     icon: <img src="/img/agents/claude-code.png" alt="" width={28} height={28} />,
   },
   {
     id: "codex",
     name: "Codex",
     description: "Codex is the CLI coding agent from OpenAI.",
+    install: "codex",
     icon: <img src="/img/agents/codex.png" alt="" width={28} height={28} />,
   },
   {
     id: "opencode",
     name: "OpenCode",
     description: "OpenCode is a terminal coding agent.",
+    install: "opencode",
     icon: <OpenCodeIcon />,
   },
   {
     id: "pi",
     name: "Pi",
     description: "Pi is a lightweight agent framework that you can change.",
+    install: "pi",
     icon: <PiIcon />,
   },
   {
     id: "hermes",
     name: "Hermes",
     description: "Hermes is the agent runtime from Nous Research.",
+    install: "hermes",
     icon: <img src="https://hermes-agent.nousresearch.com/favicon.ico" alt="" width={28} height={28} />,
   },
   {
     id: "openclaw",
     name: "OpenClaw",
     description: "OpenClaw is the gateway-first personal agent runtime.",
+    install: "openclaw",
     icon: <img src="/img/agents/openclaw.png" alt="" width={28} height={28} />,
   },
   {
     id: "grok-build",
     name: "Grok Build",
     description: "Grok Build is the terminal coding agent from xAI.",
+    install: "grok",
     icon: <img src="https://x.ai/favicon.ico" alt="" width={28} height={28} />,
   },
   {
     id: "muse-code",
     name: "Muse Code",
     description: "Muse Code is the terminal coding agent from Meta.",
+    install: "muse",
     icon: <img src="/img/agents/muse-code.ico" alt="" width={28} height={28} />,
   },
   {
     id: "antigravity-cli",
     name: "Antigravity CLI",
     description: "Antigravity CLI is the terminal coding agent from Google.",
+    install: "antigravity",
     icon: <MonogramIcon letter="A" />,
   },
   {
     id: "fx",
     name: "fx",
     description: "fx is an experimental coding agent CLI from Vercel Labs.",
+    install: "fx",
     icon: <MonogramIcon letter="fx" />,
   },
   {
@@ -284,6 +295,11 @@ export default function Home(): React.ReactElement {
                   <span className={styles.agentText}>
                     <h3 className={styles.agentName}>{agent.name}</h3>
                     <p className={styles.agentDescription}>{agent.description}</p>
+                    {agent.install && (
+                      <code className={styles.agentInstall}>
+                        agro harness install {agent.install}
+                      </code>
+                    )}
                   </span>
                 </Link>
               ))}
