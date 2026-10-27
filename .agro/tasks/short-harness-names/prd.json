@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "project": "agro-web",
+  "branchName": "feat/82-short-harness-names",
+  "description": "Update the hand-written install commands on the AGRO site to the canonical harness ids.",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Update the hand-written install commands to the canonical names",
+      "description": "As a site visitor, I want each install command to use the canonical harness id so that the command matches the AGRO CLI.",
+      "acceptanceCriteria": [
+        "`src/pages/index.tsx` shows `agro harness install claude` in the quick-start code block.",
+        "`docs/console/getting-started.md` shows `agro harness install claude --host`.",
+        "`blog/2026-07-06-first-sandbox-agent-auth.md`, `blog/2026-07-11-deploy-open-harness-with-docker.md`, and `blog/archive/2026-04-28-byoh.md` show `agro harness install claude`.",
+        "`git grep -nE 'harness install (claude-code|grok-build|antigravity-cli|muse-code)' -- src docs blog` exits 1.",
+        "The `AGENTS` ids in `src/pages/index.tsx` stay unchanged, because each id is the slug of a synced doc page.",
+        "`pnpm typecheck` exits 0. `pnpm test` exits 0.",
+        "Verify in browser using agent-browser skill: the landing page quick-start block shows `agro harness install claude`."
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [],
+      "files": [
+        "src/pages/index.tsx",
+        "docs/console/getting-started.md",
+        "blog/2026-07-06-first-sandbox-agent-auth.md",
+        "blog/2026-07-11-deploy-open-harness-with-docker.md",
+        "blog/archive/2026-04-28-byoh.md"
+      ]
+    },
+    {
+      "id": "US-002",
+      "title": "Record the manual review evidence",
+      "description": "As the advisor, I want an annotated screenshot of the landing page so that the PR `## Manual review` section shows the change.",
+      "acceptanceCriteria": [
+        "`pnpm build` exits 0.",
+        "`.agro/tasks/short-harness-names/evidence/manual-review.md` embeds an annotated screenshot of the landing page quick-start block from `pnpm serve`.",
+        "The advisor stops `pnpm serve` after the capture."
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "",
+      "dependsOn": [
+        "US-001"
+      ],
+      "files": [
+        ".agro/tasks/short-harness-names/evidence/"
+      ]
+    }
+  ]
+}
