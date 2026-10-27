@@ -87,3 +87,6 @@ None.
 - [ ] `.agro/tasks/short-harness-names/evidence/manual-review.md` exists.
 
 ## Lessons
+
+1. Claim: the synced harness pages under `docs/agro/` show the short names only after the next AGRO release. Evidence: `scripts/sync-agro-docs.mjs` copies the docs from the latest AGRO release tag. Outcome: dropped, because the sync follows the release by design.
+2. Claim: blog tags and `promos/banner-recipes/` keep `claude-code`. Evidence: the review found the tag in `blog/2026-05-19-statusline-context-rot.md` and the recipe in `promos/banner-recipes/2026-07-07-open-harness-demo-guide.json`. Outcome: dropped, because the plan puts tags and past recipes out of scope.
