@@ -18,13 +18,14 @@
         "Verify in browser using agent-browser skill: the landing page shows `agro harness install grok`, `agro harness install muse`, `agro harness install antigravity`, and `agro harness install claude` on the agent cards, and shows no old id."
       ],
       "priority": 1,
-      "passes": false,
-      "notes": "",
+      "passes": true,
+      "notes": "Integrated ff at b5c69222. C1-C2 executed: grep shows install fields claude, codex, opencode, pi, hermes, openclaw, grok, muse, antigravity, fx; t3code none. C3 executed by worker: browser eval returned ten install strings, T3 card has no code element; advisor viewed screenshot. C4 reasoned: diff leaves ids unchanged. C5 executed: git grep exits 1. C6 executed: pnpm typecheck exit 0; pnpm test exit 0. C7 executed by worker: pnpm start in tmux, agent-browser found grok, muse, antigravity, claude commands and no old id; 360px has no overflow; server stopped.",
       "dependsOn": [],
       "files": [
         "src/pages/index.tsx",
         "src/pages/index.module.css"
-      ]
+      ],
+      "commit": "b5c692223f9afe6be01a4fd380990127ec3587c7"
     },
     {
       "id": "US-002",
