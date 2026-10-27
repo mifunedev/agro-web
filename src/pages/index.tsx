@@ -23,7 +23,7 @@ agro shell <name>
 # In the sandbox, start Herdr, then install a harness.
 agro tool install herdr
 herdr
-agro harness install claude-code
+agro harness install claude
 claude auth login`;
 
 const AGENTS: Array<{

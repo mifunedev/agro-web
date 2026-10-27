@@ -83,7 +83,7 @@ Run each command in a terminal on the node host. Use the terminal of the browser
 4. Install an agent on the host. For example, to install Claude Code, run the command below:
 
    ```bash
-   agro harness install claude-code --host
+   agro harness install claude --host
    ```
 
    For a different agent, run `agro harness install <id> --host`. Replace `<id>` with the agent ID, for example `codex`. Docker and `gh` are already on the host.

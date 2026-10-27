@@ -66,7 +66,7 @@ Run these commands inside sandbox A:
 
 ```bash
 agro tool install herdr && herdr   # persistent terminal workspace
-agro harness install claude-code
+agro harness install claude
 agro harness install pi
 agro harness install hermes        # optional
 ```
